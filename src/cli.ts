@@ -6,7 +6,7 @@ import { generate } from './generate';
   try {
     const {
       driver = 'pg',
-      outFile = './node_modules/kysely-codegen/index.d.ts',
+      outFile = './node_modules/kysely-codegen/dist/index.d.ts',
       style = 'interface',
       url = 'env(DATABASE_URL)',
     } = minimist(process.argv.slice(2));
