@@ -1,1 +1,1 @@
-export const DB = {};
+export type DB = {};
