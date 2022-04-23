@@ -1,0 +1,7 @@
+/.git
+/.vscode
+/node_modules
+/.env
+/.gitignore
+/.pnpm-lock.yaml
+/tsconfig.json
