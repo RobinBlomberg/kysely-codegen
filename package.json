@@ -1,9 +1,9 @@
 {
   "name": "kysely-codegen",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Robin Blomberg",
-  "main": "main.ts",
-  "types": "main.d.ts",
+  "main": "./dist/main.ts",
+  "types": "./dist/main.d.ts",
   "bin": {
     "kysely-codegen": "./dist/cli.js"
   },
