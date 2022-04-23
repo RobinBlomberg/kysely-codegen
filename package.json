@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Robin Blomberg",
   "main": "./dist/main.ts",
   "types": "./dist/main.d.ts",
