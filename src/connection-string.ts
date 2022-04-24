@@ -1,9 +1,14 @@
 import { config as loadEnv } from 'dotenv';
+import { Logger } from './logger';
 
 const CALL_STATEMENT_REGEXP = /^\s*([a-z]+)\s*\(\s*(.*)\s*\)\s*$/;
 
-export const parseConnectionString = (expression: string) => {
-  const expressionMatch = expression.match(CALL_STATEMENT_REGEXP);
+export const parseConnectionString = (options: {
+  logger: Logger;
+  url: string;
+}) => {
+  const { logger, url } = options;
+  const expressionMatch = url.match(CALL_STATEMENT_REGEXP);
 
   if (expressionMatch) {
     const name = expressionMatch[1]!;
@@ -18,7 +23,7 @@ export const parseConnectionString = (expression: string) => {
     try {
       key = keyToken.includes('"') ? JSON.parse(keyToken) : keyToken;
     } catch {
-      throw new SyntaxError(`Invalid URL: '${expression}'`);
+      throw new SyntaxError(`Invalid URL: '${url}'`);
     }
 
     if (typeof key !== 'string') {
@@ -29,7 +34,7 @@ export const parseConnectionString = (expression: string) => {
 
     loadEnv();
 
-    console.info('Loaded environment variables from .env file.');
+    logger.info('Loaded environment variables from .env file.');
 
     const connectionString = process.env[key];
 
@@ -43,10 +48,10 @@ export const parseConnectionString = (expression: string) => {
   }
 
   try {
-    void new URL(expression);
+    void new URL(url);
   } catch {
-    throw new SyntaxError(`Invalid URL: '${expression}'`);
+    throw new SyntaxError(`Invalid URL: '${url}'`);
   }
 
-  return expression;
+  return url;
 };

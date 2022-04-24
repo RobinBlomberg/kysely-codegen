@@ -1,8 +1,6 @@
 import { ColumnMetadata, TableMetadata } from 'kysely';
-import { Dialect } from './dialect';
 import { DIALECT_BY_DRIVER, Driver } from './dialects';
-
-type Style = 'interface' | 'type';
+import { Dialect, Style } from './types';
 
 const serializeExport = (style: Style, name: string) => {
   let data = '';
@@ -31,8 +29,6 @@ const serializeExports = (options: {
 
   if (exports.length) {
     data += '\n';
-
-    exports.sort(([a], [b]) => a.localeCompare(b));
 
     for (const [tableName, interfaceName] of exports) {
       data += '  ';

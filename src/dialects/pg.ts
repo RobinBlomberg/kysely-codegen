@@ -1,4 +1,4 @@
-import { Dialect } from '../dialect';
+import { Dialect } from '../types';
 
 export const pgDialect: Dialect = {
   defaultType: 'string',

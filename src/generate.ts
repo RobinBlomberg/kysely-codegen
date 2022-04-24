@@ -2,7 +2,9 @@ import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
 import { parseConnectionString } from './connection-string';
 import { Driver } from './dialects';
+import { LogLevel } from './enums/log-level';
 import { introspect } from './introspect';
+import { Logger } from './logger';
 import { serialize, Style } from './serialize';
 
 /**
@@ -30,28 +32,42 @@ import { serialize, Style } from './serialize';
  */
 export const generate = async (options: {
   driver: Driver;
+  logLevel: LogLevel;
   outFile: string;
   style?: Style;
   url: string;
 }) => {
-  const { driver, outFile, style = 'interface', url } = options;
-  const connectionString = parseConnectionString(url);
+  const { driver, logLevel, outFile, style = 'interface', url } = options;
 
+  const logger = new Logger(logLevel);
+  const connectionString = parseConnectionString({ logger, url });
   const startTime = performance.now();
 
+  logger.info('Introspecting database...');
+
   const tables = await introspect(connectionString);
+
+  logger.debug();
+  logger.debug(`Found ${tables.length} public tables:`);
+
+  for (const table of tables) {
+    logger.debug(` - ${table.name}`);
+  }
+
+  logger.debug();
 
   const data = serialize({ driver, style, tables });
   const outDir = parse(outFile).dir;
 
   await fs.mkdir(outDir, { recursive: true });
+
   await fs.writeFile(outFile, data);
 
   const endTime = performance.now();
   const relativeOutDir = `.${sep}${relative(process.cwd(), outFile)}`;
   const duration = Math.round(endTime - startTime);
 
-  console.info(
-    `Introspected ${tables.length} models and generated ${relativeOutDir} in ${duration}ms.`,
+  logger.success(
+    `Introspected ${tables.length} tables and generated ${relativeOutDir} in ${duration}ms.`,
   );
 };

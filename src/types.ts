@@ -85,3 +85,5 @@ export type Dialect = {
    */
   types: Record<string, string>;
 };
+
+export type Style = 'interface' | 'type';

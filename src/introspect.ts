@@ -34,5 +34,7 @@ export const introspect = async (connectionString: string) => {
 
   await db.destroy();
 
-  return tables.filter((table) => table.schema === 'public');
+  return tables
+    .filter((table) => table.schema === 'public')
+    .sort((a, b) => a.name.localeCompare(b.name));
 };

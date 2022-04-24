@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Robin Blomberg",
   "main": "./dist/main.ts",
   "types": "./dist/main.d.ts",
@@ -21,6 +21,7 @@
     "start": "node ./dist/cli.js"
   },
   "dependencies": {
+    "chalk": "4.1.2",
     "dotenv": "^16.0.0",
     "kysely": "^0.18.1",
     "minimist": "^1.2.6",
@@ -42,7 +43,10 @@
     "extends": [
       "@robinblomberg/robinblomberg",
       "@robinblomberg/prettier"
-    ]
+    ],
+    "rules": {
+      "no-console": 0
+    }
   },
   "prettier": "@robinblomberg/prettier-config"
 }
