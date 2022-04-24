@@ -97,7 +97,7 @@ export type { Style };
  * @example
  * ```typescript
  * serialize({
- *   driver: 'pg',
+ *   dialect: pgDialect,
  *   style: 'interface',
  *   tables: {
  *     name: 'user',

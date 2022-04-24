@@ -6,7 +6,10 @@ import { DIALECT_BY_DRIVER, Driver } from './dialects';
  *
  * @example
  * ```typescript
- * await introspect('postgres://username:password@mydomain.com/database');
+ * await introspect({
+ *   connectionString: 'postgres://username:password@mydomain.com/database',
+ *   driver: 'pg',
+ * });
  *
  * // Output:
  * [

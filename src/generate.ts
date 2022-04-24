@@ -16,8 +16,8 @@ import { serialize, Style } from './serialize';
  *
  * await generate({
  *   driver: 'pg',
+ *   logLevel: LogLevel.WARN,
  *   outFile: './kysely-codegen/index.d.ts',
- *   style: 'type',
  *   url: 'env(DATABASE_URL)',
  * });
  *
@@ -34,7 +34,7 @@ export const generate = async (options: {
   driver: Driver;
   logLevel: LogLevel;
   outFile: string;
-  print: boolean;
+  print?: boolean;
   style?: Style;
   url: string;
 }) => {
