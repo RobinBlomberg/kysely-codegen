@@ -34,10 +34,18 @@ export const generate = async (options: {
   driver: Driver;
   logLevel: LogLevel;
   outFile: string;
+  print: boolean;
   style?: Style;
   url: string;
 }) => {
-  const { driver, logLevel, outFile, style = 'interface', url } = options;
+  const {
+    driver,
+    logLevel,
+    outFile,
+    print,
+    style = 'interface',
+    url,
+  } = options;
 
   const logger = new Logger(logLevel);
   const connectionString = parseConnectionString({ logger, url });
@@ -57,17 +65,22 @@ export const generate = async (options: {
   logger.debug();
 
   const data = serialize({ driver, style, tables });
-  const outDir = parse(outFile).dir;
 
-  await fs.mkdir(outDir, { recursive: true });
+  if (print) {
+    console.log();
+    console.log(data);
+  } else {
+    const outDir = parse(outFile).dir;
 
-  await fs.writeFile(outFile, data);
+    await fs.mkdir(outDir, { recursive: true });
+    await fs.writeFile(outFile, data);
 
-  const endTime = performance.now();
-  const relativeOutDir = `.${sep}${relative(process.cwd(), outFile)}`;
-  const duration = Math.round(endTime - startTime);
+    const endTime = performance.now();
+    const relativeOutDir = `.${sep}${relative(process.cwd(), outFile)}`;
+    const duration = Math.round(endTime - startTime);
 
-  logger.success(
-    `Introspected ${tables.length} tables and generated ${relativeOutDir} in ${duration}ms.`,
-  );
+    logger.success(
+      `Introspected ${tables.length} tables and generated ${relativeOutDir} in ${duration}ms.`,
+    );
+  }
 };

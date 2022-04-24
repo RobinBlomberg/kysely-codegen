@@ -9,9 +9,11 @@ const DEFAULT_OUT_FILE = './node_modules/kysely-codegen/dist/index.d.ts';
 const VALID_FLAGS = new Set([
   '_',
   'driver',
+  'h',
   'help',
-  'out-file',
   'log-level',
+  'out-file',
+  'print',
   'style',
   'url',
 ]);
@@ -21,10 +23,11 @@ const VALID_FLAGS = new Set([
 
   const _: string[] = argv._;
   const driver: 'pg' = argv.driver ?? 'pg';
-  const h: boolean = argv.h ?? false;
-  const help: boolean = argv.help ?? false;
-  const outFile: string = argv['out-file'] ?? DEFAULT_OUT_FILE;
+  const h = !!argv.h;
+  const help = !!argv.help;
   const logLevel = getLogLevel(argv['log-level']);
+  const outFile: string = argv['out-file'] ?? DEFAULT_OUT_FILE;
+  const print = !!argv.print;
   const style: Style = argv.style ?? 'interface';
   const url: string = argv.url ?? 'env(DATABASE_URL)';
 
@@ -46,6 +49,7 @@ const VALID_FLAGS = new Set([
           '  --help, -h   Print this message.\n' +
           '  --log-level  Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)\n' +
           `  --out-file   Set the file build path. (default: ${DEFAULT_OUT_FILE})\n` +
+          '  --print      Print the generated output to the terminal.\n' +
           '  --style      Set the output style. (values: [interface, type], default: interface)\n' +
           '  --url        Set the database connection string URL. This may point to an environment variable. (default: env(DATABASE_URL))\n',
       );
@@ -72,7 +76,7 @@ const VALID_FLAGS = new Set([
       );
     }
 
-    await generate({ driver, logLevel, outFile, style, url });
+    await generate({ driver, logLevel, outFile, print, style, url });
   } catch (error) {
     if (logLevel > LogLevel.SILENT) {
       if (error instanceof Error) {
