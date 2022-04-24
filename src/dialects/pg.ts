@@ -1,9 +1,16 @@
+import { PostgresDialect } from 'kysely';
 import { Dialect } from '../types';
 
 export const pgDialect: Dialect = {
   defaultType: 'string',
   imports: {
     IPostgresInterval: 'postgres-interval',
+  },
+  instantiate: ({ connectionString, ssl }) => {
+    return new PostgresDialect({
+      connectionString,
+      ssl: ssl ? { rejectUnauthorized: false } : false,
+    });
   },
   models: {
     Circle: {

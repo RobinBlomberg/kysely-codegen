@@ -1,3 +1,5 @@
+import { Dialect as KyselyDialect } from 'kysely';
+
 export type Dialect = {
   /**
    * Which TypeScript type to use if no other type has been assigned.
@@ -36,6 +38,13 @@ export type Dialect = {
    * ```
    */
   imports?: Record<string, string>;
+  /**
+   * Creates a Kysely dialect instance.
+   */
+  instantiate(options: {
+    connectionString: string;
+    ssl: boolean;
+  }): KyselyDialect;
   /**
    * Which models to define as soon as they are used. This property currently only supports
    * object-based models.
