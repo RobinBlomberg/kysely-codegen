@@ -1,87 +1,109 @@
 import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
-import { DIALECT_BY_DRIVER, Driver } from './dialects';
+import { CodegenConnectionStringParser } from './connection-string';
+import { CodegenDialect } from './dialect';
+import { CodegenFormat } from './enums/format';
 import { LogLevel } from './enums/log-level';
-import { introspect } from './introspect';
-import { serialize, Style } from './serialize';
-import { parseConnectionString } from './utils/connection-string';
-import { Logger } from './utils/logger';
+import { CodegenDatabaseIntrospector } from './introspector';
+import { Logger } from './logger';
+import { CodegenSerializer } from './serializer';
 
-/**
- * Generates a file with database type definitions.
- *
- * @example
- * ```typescript
- * import { generate } from 'kysely-codegen';
- *
- * await generate({
- *   driver: 'pg',
- *   logLevel: LogLevel.WARN,
- *   outFile: './kysely-codegen/index.d.ts',
- *   url: 'env(DATABASE_URL)',
- * });
- *
- * // Output:
- * export type User = {
- *   created_at: Date;
- *   email: string;
- *   full_name: string;
- *   is_active: boolean;
- * };
- * ```
- */
-export const generate = async (options: {
-  driver: Driver;
-  logLevel: LogLevel;
-  outFile: string;
-  print?: boolean;
-  style?: Style;
-  url: string;
-}) => {
-  const {
-    driver,
-    logLevel,
-    outFile,
-    print,
-    style = 'interface',
-    url,
-  } = options;
+export class CodegenGenerator {
+  readonly dialect: CodegenDialect;
+  readonly format: CodegenFormat;
+  readonly logLevel: LogLevel;
+  readonly outFile: string;
+  readonly print: boolean;
+  readonly url: string;
 
-  const logger = new Logger(logLevel);
-  const connectionString = parseConnectionString({ logger, url });
-  const startTime = performance.now();
-
-  logger.info('Introspecting database...');
-
-  const tables = await introspect({ connectionString, driver });
-
-  logger.debug();
-  logger.debug(`Found ${tables.length} public tables:`);
-
-  for (const table of tables) {
-    logger.debug(` - ${table.name}`);
+  constructor(options: {
+    dialect: CodegenDialect;
+    format?: CodegenFormat;
+    logLevel: LogLevel;
+    outFile: string;
+    print?: boolean;
+    url: string;
+  }) {
+    this.dialect = options.dialect;
+    this.format = options.format ?? CodegenFormat.INTERFACE;
+    this.logLevel = options.logLevel;
+    this.outFile = options.outFile;
+    this.print = options.print ?? false;
+    this.url = options.url;
   }
 
-  logger.debug();
+  /**
+   * Generates a file with database type definitions.
+   *
+   * @example
+   * ```typescript
+   * import { generate } from 'kysely-codegen';
+   *
+   * await generate({
+   *   driver: 'pg',
+   *   logLevel: LogLevel.WARN,
+   *   outFile: './kysely-codegen/index.d.ts',
+   *   url: 'env(DATABASE_URL)',
+   * });
+   *
+   * // Output:
+   * export type User = {
+   *   created_at: Date;
+   *   email: string;
+   *   full_name: string;
+   *   is_active: boolean;
+   * };
+   * ```
+   */
+  async generate() {
+    const logger = new Logger(this.logLevel);
+    const connectionStringParser = new CodegenConnectionStringParser({
+      logger,
+      url: this.url,
+    });
+    const connectionString = connectionStringParser.parseConnectionString();
+    const startTime = performance.now();
 
-  const dialect = DIALECT_BY_DRIVER[driver];
-  const data = serialize({ dialect, style, tables });
+    logger.info('Introspecting database...');
 
-  if (print) {
-    console.log();
-    console.log(data);
-  } else {
-    const outDir = parse(outFile).dir;
+    const introspector = new CodegenDatabaseIntrospector({
+      connectionString,
+      dialect: this.dialect,
+    });
+    const tables = await introspector.introspect();
 
-    await fs.mkdir(outDir, { recursive: true });
-    await fs.writeFile(outFile, data);
+    logger.debug();
+    logger.debug(`Found ${tables.length} public tables:`);
 
-    const endTime = performance.now();
-    const relativeOutDir = `.${sep}${relative(process.cwd(), outFile)}`;
-    const duration = Math.round(endTime - startTime);
+    for (const table of tables) {
+      logger.debug(` - ${table.name}`);
+    }
 
-    logger.success(
-      `Introspected ${tables.length} tables and generated ${relativeOutDir} in ${duration}ms.`,
-    );
+    logger.debug();
+
+    const serializer = new CodegenSerializer({
+      dialect: this.dialect,
+      format: this.format,
+      tables,
+    });
+    const data = serializer.serialize();
+
+    if (this.print) {
+      logger.log();
+      logger.log(data);
+    } else {
+      const outDir = parse(this.outFile).dir;
+
+      await fs.mkdir(outDir, { recursive: true });
+      await fs.writeFile(this.outFile, data);
+
+      const endTime = performance.now();
+      const relativeOutDir = `.${sep}${relative(process.cwd(), this.outFile)}`;
+      const duration = Math.round(endTime - startTime);
+
+      logger.success(
+        `Introspected ${tables.length} tables and generated ${relativeOutDir} in ${duration}ms.`,
+      );
+    }
   }
-};
+}

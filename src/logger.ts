@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { inspect } from 'util';
-import { LogLevel } from '../enums/log-level';
+import { LogLevel } from './enums/log-level';
 
 export class Logger {
   readonly logLevel: LogLevel;

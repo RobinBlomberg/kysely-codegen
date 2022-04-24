@@ -1,26 +1,22 @@
 import { PostgresDialect } from 'kysely';
-import { Dialect } from '../utils/types';
+import { CodegenDialect } from '../dialect';
 
-export const pgDialect: Dialect = {
-  defaultType: 'string',
-  imports: {
+export class CodegenPostgresDialect extends CodegenDialect {
+  override readonly defaultType = 'string';
+  override readonly imports = {
     IPostgresInterval: 'postgres-interval',
-  },
-  instantiate: ({ connectionString, ssl }) => {
-    return new PostgresDialect({
-      connectionString,
-      ssl: ssl ? { rejectUnauthorized: false } : false,
-    });
-  },
-  models: {
+  };
+
+  override readonly models = {
     Circle: {
       radius: 'number',
       x: 'number',
       y: 'number',
     },
-  },
-  schema: 'public',
-  types: {
+  };
+
+  override readonly schema = 'public';
+  override readonly types = {
     bool: 'boolean',
     bytea: 'Buffer',
     circle: 'Circle',
@@ -37,5 +33,12 @@ export const pgDialect: Dialect = {
     text: 'string',
     timestamp: 'number',
     timestamptz: 'number',
-  },
-};
+  };
+
+  instantiate(options: { connectionString: string; ssl: boolean }) {
+    return new PostgresDialect({
+      connectionString: options.connectionString,
+      ssl: options.ssl ? { rejectUnauthorized: false } : false,
+    });
+  }
+}
