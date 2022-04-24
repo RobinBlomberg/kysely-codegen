@@ -21,7 +21,7 @@ DATABASE_URL=postgres://username:password@mydomain.com/database
 And then run:
 
 ```
-kysely-codegen --driver=pg
+kysely-codegen --dialect=pg
 ```
 
 For more options, run `kysely-codegen --help`.
