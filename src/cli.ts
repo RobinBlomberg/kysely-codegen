@@ -6,6 +6,9 @@ import { Logger } from './logger';
 import { Style } from './types';
 
 const DEFAULT_OUT_FILE = './node_modules/kysely-codegen/dist/index.d.ts';
+const VALID_DRIVERS = ['better-sqlite3', 'pg', 'sqlite3'];
+const VALID_STYLES = ['interface', 'type'];
+
 const VALID_FLAGS = new Set([
   '_',
   'driver',
@@ -22,7 +25,7 @@ const VALID_FLAGS = new Set([
   const argv = minimist(process.argv.slice(2));
 
   const _: string[] = argv._;
-  const driver: 'pg' = argv.driver ?? 'pg';
+  const driver = argv.driver;
   const h = !!argv.h;
   const help = !!argv.help;
   const logLevel = getLogLevel(argv['log-level']);
@@ -43,28 +46,36 @@ const VALID_FLAGS = new Set([
     if (h || help || _.includes('-h') || _.includes('--help')) {
       logger.log(
         '\n' +
-          'kysely-codegen <options>\n' +
+          'kysely-codegen [options]\n' +
           '\n' +
-          '  --driver     Set the SQL driver. (values: [pg], default: pg)\n' +
+          `  --driver     Set the SQL driver. (values: [${VALID_DRIVERS.join(
+            ', ',
+          )}])\n` +
           '  --help, -h   Print this message.\n' +
           '  --log-level  Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)\n' +
           `  --out-file   Set the file build path. (default: ${DEFAULT_OUT_FILE})\n` +
           '  --print      Print the generated output to the terminal.\n' +
-          '  --style      Set the output style. (values: [interface, type], default: interface)\n' +
+          `  --style      Set the output style. (values: [${VALID_STYLES.join(
+            ', ',
+          )}], default: interface)\n` +
           '  --url        Set the database connection string URL. This may point to an environment variable. (default: env(DATABASE_URL))\n',
       );
       process.exit(0);
     }
 
-    if (driver !== 'pg') {
+    if (!VALID_DRIVERS.includes(driver)) {
       throw new RangeError(
-        "Parameter '--driver' must have one of the following values: pg",
+        `Parameter '--driver' must have one of the following values: ${VALID_DRIVERS.join(
+          ', ',
+        )}`,
       );
     }
 
-    if (!['interface', 'type'].includes(style)) {
+    if (!VALID_STYLES.includes(style)) {
       throw new RangeError(
-        "Parameter '--style' must have one of the following values: interface, type",
+        `Parameter '--style' must have one of the following values: ${VALID_STYLES.join(
+          ', ',
+        )}`,
       );
     }
 

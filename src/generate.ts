@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
 import { parseConnectionString } from './connection-string';
-import { Driver } from './dialects';
+import { DIALECT_BY_DRIVER, Driver } from './dialects';
 import { LogLevel } from './enums/log-level';
 import { introspect } from './introspect';
 import { Logger } from './logger';
@@ -53,7 +53,7 @@ export const generate = async (options: {
 
   logger.info('Introspecting database...');
 
-  const tables = await introspect(connectionString);
+  const tables = await introspect({ connectionString, driver });
 
   logger.debug();
   logger.debug(`Found ${tables.length} public tables:`);
@@ -64,7 +64,8 @@ export const generate = async (options: {
 
   logger.debug();
 
-  const data = serialize({ driver, style, tables });
+  const dialect = DIALECT_BY_DRIVER[driver];
+  const data = serialize({ dialect, style, tables });
 
   if (print) {
     console.log();

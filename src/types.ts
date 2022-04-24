@@ -1,6 +1,7 @@
 export type Dialect = {
   /**
    * Which TypeScript type to use if no other type has been assigned.
+   * If "defaultType" is not specified, the "unknown" type will be used.
    *
    * @example
    * ```typescript
@@ -14,7 +15,7 @@ export type Dialect = {
    * }
    * ```
    */
-  defaultType: string;
+  defaultType?: string;
   /**
    * Which types to import as soon as they are used.
    *
@@ -34,7 +35,7 @@ export type Dialect = {
    * }
    * ```
    */
-  imports: Record<string, string>;
+  imports?: Record<string, string>;
   /**
    * Which models to define as soon as they are used. This property currently only supports
    * object-based models.
@@ -63,9 +64,14 @@ export type Dialect = {
    * }
    * ```
    */
-  models: Record<string, Record<string, string>>;
+  models?: Record<string, Record<string, string>>;
+  /**
+   * The schema to introspect. If none is provided, all schemas will be introspected.
+   */
+  schema?: string;
   /**
    * An object that defines which native types to map to which TypeScript types.
+   * If no matching type can be found, the "defaultType" property will be used.
    *
    * @example
    * ```typescript
@@ -83,7 +89,7 @@ export type Dialect = {
    * }
    * ```
    */
-  types: Record<string, string>;
+  types?: Record<string, string>;
 };
 
 export type Style = 'interface' | 'type';

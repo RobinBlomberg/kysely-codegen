@@ -3,7 +3,11 @@
 ## Installation
 
 ```
-npm install kysely kysely-codegen pg
+npm install kysely kysely-codegen
+
+# Then add one of the following drivers:
+npm install pg
+npm install better-sqlite3
 ```
 
 ## To generate types:
@@ -17,7 +21,7 @@ DATABASE_URL=postgres://username:password@mydomain.com/database
 And then run:
 
 ```
-kysely-codegen
+kysely-codegen --driver=pg
 ```
 
 For more options, run `kysely-codegen --help`.

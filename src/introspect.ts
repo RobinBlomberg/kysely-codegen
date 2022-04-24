@@ -1,4 +1,26 @@
-import { Kysely, PostgresDialect } from 'kysely';
+import { Kysely, PostgresDialect, SqliteDialect } from 'kysely';
+import { DIALECT_BY_DRIVER, Driver } from './dialects';
+
+const getDialectForDriver = (options: {
+  connectionString: string;
+  driver: Driver;
+}) => {
+  const { connectionString, driver } = options;
+
+  switch (driver) {
+    case 'pg':
+      return new PostgresDialect({
+        connectionString,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      });
+    default:
+      return new SqliteDialect({
+        databasePath: connectionString,
+      });
+  }
+};
 
 /**
  * Gets all public schemas from a database.
@@ -20,14 +42,15 @@ import { Kysely, PostgresDialect } from 'kysely';
  * ]
  * ```
  */
-export const introspect = async (connectionString: string) => {
+export const introspect = async (options: {
+  connectionString: string;
+  driver: Driver;
+}) => {
+  const { connectionString, driver } = options;
+  const dialect = DIALECT_BY_DRIVER[driver];
+
   const db = new Kysely<any>({
-    dialect: new PostgresDialect({
-      connectionString,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    }),
+    dialect: getDialectForDriver({ connectionString, driver }),
   });
 
   const tables = await db.introspection.getTables();
@@ -35,6 +58,8 @@ export const introspect = async (connectionString: string) => {
   await db.destroy();
 
   return tables
-    .filter((table) => table.schema === 'public')
+    .filter((table) => {
+      return dialect.schema ? table.schema === dialect.schema : true;
+    })
     .sort((a, b) => a.name.localeCompare(b.name));
 };

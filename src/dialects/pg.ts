@@ -12,6 +12,7 @@ export const pgDialect: Dialect = {
       y: 'number',
     },
   },
+  schema: 'public',
   types: {
     bool: 'boolean',
     bytea: 'Buffer',

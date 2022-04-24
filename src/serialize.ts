@@ -1,5 +1,4 @@
 import { ColumnMetadata, TableMetadata } from 'kysely';
-import { DIALECT_BY_DRIVER, Driver } from './dialects';
 import { Dialect, Style } from './types';
 
 const serializeExport = (style: Style, name: string) => {
@@ -61,11 +60,8 @@ const serializeInterface = (options: {
   );
 
   for (const column of sortedColumns) {
-    /**
-     * NOTE: Kysely typing does not match the pg driver types, so we'll need to type cast.
-     */
     const dataType = column.dataType as keyof typeof dialect.types;
-    const type = dialect.types[dataType] ?? dialect.defaultType;
+    const type = dialect.types?.[dataType] ?? dialect.defaultType ?? 'unknown';
 
     data += '\n  ';
     data += column.name;
@@ -125,12 +121,11 @@ export type { Style };
  * ```
  */
 export const serialize = (options: {
-  driver: Driver;
+  dialect: Dialect;
   style: Style;
   tables: TableMetadata[];
 }) => {
-  const { driver, style, tables } = options;
-  const dialect = DIALECT_BY_DRIVER[driver];
+  const { dialect, style, tables } = options;
   const importedTypes = new Set<string>();
   const imports: Record<string, string[]> = {};
   const models: [string, Record<string, string>][] = [];
@@ -139,8 +134,8 @@ export const serialize = (options: {
 
   for (const table of tables) {
     for (const { dataType } of table.columns) {
-      const type = dialect.types[dataType] as keyof typeof dialect.imports;
-      const moduleName = dialect.imports[type];
+      const type = dialect.types?.[dataType] as keyof typeof dialect.imports;
+      const moduleName = dialect.imports?.[type];
 
       if (moduleName && !importedTypes.has(type)) {
         if (!imports[moduleName]) {
@@ -150,7 +145,7 @@ export const serialize = (options: {
         imports[moduleName]!.push(type);
         importedTypes.add(type);
       } else {
-        const model = dialect.models[type];
+        const model = dialect.models?.[type];
 
         if (model) {
           models.push([type, model]);
