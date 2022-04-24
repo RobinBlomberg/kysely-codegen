@@ -1,11 +1,11 @@
 import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
-import { parseConnectionString } from './connection-string';
 import { DIALECT_BY_DRIVER, Driver } from './dialects';
 import { LogLevel } from './enums/log-level';
 import { introspect } from './introspect';
-import { Logger } from './logger';
 import { serialize, Style } from './serialize';
+import { parseConnectionString } from './utils/connection-string';
+import { Logger } from './utils/logger';
 
 /**
  * Generates a file with database type definitions.

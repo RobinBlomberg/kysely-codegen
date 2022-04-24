@@ -1,5 +1,5 @@
 import { SqliteDialect } from 'kysely';
-import { Dialect } from '../types';
+import { Dialect } from '../utils/types';
 
 export const betterSqlite3Dialect: Dialect = {
   defaultType: 'string',

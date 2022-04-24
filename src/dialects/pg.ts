@@ -1,5 +1,5 @@
 import { PostgresDialect } from 'kysely';
-import { Dialect } from '../types';
+import { Dialect } from '../utils/types';
 
 export const pgDialect: Dialect = {
   defaultType: 'string',

@@ -2,8 +2,8 @@
 import minimist from 'minimist';
 import { getLogLevel, LogLevel } from './enums/log-level';
 import { generate } from './generate';
-import { Logger } from './logger';
-import { Style } from './types';
+import { Logger } from './utils/logger';
+import { Style } from './utils/types';
 
 const DEFAULT_OUT_FILE = './node_modules/kysely-codegen/dist/index.d.ts';
 const VALID_DRIVERS = ['better-sqlite3', 'pg', 'sqlite3'];

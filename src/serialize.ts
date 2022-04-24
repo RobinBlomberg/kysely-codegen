@@ -1,5 +1,5 @@
 import { ColumnMetadata, TableMetadata } from 'kysely';
-import { Dialect, Style } from './types';
+import { Dialect, Style } from './utils/types';
 
 const serializeExport = (style: Style, name: string) => {
   let data = '';
