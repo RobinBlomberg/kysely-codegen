@@ -4,7 +4,7 @@ import { CodegenDialect } from './dialect';
 import { CodegenDialectManager, CodegenDialectName } from './dialect-manager';
 import { CodegenFormat } from './enums/format';
 import { getLogLevel, LogLevel } from './enums/log-level';
-import { CodegenGenerator } from './generate';
+import { CodegenGenerator } from './generator';
 import { Logger } from './logger';
 
 const DEFAULT_OUT_FILE = './node_modules/kysely-codegen/dist/index.d.ts';

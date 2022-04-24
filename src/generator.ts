@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
-import { CodegenConnectionStringParser } from './connection-string';
+import { CodegenConnectionStringParser } from './connection-string-parser';
 import { CodegenDialect } from './dialect';
 import { CodegenFormat } from './enums/format';
 import { LogLevel } from './enums/log-level';
