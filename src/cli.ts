@@ -77,7 +77,13 @@ const VALID_FLAGS = new Set([
     if (logLevel > LogLevel.SILENT) {
       if (error instanceof Error) {
         console.error(logger.serializeError(error.message));
-        process.exit(0);
+
+        if (logLevel >= LogLevel.DEBUG) {
+          console.error();
+          throw error;
+        } else {
+          process.exit(0);
+        }
       } else {
         throw error;
       }
