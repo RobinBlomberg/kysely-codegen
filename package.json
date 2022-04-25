@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Robin Blomberg",
   "main": "./dist/main.ts",
   "types": "./dist/main.d.ts",
@@ -42,6 +42,14 @@
   "peerDependencies": {
     "better-sqlite3": "^7.5.1",
     "pg": "^8.7.3"
+  },
+  "peerDependenciesMeta": {
+    "better-sqlite3": {
+      "optional": true
+    },
+    "pg": {
+      "optional": true
+    }
   },
   "eslintConfig": {
     "extends": [
