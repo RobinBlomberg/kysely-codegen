@@ -3,11 +3,12 @@
 ## Installation
 
 ```
-npm install kysely kysely-codegen
+npm install kysely
+npm install --save-dev kysely-codegen
 
 # Then add one of the following drivers:
-npm install pg
-npm install better-sqlite3
+npm install --save-dev pg
+npm install --save-dev better-sqlite3
 ```
 
 ## To generate types:
@@ -18,7 +19,7 @@ The most convenient way to get started is to create an `.env` file with your dat
 DATABASE_URL=postgres://username:password@mydomain.com/database
 ```
 
-And then run:
+And then run (with your selected dialect):
 
 ```
 kysely-codegen --dialect=pg
