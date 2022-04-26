@@ -22,7 +22,8 @@ DATABASE_URL=postgres://username:password@mydomain.com/database
 And then run (with your selected dialect):
 
 ```
-kysely-codegen --dialect=pg
+kysely-codegen --dialect=postgres
+kysely-codegen --dialect=sqlite
 ```
 
 For more options, run `kysely-codegen --help`.
