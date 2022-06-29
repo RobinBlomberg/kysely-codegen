@@ -2,19 +2,59 @@ import { ColumnMetadata, TableMetadata } from 'kysely';
 import { CodegenDialect } from './dialect';
 import { CodegenFormat } from './enums/format';
 
+export type TableMetadataWithModelName = TableMetadata & {
+  modelName: string;
+};
+
 export class CodegenSerializer {
   readonly dialect: CodegenDialect;
   readonly format: CodegenFormat;
-  readonly tables: TableMetadata[];
+  readonly tables: TableMetadataWithModelName[];
 
   constructor(options: {
     dialect: CodegenDialect;
     format: CodegenFormat;
     tables: TableMetadata[];
   }) {
+    const modelNames = this.#generateModelNames(options.tables);
+
     this.dialect = options.dialect;
     this.format = options.format;
-    this.tables = options.tables;
+    this.tables = options.tables.map(
+      (metadata): TableMetadataWithModelName => ({
+        ...metadata,
+        modelName: modelNames[metadata.name]!,
+      }),
+    );
+  }
+
+  #generateModelNames(tables: TableMetadata[]) {
+    const modelNames = new Set<string>();
+    const tableModelNameMap: Record<string, string> = {};
+
+    for (const table of tables) {
+      let modelName = table.name
+        .split('_')
+        .map((word) => {
+          return word.slice(0, 1).toUpperCase() + word.slice(1).toLowerCase();
+        })
+        .join('');
+
+      if (modelNames.has(modelName)) {
+        let suffix = 2;
+
+        while (modelNames.has(`${modelName}${suffix}`)) {
+          suffix++;
+        }
+
+        modelName += suffix;
+      }
+
+      modelNames.add(modelName);
+      tableModelNameMap[table.name] = modelName;
+    }
+
+    return tableModelNameMap;
   }
 
   #serializeExport(name: string) {
@@ -41,11 +81,11 @@ export class CodegenSerializer {
     if (exports.length) {
       data += '\n';
 
-      for (const [tableName, interfaceName] of exports) {
+      for (const [tableName, modelName] of exports) {
         data += '  ';
         data += tableName;
         data += ': ';
-        data += interfaceName;
+        data += modelName;
         data += ';\n';
       }
     }
@@ -55,10 +95,10 @@ export class CodegenSerializer {
     return data;
   }
 
-  #serializeInterface(interfaceName: string, columns: ColumnMetadata[]) {
+  #serializeModel(modelName: string, columns: ColumnMetadata[]) {
     let data = '';
 
-    data += this.#serializeExport(interfaceName);
+    data += this.#serializeExport(modelName);
     data += ' {';
 
     const sortedColumns = [...columns].sort((a, b) =>
@@ -66,7 +106,7 @@ export class CodegenSerializer {
     );
 
     for (const column of sortedColumns) {
-      const dataType = column.dataType as keyof typeof this.dialect.types;
+      const dataType = column.dataType;
       const type =
         this.dialect.types?.[dataType] ?? this.dialect.defaultType ?? 'unknown';
 
@@ -89,15 +129,6 @@ export class CodegenSerializer {
     data += '}\n\n';
 
     return data;
-  }
-
-  #serializeInterfaceName(tableName: string) {
-    return tableName
-      .split('_')
-      .map(
-        (word) => word.slice(0, 1).toUpperCase() + word.slice(1).toLowerCase(),
-      )
-      .join('');
   }
 
   /**
@@ -130,15 +161,13 @@ export class CodegenSerializer {
   serialize() {
     const importedTypes = new Set<string>();
     const imports: Record<string, string[]> = {};
-    const models: [string, Record<string, string>][] = [];
-    const interfaces = [];
+    const definitions: [string, Record<string, string>][] = [];
+    const models = [];
     const exports: [string, string][] = [];
 
-    for (const table of this.tables) {
-      for (const { dataType } of table.columns) {
-        const type = this.dialect.types?.[
-          dataType
-        ] as keyof typeof this.dialect.imports;
+    for (const metadata of this.tables) {
+      for (const { dataType } of metadata.columns) {
+        const type = this.dialect.types?.[dataType] ?? 'unknown';
         const moduleName = this.dialect.imports?.[type];
 
         if (moduleName && !importedTypes.has(type)) {
@@ -149,22 +178,20 @@ export class CodegenSerializer {
           imports[moduleName]!.push(type);
           importedTypes.add(type);
         } else {
-          const model = this.dialect.models?.[type];
+          const model = this.dialect.definitions?.[type];
 
           if (model) {
-            models.push([type, model]);
+            definitions.push([type, model]);
           }
         }
       }
 
-      const interfaceName = this.#serializeInterfaceName(table.name);
-
-      interfaces.push({
-        body: this.#serializeInterface(interfaceName, table.columns),
-        name: interfaceName,
+      models.push({
+        body: this.#serializeModel(metadata.modelName, metadata.columns),
+        name: metadata.modelName,
       });
 
-      exports.push([table.name, interfaceName]);
+      exports.push([metadata.name, metadata.modelName]);
     }
 
     let data = '';
@@ -198,7 +225,7 @@ export class CodegenSerializer {
       data += '\n';
     }
 
-    for (const [name, model] of models) {
+    for (const [name, model] of definitions) {
       const entries = Object.entries(model).sort(([a], [b]) =>
         a.localeCompare(b),
       );
@@ -221,9 +248,9 @@ export class CodegenSerializer {
       data += '}\n\n';
     }
 
-    interfaces.sort((a, b) => a.name.localeCompare(b.name));
+    models.sort((a, b) => a.name.localeCompare(b.name));
 
-    for (const { body } of interfaces) {
+    for (const { body } of models) {
       data += body;
     }
 

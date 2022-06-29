@@ -4,18 +4,16 @@ import { CodegenDialect } from '../dialect';
 
 export class CodegenPostgresDialect extends CodegenDialect {
   override readonly defaultType = 'string';
-  override readonly imports = {
-    IPostgresInterval: 'postgres-interval',
-  };
-
-  override readonly models = {
+  override readonly definitions = {
     Circle: {
       radius: 'number',
       x: 'number',
       y: 'number',
     },
   };
-
+  override readonly imports = {
+    IPostgresInterval: 'postgres-interval',
+  };
   override readonly schema = 'public';
   override readonly types = {
     bool: 'boolean',
