@@ -2,7 +2,7 @@ import { Dialect } from 'kysely';
 
 export abstract class CodegenDialect {
   /**
-   * Which TypeScript type to use if no other type has been assigned.
+   * Specifies which TypeScript type to use if no other type has been assigned.
    * If "defaultType" is not specified, the "unknown" type will be used.
    *
    * @example
@@ -20,34 +20,13 @@ export abstract class CodegenDialect {
   readonly defaultType?: string = 'unknown';
 
   /**
-   * Which types to import as soon as they are used.
+   * Specifies all types that should be defined as soon as they are referenced.
+   * This property currently only supports object-shape definitions.
    *
    * @example
    * ```typescript
    * export const dialect: Dialect = {
-   *   imports: {
-   *     IPostgresInterval: 'postgres-interval',
-   *   },
-   * };
-   *
-   * // Output:
-   * import { IPostgresInterval } from 'postgres-interval';
-   *
-   * export interface SomeTable {
-   *   frequency: IPostgresInterval;
-   * }
-   * ```
-   */
-  readonly imports?: Record<string, string> = {};
-
-  /**
-   * Which models to define as soon as they are used. This property currently only supports
-   * object-based models.
-   *
-   * @example
-   * ```typescript
-   * export const dialect: Dialect = {
-   *   models: {
+   *   definitions: {
    *     Circle: {
    *       radius: 'number',
    *       x: 'number',
@@ -68,10 +47,31 @@ export abstract class CodegenDialect {
    * }
    * ```
    */
-  readonly models?: Record<string, Record<string, string>> = {};
+  readonly definitions?: Record<string, Record<string, string>> = {};
 
   /**
-   * The schema to introspect. If none is provided, all schemas will be introspected.
+   * Specifies which types to import as soon as they are used.
+   *
+   * @example
+   * ```typescript
+   * export const dialect: Dialect = {
+   *   imports: {
+   *     IPostgresInterval: 'postgres-interval',
+   *   },
+   * };
+   *
+   * // Output:
+   * import { IPostgresInterval } from 'postgres-interval';
+   *
+   * export interface SomeTable {
+   *   frequency: IPostgresInterval;
+   * }
+   * ```
+   */
+  readonly imports?: Record<string, string> = {};
+
+  /**
+   * The name of the schema to introspect. If none is provided, all schemas will be introspected.
    */
   readonly schema?: string | null = null;
 
