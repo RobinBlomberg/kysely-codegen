@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
 import { CodegenConnectionStringParser } from './connection-string-parser';
-import { CodegenDialect } from './dialect';
+import { CodegenDialectManager, CodegenDialectName } from './dialect-manager';
 import { CodegenFormat } from './enums/format';
 import { LogLevel } from './enums/log-level';
 import { CodegenDatabaseIntrospector } from './introspector';
@@ -9,7 +9,7 @@ import { Logger } from './logger';
 import { CodegenSerializer } from './serializer';
 
 export class CodegenGenerator {
-  readonly dialect: CodegenDialect;
+  readonly dialectName: CodegenDialectName | undefined;
   readonly format: CodegenFormat;
   readonly logLevel: LogLevel;
   readonly outFile: string;
@@ -17,14 +17,14 @@ export class CodegenGenerator {
   readonly url: string;
 
   constructor(options: {
-    dialect: CodegenDialect;
+    dialectName?: CodegenDialectName;
     format?: CodegenFormat;
     logLevel: LogLevel;
     outFile: string;
     print?: boolean;
     url: string;
   }) {
-    this.dialect = options.dialect;
+    this.dialectName = options.dialectName;
     this.format = options.format ?? CodegenFormat.INTERFACE;
     this.logLevel = options.logLevel;
     this.outFile = options.outFile;
@@ -61,14 +61,25 @@ export class CodegenGenerator {
       logger,
       url: this.url,
     });
-    const connectionString = connectionStringParser.parseConnectionString();
+    const { connectionString, dialectName } =
+      connectionStringParser.parseConnectionString();
+
+    if (dialectName === this.dialectName) {
+      logger.info(`Using dialect '${dialectName}'.`);
+    } else {
+      logger.info(`No dialect specified. Assuming '${dialectName}'.`);
+    }
+
+    const dialectManager = new CodegenDialectManager();
+    const dialect = dialectManager.getDialect(this.dialectName ?? dialectName);
+
     const startTime = performance.now();
 
     logger.info('Introspecting database...');
 
     const introspector = new CodegenDatabaseIntrospector({
       connectionString,
-      dialect: this.dialect,
+      dialect,
     });
     const tables = await introspector.introspect();
 
@@ -82,7 +93,7 @@ export class CodegenGenerator {
     logger.debug();
 
     const serializer = new CodegenSerializer({
-      dialect: this.dialect,
+      dialect,
       format: this.format,
       tables,
     });

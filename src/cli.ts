@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import minimist from 'minimist';
-import { CodegenDialect } from './dialect';
-import { CodegenDialectManager, CodegenDialectName } from './dialect-manager';
+import { CodegenDialectName } from './dialect-manager';
 import { CodegenFormat } from './enums/format';
 import { getLogLevel, LogLevel } from './enums/log-level';
 import { CodegenGenerator } from './generator';
@@ -28,7 +27,7 @@ class CodegenCli {
     const argv = minimist(args);
 
     const _: string[] = argv._;
-    const dialectName = argv.dialect as CodegenDialectName;
+    const dialectName = argv.dialect as CodegenDialectName | undefined;
     const format = (argv.format as CodegenFormat) ?? CodegenFormat.INTERFACE;
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
@@ -66,7 +65,7 @@ class CodegenCli {
         process.exit(0);
       }
 
-      if (!VALID_DIALECTS.includes(dialectName)) {
+      if (dialectName && !VALID_DIALECTS.includes(dialectName)) {
         throw new RangeError(
           `Parameter '--dialect' must have one of the following values: ${dialectValues}`,
         );
@@ -102,11 +101,8 @@ class CodegenCli {
       }
     }
 
-    const dialectManager = new CodegenDialectManager();
-    const dialect = dialectManager.getDialect(dialectName);
-
     return {
-      dialect,
+      dialectName,
       format,
       logLevel,
       outFile,
@@ -116,7 +112,7 @@ class CodegenCli {
   }
 
   async #generate(options: {
-    dialect: CodegenDialect;
+    dialectName: CodegenDialectName | undefined;
     format: CodegenFormat;
     logLevel: LogLevel;
     outFile: string;
@@ -124,13 +120,11 @@ class CodegenCli {
     url: string;
   }) {
     const generator = new CodegenGenerator(options);
-
     await generator.generate();
   }
 
   async run() {
     const options = this.#parseOptions(process.argv.slice(2));
-
     await this.#generate(options);
   }
 }
