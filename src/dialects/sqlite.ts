@@ -1,3 +1,4 @@
+import Database from 'better-sqlite3';
 import { SqliteDialect } from 'kysely';
 import { CodegenDialect } from '../dialect';
 
@@ -14,6 +15,8 @@ export class CodegenSqliteDialect extends CodegenDialect {
   };
 
   instantiate(options: { connectionString: string }) {
-    return new SqliteDialect({ databasePath: options.connectionString });
+    return new SqliteDialect({
+      database: new Database(options.connectionString),
+    });
   }
 }

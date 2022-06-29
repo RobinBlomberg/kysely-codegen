@@ -1,4 +1,5 @@
 import { PostgresDialect } from 'kysely';
+import { Pool } from 'pg';
 import { CodegenDialect } from '../dialect';
 
 export class CodegenPostgresDialect extends CodegenDialect {
@@ -37,8 +38,10 @@ export class CodegenPostgresDialect extends CodegenDialect {
 
   instantiate(options: { connectionString: string; ssl: boolean }) {
     return new PostgresDialect({
-      connectionString: options.connectionString,
-      ssl: options.ssl ? { rejectUnauthorized: false } : false,
+      pool: new Pool({
+        connectionString: options.connectionString,
+        ssl: options.ssl ? { rejectUnauthorized: false } : false,
+      }),
     });
   }
 }
