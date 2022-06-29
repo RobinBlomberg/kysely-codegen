@@ -30,8 +30,8 @@ export class CodegenPostgresDialect extends CodegenDialect {
     numeric: 'number',
     oid: 'number',
     text: 'string',
-    timestamp: 'number|string|Date',
-    timestamptz: 'number|string|Date',
+    timestamp: 'number | string | Date',
+    timestamptz: 'number | string | Date',
   };
 
   instantiate(options: { connectionString: string; ssl: boolean }) {
