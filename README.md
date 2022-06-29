@@ -11,24 +11,27 @@ npm install --save-dev pg
 npm install --save-dev better-sqlite3
 ```
 
-## To generate types:
+## Generating type definitions
 
 The most convenient way to get started is to create an `.env` file with your database connection string:
 
 ```
+# Postgres:
 DATABASE_URL=postgres://username:password@mydomain.com/database
+
+# SQLite:
+DATABASE_URL=C:/Program Files/sqlite3/db
 ```
 
-And then run (with your selected dialect):
+And then run:
 
 ```
-kysely-codegen --dialect=postgres
-kysely-codegen --dialect=sqlite
+kysely-codegen
 ```
 
 For more options, run `kysely-codegen --help`.
 
-## To use:
+## Using the type definitions
 
 ```typescript
 import { Kysely, PostgresDialect } from 'kysely';

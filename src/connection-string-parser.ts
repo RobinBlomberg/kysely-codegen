@@ -1,7 +1,13 @@
 import { config as loadEnv } from 'dotenv';
+import { CodegenDialectName } from './dialect-manager';
 import { Logger } from './logger';
 
 const CALL_STATEMENT_REGEXP = /^\s*([a-z]+)\s*\(\s*(.*)\s*\)\s*$/;
+
+export type ParseConnectionStringResult = {
+  connectionString: string;
+  dialectName: CodegenDialectName;
+};
 
 export class CodegenConnectionStringParser {
   readonly logger: Logger;
@@ -12,9 +18,10 @@ export class CodegenConnectionStringParser {
     this.url = options.url;
   }
 
-  parseConnectionString() {
-    const expressionMatch = this.url.match(CALL_STATEMENT_REGEXP);
+  parseConnectionString(): ParseConnectionStringResult {
+    let connectionString = this.url;
 
+    const expressionMatch = connectionString.match(CALL_STATEMENT_REGEXP);
     if (expressionMatch) {
       const name = expressionMatch[1]!;
 
@@ -28,7 +35,9 @@ export class CodegenConnectionStringParser {
       try {
         key = keyToken.includes('"') ? JSON.parse(keyToken) : keyToken;
       } catch {
-        throw new SyntaxError(`Invalid URL: '${this.url}'`);
+        throw new SyntaxError(
+          `Invalid connection string: '${connectionString}'`,
+        );
       }
 
       if (typeof key !== 'string') {
@@ -41,23 +50,27 @@ export class CodegenConnectionStringParser {
 
       this.logger.info('Loaded environment variables from .env file.');
 
-      const connectionString = process.env[key];
-
-      if (!connectionString) {
+      const envConnectionString = process.env[key];
+      if (!envConnectionString) {
         throw new ReferenceError(
           `Environment variable '${key}' could not be found.`,
         );
       }
 
-      return connectionString;
+      connectionString = envConnectionString;
     }
 
     try {
-      void new URL(this.url);
+      void new URL(connectionString);
     } catch {
-      throw new SyntaxError(`Invalid URL: '${this.url}'`);
+      throw new SyntaxError(`Invalid URL: '${connectionString}'`);
     }
 
-    return this.url;
+    return {
+      connectionString,
+      dialectName: connectionString.startsWith('postgres://')
+        ? 'postgres'
+        : 'sqlite',
+    };
   }
 }
