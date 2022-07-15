@@ -23,7 +23,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "dotenv": "^16.0.1",
-    "minimist": "^1.2.6"
+    "minimist": "^1.2.6",
   },
   "devDependencies": {
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
@@ -44,7 +44,8 @@
   "peerDependencies": {
     "better-sqlite3": "^7.5.3",
     "kysely": "^0.19.6",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "mysql2": "^2.3.3"
   },
   "peerDependenciesMeta": {
     "better-sqlite3": {

@@ -63,14 +63,22 @@ export class CodegenConnectionStringParser {
     try {
       void new URL(connectionString);
     } catch {
-      throw new SyntaxError(`Invalid URL: '${connectionString}'`);
+      if (!connectionString.includes('Server')) {
+        throw new SyntaxError(`Invalid URL: '${connectionString}'`);
+      }
     }
 
+    let dialectName: CodegenDialectName = 'sqlite';
+    if (connectionString.includes('Server')) {
+      dialectName = 'mysql';
+    }
+
+    if (connectionString.startsWith('postgres://')) {
+      dialectName = 'postgres';
+    }
     return {
       connectionString,
-      dialectName: connectionString.startsWith('postgres://')
-        ? 'postgres'
-        : 'sqlite',
+      dialectName,
     };
   }
 }
