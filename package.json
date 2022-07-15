@@ -23,7 +23,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "dotenv": "^16.0.1",
-    "minimist": "^1.2.6",
+    "minimist": "^1.2.6"
   },
   "devDependencies": {
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
