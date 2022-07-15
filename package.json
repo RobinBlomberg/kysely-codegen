@@ -44,7 +44,8 @@
   "peerDependencies": {
     "better-sqlite3": "^7.5.3",
     "kysely": "^0.19.6",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "mysql2": "^2.3.3"
   },
   "peerDependenciesMeta": {
     "better-sqlite3": {
