@@ -1,4 +1,5 @@
-import { Dialect } from 'kysely';
+import { Dialect, TableMetadata } from 'kysely';
+import { pascalCase } from './util';
 
 export abstract class CodegenDialect {
   /**
@@ -104,4 +105,18 @@ export abstract class CodegenDialect {
     connectionString: string;
     ssl: boolean;
   }): Dialect;
+
+  /**
+   * Returns the model name for the given table.
+   */
+  getModelName(table: TableMetadata): string {
+    return pascalCase(table.name);
+  }
+
+  /**
+   * Returns the name of the table in the exported `DB` interface.
+   */
+  getExportedTableName(table: TableMetadata): string {
+    return table.name;
+  }
 }

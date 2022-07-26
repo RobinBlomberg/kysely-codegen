@@ -49,12 +49,7 @@ export class CodegenSerializer {
         }
       }
 
-      let modelName = table.name
-        .split('_')
-        .map((word) => {
-          return word.slice(0, 1).toUpperCase() + word.slice(1).toLowerCase();
-        })
-        .join('');
+      let modelName = this.dialect.getModelName(table);
 
       if (modelNames.has(modelName)) {
         let suffix = 2;
@@ -105,7 +100,10 @@ export class CodegenSerializer {
         name: metadata.modelName,
       });
 
-      exports.push([metadata.name, metadata.modelName]);
+      exports.push([
+        this.dialect.getExportedTableName(metadata),
+        metadata.modelName,
+      ]);
     }
 
     return {

@@ -1,6 +1,7 @@
-import { PostgresDialect } from 'kysely';
+import { PostgresDialect, TableMetadata } from 'kysely';
 import { Pool } from 'pg';
 import { CodegenDialect } from '../dialect';
+import { pascalCase } from '../util';
 
 export class CodegenPostgresDialect extends CodegenDialect {
   override readonly defaultType = 'string';
@@ -14,7 +15,6 @@ export class CodegenPostgresDialect extends CodegenDialect {
   override readonly imports = {
     IPostgresInterval: 'postgres-interval',
   };
-  override readonly schema = 'public';
   override readonly types = {
     bool: 'boolean',
     bytea: 'Buffer',
@@ -41,5 +41,21 @@ export class CodegenPostgresDialect extends CodegenDialect {
         ssl: options.ssl ? { rejectUnauthorized: false } : false,
       }),
     });
+  }
+
+  override getModelName(table: TableMetadata): string {
+    if (table.schema !== 'public') {
+      return pascalCase(`${table.schema}_${table.name}`);
+    }
+
+    return super.getModelName(table);
+  }
+
+  override getExportedTableName(table: TableMetadata): string {
+    if (table.schema !== 'public') {
+      return `${table.schema}.${table.name}`;
+    }
+
+    return super.getExportedTableName(table);
   }
 }
