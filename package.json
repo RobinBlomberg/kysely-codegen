@@ -17,9 +17,9 @@
   "homepage": "https://github.com/RobinBlomberg/kysely-codegen#readme",
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node-dev --quiet --respawn ./src/cli.ts",
+    "dev": "ts-node-dev --quiet --respawn ./src/bin/index.ts",
     "docker:up": "docker-compose up -d",
-    "start": "node ./dist/cli.js",
+    "start": "node ./dist/bin/index.js",
     "test": "ts-node-dev ./src/tests/index.test.ts"
   },
   "dependencies": {
