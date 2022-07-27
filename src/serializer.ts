@@ -1,350 +1,251 @@
-import { ColumnMetadata, TableMetadata } from 'kysely';
-import { CodegenDialect } from './dialect';
-import { CodegenFormat } from './enums/format';
+import { NodeType } from './enums/node-type';
+import { AliasDeclarationNode } from './nodes/alias-declaration-node';
+import { ArrayExpressionNode } from './nodes/array-expression-node';
+import { ExportStatementNode } from './nodes/export-statement-node';
+import { ExpressionNode } from './nodes/expression-node';
+import { ExtendsClauseNode } from './nodes/extends-clause-node';
+import { GenericExpressionNode } from './nodes/generic-expression-node';
+import { IdentifierNode } from './nodes/identifier-node';
+import { ImportStatementNode } from './nodes/import-statement-node';
+import { InferClauseNode } from './nodes/infer-clause-node';
+import { InterfaceDeclarationNode } from './nodes/interface-declaration-node';
+import { PropertyNode } from './nodes/property-node';
+import { StatementNode } from './nodes/statement-node';
+import { UnionExpressionNode } from './nodes/union-expression-node';
 
-export type Definition = [string, Record<string, string>];
+const IDENTIFIER_REGEXP = /^[a-zA-Z_$][a-zA-Z_0-9$]*$/;
 
-export type ImportMap = Record<string, string[]>;
-
-export type Model = {
-  body: string;
-  name: string;
-};
-
-export type TableMetadataWithModelName = TableMetadata & {
-  modelName: string;
-};
-
-export class CodegenSerializer {
-  readonly dialect: CodegenDialect;
-  readonly format: CodegenFormat;
-  readonly tables: TableMetadata[];
-
-  constructor(options: {
-    dialect: CodegenDialect;
-    format: CodegenFormat;
-    tables: TableMetadata[];
-  }) {
-    this.dialect = options.dialect;
-    this.format = options.format;
-    this.tables = options.tables;
-  }
-
-  #analyzeTables() {
-    const definitions: Definition[] = [];
-    const exports: [string, string][] = [];
-    const importedTypes = new Set<string>();
-    const imports: Record<string, string[]> = {};
-    const modelNames = new Set<string>();
-    const models: Model[] = [];
-    const tableModelNameMap: Record<string, string> = {};
-    let hasGeneratedColumns = false;
-
-    for (const table of this.tables) {
-      if (!hasGeneratedColumns) {
-        for (const column of table.columns) {
-          if (column.hasDefaultValue || column.isAutoIncrementing) {
-            hasGeneratedColumns = true;
-          }
-        }
-      }
-
-      let modelName = table.name
-        .split('_')
-        .map((word) => {
-          return word.slice(0, 1).toUpperCase() + word.slice(1).toLowerCase();
-        })
-        .join('');
-
-      if (modelNames.has(modelName)) {
-        let suffix = 2;
-
-        while (modelNames.has(`${modelName}${suffix}`)) {
-          suffix++;
-        }
-
-        modelName += suffix;
-      }
-
-      modelNames.add(modelName);
-      tableModelNameMap[table.name] = modelName;
-    }
-
-    if (hasGeneratedColumns) {
-      imports.kysely ??= [];
-      imports.kysely!.push('Generated');
-    }
-
-    const tables = this.tables.map(
-      (metadata): TableMetadataWithModelName => ({
-        ...metadata,
-        modelName: tableModelNameMap[metadata.name]!,
-      }),
-    );
-
-    for (const metadata of tables) {
-      for (const { dataType } of metadata.columns) {
-        const typeName = this.dialect.types?.[dataType] as string;
-        const moduleName = this.dialect.imports?.[typeName];
-
-        if (moduleName && !importedTypes.has(typeName)) {
-          imports[moduleName] ??= [];
-          imports[moduleName]!.push(typeName);
-          importedTypes.add(typeName);
-        } else {
-          const model = this.dialect.definitions?.[typeName];
-
-          if (model) {
-            definitions.push([typeName, model]);
-          }
-        }
-      }
-
-      models.push({
-        body: this.#serializeModel(metadata.modelName, metadata.columns),
-        name: metadata.modelName,
-      });
-
-      exports.push([metadata.name, metadata.modelName]);
-    }
-
-    return {
-      definitions,
-      exports,
-      imports,
-      models,
-    };
-  }
-
-  #serializeDefinition(name: string, model: Record<string, string>) {
-    const entries = Object.entries(model).sort(([a], [b]) =>
-      a.localeCompare(b),
-    );
+/**
+ * Creates a TypeScript output string from a codegen AST (abstract syntax tree).
+ */
+export class Serializer {
+  #serializeAliasDeclaration(node: AliasDeclarationNode) {
     let data = '';
 
-    data += this.#serializeExport(name);
-    data += ' {';
+    data += 'type ';
+    data += node.name;
 
-    for (const [key, value] of entries) {
-      data += '\n  ';
-      data += key;
-      data += ': ';
-      data += value;
-      data += ';';
+    if (node.args.length) {
+      data += '<';
+
+      for (let i = 0; i < node.args.length; i++) {
+        if (i >= 1) {
+          data += ', ';
+        }
+
+        data += node.args[i]!;
+      }
+
+      data += '>';
     }
 
-    if (entries.length) {
-      data += '\n';
-    }
-
-    data += '}\n\n';
+    data += ' = ';
+    data += this.#serializeExpression(node.body);
+    data += ';';
 
     return data;
   }
 
-  #serializeDefinitions(definitions: Definition[]) {
+  #serializeArrayExpression(node: ArrayExpressionNode) {
+    const shouldParenthesize =
+      node.values.type === NodeType.UNION_EXPRESSION &&
+      node.values.args.length >= 2;
     let data = '';
 
-    for (const [name, model] of definitions) {
-      data += this.#serializeDefinition(name, model);
+    if (shouldParenthesize) {
+      data += '(';
     }
+
+    data += this.#serializeExpression(node.values);
+
+    if (shouldParenthesize) {
+      data += ')';
+    }
+
+    data += '[]';
 
     return data;
   }
 
-  #serializeExport(name: string) {
+  #serializeExportStatement(node: ExportStatementNode) {
     let data = '';
 
     data += 'export ';
-    data += this.format;
-    data += ' ';
-    data += name;
 
-    if (this.format === 'type') {
-      data += ' =';
+    switch (node.argument.type) {
+      case NodeType.ALIAS_DECLARATION:
+        data += this.#serializeAliasDeclaration(node.argument);
+        break;
+      case NodeType.INTERFACE_DECLARATION:
+        data += this.#serializeInterfaceDeclaration(node.argument);
+        break;
     }
 
     return data;
   }
 
-  #serializeExports(exports: [string, string][]) {
+  #serializeExpression(node: ExpressionNode) {
+    switch (node.type) {
+      case NodeType.ARRAY_EXPRESSION:
+        return this.#serializeArrayExpression(node);
+      case NodeType.EXTENDS_CLAUSE:
+        return this.#serializeExtendsClause(node);
+      case NodeType.GENERIC_EXPRESSION:
+        return this.#serializeGenericExpression(node);
+      case NodeType.IDENTIFIER:
+        return this.#serializeIdentifier(node);
+      case NodeType.INFER_CLAUSE:
+        return this.#serializeInferClause(node);
+      case NodeType.UNION_EXPRESSION:
+        return this.#serializeUnionExpression(node);
+      default:
+        throw new TypeError(`Unexpected node: ${JSON.stringify(node)}`);
+    }
+  }
+
+  #serializeExtendsClause(node: ExtendsClauseNode) {
     let data = '';
 
-    data += this.#serializeExport('DB');
-    data += ' {';
+    data += node.name;
+    data += ' extends ';
+    data += this.#serializeExpression(node.test);
+    data += '\n  ? ';
+    data += this.#serializeExpression(node.consequent);
+    data += '\n  : ';
+    data += this.#serializeExpression(node.alternate);
 
-    if (exports.length) {
-      data += '\n';
+    return data;
+  }
 
-      for (const [tableName, modelName] of exports) {
-        data += '  ';
-        data += tableName;
-        data += ': ';
-        data += modelName;
-        data += ';\n';
+  #serializeGenericExpression(node: GenericExpressionNode) {
+    let data = '';
+
+    data += node.name;
+    data += '<';
+
+    for (let i = 0; i < node.args.length; i++) {
+      if (i >= 1) {
+        data += ', ';
       }
+
+      data += this.#serializeExpression(node.args[i]!);
     }
 
-    data += '}\n';
+    data += '>';
 
     return data;
   }
 
-  #serializeImport(name: string, imports: string[]) {
+  #serializeIdentifier(node: IdentifierNode) {
+    return node.name;
+  }
+
+  #serializeImportStatement(node: ImportStatementNode) {
     let data = '';
+    let i = 0;
 
     data += 'import {';
 
-    for (let i = 0; i < imports.length; i++) {
-      if (i) {
-        data += ',';
+    for (const importName of node.imports) {
+      if (i >= 1) {
+        data += ', ';
       }
 
       data += ' ';
-      data += imports[i];
+      data += importName;
+      i++;
     }
 
-    if (imports.length) {
-      data += ' ';
-    }
-
-    data += "} from '";
-    data += name;
-    data += "';\n";
+    data += " } from '";
+    data += node.moduleName;
+    data += "';";
 
     return data;
   }
 
-  #serializeImports(importMap: ImportMap) {
-    const importEntries = Object.entries(importMap).sort(([a], [b]) =>
-      a.localeCompare(b),
-    );
+  #serializeInferClause(node: InferClauseNode) {
     let data = '';
 
-    for (const [name, imports] of importEntries) {
-      data += this.#serializeImport(name, imports);
-    }
-
-    if (importEntries.length) {
-      data += '\n';
-    }
+    data += 'infer ';
+    data += node.name;
 
     return data;
   }
 
-  #serializeModel(modelName: string, columns: ColumnMetadata[]) {
+  #serializeInterfaceDeclaration(node: InterfaceDeclarationNode) {
     let data = '';
 
-    data += this.#serializeExport(modelName);
-    data += ' {';
+    data += 'interface ';
+    data += node.name;
+    data += ' {\n';
 
-    const sortedColumns = [...columns].sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
+    for (const property of node.body.properties) {
+      data += '  ';
+      data += this.#serializeProperty(property);
+    }
 
-    for (const column of sortedColumns) {
-      const dataType = column.dataType;
-      const isGenerated = column.isAutoIncrementing || column.hasDefaultValue;
-      const type =
-        this.dialect.types?.[dataType] ?? this.dialect.defaultType ?? 'unknown';
+    data += '}';
 
-      data += '\n  ';
-      data += column.name;
-      data += ': ';
+    return data;
+  }
 
-      if (isGenerated) {
-        data += 'Generated<';
+  #serializeKey(key: string) {
+    return IDENTIFIER_REGEXP.test(key) ? key : JSON.stringify(key);
+  }
+
+  #serializeProperty(node: PropertyNode) {
+    let data = '';
+
+    data += this.#serializeKey(node.key);
+    data += ': ';
+    data += this.#serializeExpression(node.value);
+    data += ';\n';
+
+    return data;
+  }
+
+  #serializeUnionExpression(node: UnionExpressionNode) {
+    let data = '';
+    let i = 0;
+
+    for (const arg of node.args) {
+      if (i >= 1) {
+        data += ' | ';
       }
 
-      data += type;
-
-      if (column.isNullable) {
-        data += ' | null';
-      }
-
-      if (isGenerated) {
-        data += '>';
-      }
-
-      data += ';';
-    }
-
-    if (columns.length) {
-      data += '\n';
-    }
-
-    data += '}\n\n';
-
-    return data;
-  }
-
-  #serializeModels(models: Model[]) {
-    let data = '';
-
-    models.sort((a, b) => a.name.localeCompare(b.name));
-
-    for (const { body } of models) {
-      data += body;
+      data += this.#serializeExpression(arg);
+      i++;
     }
 
     return data;
   }
 
-  /**
-   * @example
-   * ```typescript
-   * new Serializer({
-   *   dialect: pgDialect,
-   *   style: 'interface',
-   *   tables: {
-   *     name: 'user',
-   *     schema: 'public',
-   *     columns: [
-   *       {
-   *         name: 'id',
-   *         dataType: 'smallint',
-   *         isNullable: false,
-   *         isAutoIncrementing: true,
-   *         hasDefaultValue: false,
-   *       },
-   *       {
-   *         name: 'created_at',
-   *         dataType: 'timestamptz',
-   *         isNullable: false,
-   *         isAutoIncrementing: false,
-   *         hasDefaultValue: true,
-   *       },
-   *       {
-   *         name: 'full_name',
-   *         dataType: 'varchar',
-   *         isNullable: true,
-   *         isAutoIncrementing: false,
-   *         hasDefaultValue: false,
-   *       },
-   *     ],
-   *   },
-   * }).serialize();
-   *
-   * // Output:
-   * export interface User {
-   *   created_at: Generated<number | string | Date>;
-   *   full_name: string | null;
-   *   id: Generated<number>;
-   * }
-   *
-   * export interface DB {
-   *   user: User;
-   * }
-   * ```
-   */
-  serialize() {
-    const { definitions, exports, imports, models } = this.#analyzeTables();
+  serialize(nodes: StatementNode[]) {
     let data = '';
+    let i = 0;
 
-    data += this.#serializeImports(imports);
-    data += this.#serializeDefinitions(definitions);
-    data += this.#serializeModels(models);
-    data += this.#serializeExports(exports);
+    for (const node of nodes) {
+      if (i >= 1) {
+        data += '\n';
+
+        if (node.type !== NodeType.IMPORT_STATEMENT) {
+          data += '\n';
+        }
+      }
+
+      switch (node.type) {
+        case NodeType.EXPORT_STATEMENT:
+          data += this.#serializeExportStatement(node);
+          break;
+        case NodeType.IMPORT_STATEMENT:
+          data += this.#serializeImportStatement(node);
+          break;
+      }
+
+      i++;
+    }
+
+    data += '\n';
 
     return data;
   }

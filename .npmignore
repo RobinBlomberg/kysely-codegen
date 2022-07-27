@@ -1,7 +1,9 @@
 /.git
 /.vscode
+/dist/tests
 /node_modules
-/.env
-/.gitignore
-/.pnpm-lock.yaml
-/tsconfig.json
+.env
+.gitignore
+docker-compose.yml
+pnpm-lock.yaml
+tsconfig.json

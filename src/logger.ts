@@ -2,6 +2,9 @@ import chalk from 'chalk';
 import { inspect } from 'util';
 import { LogLevel } from './enums/log-level';
 
+/**
+ * Provides pretty console logging.
+ */
 export class Logger {
   readonly logLevel: LogLevel;
 
@@ -9,7 +12,7 @@ export class Logger {
     this.logLevel = logLevel;
   }
 
-  private inspect(values: unknown[]) {
+  #inspect(values: unknown[]) {
     return values
       .map((value) => {
         return value instanceof Object
@@ -44,23 +47,23 @@ export class Logger {
   }
 
   serializeDebug(...values: unknown[]) {
-    return chalk.gray(`  ${this.inspect(values)}`);
+    return chalk.gray(`  ${this.#inspect(values)}`);
   }
 
   serializeError(...values: unknown[]) {
-    return chalk.red(`✗ ${this.inspect(values)}`);
+    return chalk.red(`✗ ${this.#inspect(values)}`);
   }
 
   serializeInfo(...values: unknown[]) {
-    return chalk.blue(`• ${this.inspect(values)}`);
+    return chalk.blue(`• ${this.#inspect(values)}`);
   }
 
   serializeSuccess(...values: unknown[]) {
-    return chalk.green(`✓ ${this.inspect(values)}`);
+    return chalk.green(`✓ ${this.#inspect(values)}`);
   }
 
   serializeWarn(...values: unknown[]) {
-    return chalk.yellow(`⚠ ${this.inspect(values)}`);
+    return chalk.yellow(`⚠ ${this.#inspect(values)}`);
   }
 
   success(...values: unknown[]) {
