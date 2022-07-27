@@ -1,7 +1,9 @@
 import { ColumnMetadata, TableMetadata } from 'kysely';
-import { Adapter } from './adapter';
+import { AdapterDefinitions, AdapterImports, AdapterTypes } from './adapter';
 import { Definition, DEFINITIONS } from './constants/definitions';
+import { Dialect } from './dialect';
 import { NodeType } from './enums/node-type';
+import { StatementNode } from './nodes';
 import { AliasDeclarationNode } from './nodes/alias-declaration-node';
 import { DeclarationNode } from './nodes/declaration-node';
 import { ExportStatementNode } from './nodes/export-statement-node';
@@ -12,7 +14,6 @@ import { ImportStatementNode } from './nodes/import-statement-node';
 import { InterfaceDeclarationNode } from './nodes/interface-declaration-node';
 import { ObjectExpressionNode } from './nodes/object-expression-node';
 import { PropertyNode } from './nodes/property-node';
-import { StatementNode } from './nodes/statement-node';
 import { UnionExpressionNode } from './nodes/union-expression-node';
 
 const SYMBOLS: { [K in string]?: boolean } = Object.fromEntries(
@@ -20,36 +21,34 @@ const SYMBOLS: { [K in string]?: boolean } = Object.fromEntries(
 );
 
 /**
- * Converts table metadata to a codegen AST (abstract syntax tree).
+ * Converts table metadata to a codegen AST.
  */
 export class Transformer {
   readonly #declarationNodes: DeclarationNode[];
   readonly #defaultType: ExpressionNode;
-  readonly #definitions: { [K in string]?: Definition };
+  readonly #definitions: AdapterDefinitions;
+  readonly #dialect: Dialect;
   readonly #exportedProperties: PropertyNode[];
   readonly #imported: Record<string, Set<string>>;
-  readonly #imports: { [K in string]?: string };
+  readonly #imports: AdapterImports;
   readonly #symbols = SYMBOLS;
-  readonly #types: { [K in string]?: ExpressionNode };
+  readonly #types: AdapterTypes;
 
-  constructor(adapter: Adapter) {
+  constructor(dialect: Dialect) {
     this.#declarationNodes = [];
-    this.#defaultType = adapter.defaultType ?? new IdentifierNode('unknown');
-    this.#definitions = { ...DEFINITIONS, ...adapter.definitions };
+    this.#defaultType =
+      dialect.adapter.defaultType ?? new IdentifierNode('unknown');
+    this.#definitions = { ...DEFINITIONS, ...dialect.adapter.definitions };
+    this.#dialect = dialect;
     this.#exportedProperties = [];
     this.#imported = {};
-    this.#imports = { ColumnType: 'kysely', ...adapter.imports };
+    this.#imports = { ColumnType: 'kysely', ...dialect.adapter.imports };
     this.#symbols = SYMBOLS;
-    this.#types = adapter.types ?? {};
+    this.#types = dialect.adapter.types ?? {};
   }
 
-  #createSymbolName(name: string) {
-    let symbolName = name
-      .split('_')
-      .map(
-        (word) => word.slice(0, 1).toUpperCase() + word.slice(1).toLowerCase(),
-      )
-      .join('');
+  #createSymbolName(table: TableMetadata) {
+    let symbolName = this.#dialect.getSymbolName(table);
 
     if (this.#symbols[symbolName] !== undefined) {
       let suffix = 2;
@@ -192,13 +191,14 @@ export class Transformer {
     const nodes: ExportStatementNode[] = [];
 
     for (const table of tables) {
-      const tableSymbolName = this.#createSymbolName(table.name);
+      const tableSymbolName = this.#createSymbolName(table);
       const propertyNodes: PropertyNode[] = [];
 
       this.#declareSymbol(tableSymbolName);
 
       const valueNode = new IdentifierNode(tableSymbolName);
-      const exportedPropertyNode = new PropertyNode(table.name, valueNode);
+      const key = this.#dialect.getExportedTableName(table);
+      const exportedPropertyNode = new PropertyNode(key, valueNode);
 
       this.#exportedProperties.push(exportedPropertyNode);
 

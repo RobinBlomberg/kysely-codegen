@@ -37,8 +37,7 @@ export class Generator {
     this.introspector = options.introspector ?? new Introspector();
     this.logger = options.logger;
     this.serializer = options.serializer ?? new Serializer();
-    this.transformer =
-      options.transformer ?? new Transformer(options.dialect.createAdapter());
+    this.transformer = options.transformer ?? new Transformer(options.dialect);
   }
 
   async generate(options: GenerateOptions) {

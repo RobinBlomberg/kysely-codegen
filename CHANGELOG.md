@@ -8,8 +8,10 @@
 - build: upgrade modules
 - feat!: make generated PostgreSQL and SQLite types more accurate
 - feat: add MySQL support
+- feat: add PostgreSQL schema support
+- feat: lazy load database drivers
 - feat: make adapters separable from their dialects
-- feat: make dialect option optional
+- feat: make dialect CLI option optional
 - refactor!: remove format CLI option
 - refactor: implement new AST-based transformer/serializer
 - refactor: export internal modules and make them dependency-injectable

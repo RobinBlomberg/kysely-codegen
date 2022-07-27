@@ -3,9 +3,7 @@ import { Dialect, DriverInstantiateOptions } from '../../dialect';
 import { MysqlAdapter } from './mysql-adapter';
 
 export class MysqlDialect extends Dialect {
-  createAdapter() {
-    return new MysqlAdapter();
-  }
+  readonly adapter = new MysqlAdapter();
 
   async createKyselyDialect(options: DriverInstantiateOptions) {
     const { createPool } = await import('mysql2');

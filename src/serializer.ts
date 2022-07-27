@@ -16,7 +16,7 @@ import { UnionExpressionNode } from './nodes/union-expression-node';
 const IDENTIFIER_REGEXP = /^[a-zA-Z_$][a-zA-Z_0-9$]*$/;
 
 /**
- * Creates a TypeScript output string from a codegen AST (abstract syntax tree).
+ * Creates a TypeScript output string from a codegen AST.
  */
 export class Serializer {
   #serializeAliasDeclaration(node: AliasDeclarationNode) {
