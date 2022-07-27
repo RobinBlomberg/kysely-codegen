@@ -1,119 +1,88 @@
 import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
-import { CodegenConnectionStringParser } from './connection-string-parser';
-import { CodegenDialectManager, CodegenDialectName } from './dialect-manager';
-import { CodegenFormat } from './enums/format';
-import { LogLevel } from './enums/log-level';
-import { CodegenDatabaseIntrospector } from './introspector';
+import { Dialect } from './dialect';
+import { Introspector } from './introspector';
 import { Logger } from './logger';
-import { CodegenSerializer } from './serializer';
+import { Serializer } from './serializer';
+import { Transformer } from './transformer';
 
-export class CodegenGenerator {
-  readonly dialectName: CodegenDialectName | undefined;
-  readonly format: CodegenFormat;
-  readonly logLevel: LogLevel;
-  readonly outFile: string;
-  readonly print: boolean;
-  readonly url: string;
+export type GeneratorOptions = {
+  connectionString: string;
+  dialect: Dialect;
+  introspector?: Introspector;
+  logger?: Logger;
+  serializer?: Serializer;
+  transformer?: Transformer;
+};
 
-  constructor(options: {
-    dialectName?: CodegenDialectName;
-    format?: CodegenFormat;
-    logLevel: LogLevel;
-    outFile: string;
-    print?: boolean;
-    url: string;
-  }) {
-    this.dialectName = options.dialectName;
-    this.format = options.format ?? CodegenFormat.INTERFACE;
-    this.logLevel = options.logLevel;
-    this.outFile = options.outFile;
-    this.print = options.print ?? false;
-    this.url = options.url;
+export type GenerateOptions = {
+  outFile: string;
+  print?: boolean;
+};
+
+/**
+ * Generates codegen output using specified options.
+ */
+export class Generator {
+  readonly connectionString: string;
+  readonly dialect: Dialect;
+  readonly introspector: Introspector;
+  readonly logger: Logger | undefined;
+  readonly serializer: Serializer;
+  readonly transformer: Transformer;
+
+  constructor(options: GeneratorOptions) {
+    this.connectionString = options.connectionString;
+    this.dialect = options.dialect;
+    this.introspector = options.introspector ?? new Introspector();
+    this.logger = options.logger;
+    this.serializer = options.serializer ?? new Serializer();
+    this.transformer =
+      options.transformer ?? new Transformer(options.dialect.createAdapter());
   }
 
-  /**
-   * Generates a file with database type definitions.
-   *
-   * @example
-   * ```typescript
-   * import { generate } from 'kysely-codegen';
-   *
-   * await generate({
-   *   driver: 'pg',
-   *   logLevel: LogLevel.WARN,
-   *   outFile: './kysely-codegen/index.d.ts',
-   *   url: 'env(DATABASE_URL)',
-   * });
-   *
-   * // Output:
-   * export type User = {
-   *   created_at: Date;
-   *   email: string;
-   *   full_name: string;
-   *   is_active: boolean;
-   * };
-   * ```
-   */
-  async generate() {
-    const logger = new Logger(this.logLevel);
-    const connectionStringParser = new CodegenConnectionStringParser({
-      logger,
-      url: this.url,
-    });
-    const { connectionString, dialectName } =
-      connectionStringParser.parseConnectionString();
-
-    if (dialectName === this.dialectName) {
-      logger.info(`Using dialect '${dialectName}'.`);
-    } else {
-      logger.info(`No dialect specified. Assuming '${dialectName}'.`);
-    }
-
-    const dialectManager = new CodegenDialectManager();
-    const dialect = dialectManager.getDialect(this.dialectName ?? dialectName);
-
+  async generate(options: GenerateOptions) {
     const startTime = performance.now();
 
-    logger.info('Introspecting database...');
+    this.logger?.info('Introspecting database...');
 
-    const introspector = new CodegenDatabaseIntrospector({
-      connectionString,
-      dialect,
+    const tables = await this.introspector.introspect({
+      connectionString: this.connectionString,
+      dialect: this.dialect,
     });
-    const tables = await introspector.introspect();
 
-    logger.debug();
-    logger.debug(`Found ${tables.length} public tables:`);
+    this.logger?.debug();
+    this.logger?.debug(`Found ${tables.length} public tables:`);
 
     for (const table of tables) {
-      logger.debug(` - ${table.name}`);
+      this.logger?.debug(` - ${table.name}`);
     }
 
-    logger.debug();
+    this.logger?.debug();
 
-    const serializer = new CodegenSerializer({
-      dialect,
-      format: this.format,
-      tables,
-    });
-    const data = serializer.serialize();
+    const nodes = this.transformer.transform(tables);
+    const data = this.serializer.serialize(nodes);
 
-    if (this.print) {
-      logger.log();
-      logger.log(data);
+    if (options.print) {
+      this.logger?.log();
+      this.logger?.log(data);
     } else {
-      const outDir = parse(this.outFile).dir;
+      const outDir = parse(options.outFile).dir;
 
       await fs.mkdir(outDir, { recursive: true });
-      await fs.writeFile(this.outFile, data);
+      await fs.writeFile(options.outFile, data);
 
       const endTime = performance.now();
-      const relativeOutDir = `.${sep}${relative(process.cwd(), this.outFile)}`;
+      const relativeOutDir = `.${sep}${relative(
+        process.cwd(),
+        options.outFile,
+      )}`;
       const duration = Math.round(endTime - startTime);
 
-      logger.success(
-        `Introspected ${tables.length} tables and generated ${relativeOutDir} in ${duration}ms.`,
+      this.logger?.success(
+        `Introspected ${tables.length} table${
+          tables.length === 1 ? '' : 's'
+        } and generated ${relativeOutDir} in ${duration}ms.\n`,
       );
     }
   }

@@ -1,0 +1,15 @@
+export const enum NodeType {
+  ALIAS_DECLARATION = 'AliasDeclaration',
+  ARRAY_EXPRESSION = 'ArrayExpression',
+  EXPORT_STATEMENT = 'ExportStatement',
+  EXTENDS_CLAUSE = 'ExtendsClause',
+  GENERIC_EXPRESSION = 'GenericExpression',
+  IDENTIFIER = 'Identifier',
+  IMPORT_STATEMENT = 'ImportStatement',
+  INFER_CLAUSE = 'InferClause',
+  INTERFACE_DECLARATION = 'InterfaceDeclaration',
+  OBJECT_EXPRESSION = 'ObjectExpression',
+  PROPERTY = 'Property',
+  UNION_EXPRESSION = 'UnionExpression',
+  VALUE = 'Value',
+}

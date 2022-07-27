@@ -1,16 +1,22 @@
-import { CodegenDialect } from './dialect';
-import { CodegenPostgresDialect } from './dialects/postgres';
-import { CodegenSqliteDialect } from './dialects/sqlite';
+import { Dialect } from './dialect';
+import { MysqlDialect } from './dialects/mysql/mysql-dialect';
+import { PostgresDialect } from './dialects/postgres/postgres-dialect';
+import { SqliteDialect } from './dialects/sqlite/sqlite-dialect';
 
-export type CodegenDialectName = 'postgres' | 'sqlite';
+export type DialectName = 'mysql' | 'postgres' | 'sqlite';
 
-export class CodegenDialectManager {
-  getDialect(name: CodegenDialectName): CodegenDialect {
+/**
+ * Returns a dialect instance for a pre-defined dialect name.
+ */
+export class DialectManager {
+  getDialect(name: DialectName): Dialect {
     switch (name) {
+      case 'mysql':
+        return new MysqlDialect();
       case 'postgres':
-        return new CodegenPostgresDialect();
+        return new PostgresDialect();
       default:
-        return new CodegenSqliteDialect();
+        return new SqliteDialect();
     }
   }
 }

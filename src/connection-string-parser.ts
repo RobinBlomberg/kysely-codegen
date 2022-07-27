@@ -1,27 +1,47 @@
 import { config as loadEnv } from 'dotenv';
-import { CodegenDialectName } from './dialect-manager';
+import { DialectName } from './dialect-manager';
 import { Logger } from './logger';
 
 const CALL_STATEMENT_REGEXP = /^\s*([a-z]+)\s*\(\s*(.*)\s*\)\s*$/;
 
-export type ParseConnectionStringResult = {
+/**
+ * @see https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html
+ */
+const MYSQL_URI_CONNECTION_STRING_REGEXP = /^mysqlx?:\/\//;
+
+export type ParseConnectionStringOptions = {
   connectionString: string;
-  dialectName: CodegenDialectName;
+  dialectName?: DialectName;
+  logger?: Logger;
 };
 
-export class CodegenConnectionStringParser {
-  readonly logger: Logger;
-  readonly url: string;
+export type ParsedConnectionString = {
+  connectionString: string;
+  inferredDialectName: DialectName;
+};
 
-  constructor(options: { logger: Logger; url: string }) {
-    this.logger = options.logger;
-    this.url = options.url;
+/**
+ * Parses a connection string URL or loads it from an environment file.
+ * Upon success, it also returns which dialect was inferred from the connection string.
+ */
+export class ConnectionStringParser {
+  #inferDialectName(connectionString: string): DialectName {
+    if (connectionString.startsWith('postgres://')) {
+      return 'postgres';
+    }
+
+    if (MYSQL_URI_CONNECTION_STRING_REGEXP.test(connectionString)) {
+      return 'mysql';
+    }
+
+    return 'sqlite';
   }
 
-  parseConnectionString(): ParseConnectionStringResult {
-    let connectionString = this.url;
+  parse(options: ParseConnectionStringOptions): ParsedConnectionString {
+    let connectionString = options.connectionString;
 
     const expressionMatch = connectionString.match(CALL_STATEMENT_REGEXP);
+
     if (expressionMatch) {
       const name = expressionMatch[1]!;
 
@@ -48,7 +68,7 @@ export class CodegenConnectionStringParser {
 
       loadEnv();
 
-      this.logger.info('Loaded environment variables from .env file.');
+      options.logger?.info('Loaded environment variables from .env file.');
 
       const envConnectionString = process.env[key];
       if (!envConnectionString) {
@@ -60,17 +80,17 @@ export class CodegenConnectionStringParser {
       connectionString = envConnectionString;
     }
 
-    try {
-      void new URL(connectionString);
-    } catch {
-      throw new SyntaxError(`Invalid URL: '${connectionString}'`);
+    const inferredDialectName =
+      options.dialectName ?? this.#inferDialectName(connectionString);
+
+    if (inferredDialectName !== 'sqlite') {
+      try {
+        void new URL(connectionString);
+      } catch {
+        throw new SyntaxError(`Invalid URL: '${connectionString}'`);
+      }
     }
 
-    return {
-      connectionString,
-      dialectName: connectionString.startsWith('postgres://')
-        ? 'postgres'
-        : 'sqlite',
-    };
+    return { connectionString, inferredDialectName };
   }
 }

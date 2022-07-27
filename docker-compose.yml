@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  kysely_codegen_adminer:
+    container_name: kysely_codegen_adminer
+    image: adminer
+    ports:
+      - 8081:8080
+    restart: always
+  kysely_codegen_mysql:
+    container_name: kysely_codegen_mysql
+    environment:
+      - MYSQL_DATABASE=database
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+    image: mysql:latest
+    restart: always
+    ports:
+      - 3306:3306
+  kysely_codegen_postgres:
+    container_name: kysely_codegen_postgres
+    environment:
+      - POSTGRES_DB=database
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=user
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
