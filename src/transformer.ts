@@ -43,7 +43,7 @@ export class Transformer {
     this.#exportedProperties = [];
     this.#imported = {};
     this.#imports = { ColumnType: 'kysely', ...dialect.adapter.imports };
-    this.#symbols = SYMBOLS;
+    this.#symbols = { ...SYMBOLS };
     this.#types = dialect.adapter.types ?? {};
   }
 
