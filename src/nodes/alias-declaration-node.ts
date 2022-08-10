@@ -7,9 +7,9 @@ export class AliasDeclarationNode {
   readonly name: string;
   readonly type = NodeType.ALIAS_DECLARATION;
 
-  constructor(name: string, generics: string[], body: ExpressionNode) {
+  constructor(name: string, args: string[], body: ExpressionNode) {
     this.name = name;
-    this.args = generics;
+    this.args = args;
     this.body = body;
   }
 }

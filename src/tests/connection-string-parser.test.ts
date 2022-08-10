@@ -4,9 +4,9 @@ import { describe, it } from './test.utils';
 
 const parser = new ConnectionStringParser();
 
-void describe('connection-string-parser', async () => {
-  await describe('postgres', async () => {
-    await it('should infer the correct dialect name', () => {
+void describe('connection-string-parser', () => {
+  void describe('postgres', () => {
+    void it('should infer the correct dialect name', () => {
       deepStrictEqual(
         parser.parse({
           connectionString: 'postgres://username:password@hostname/database',
@@ -19,8 +19,8 @@ void describe('connection-string-parser', async () => {
     });
   });
 
-  await describe('mysql', async () => {
-    await it('should infer the correct dialect name', () => {
+  void describe('mysql', () => {
+    void it('should infer the correct dialect name', () => {
       deepStrictEqual(
         parser.parse({
           connectionString: 'mysql://username:password@hostname/database',
@@ -42,8 +42,8 @@ void describe('connection-string-parser', async () => {
     });
   });
 
-  await describe('sqlite', async () => {
-    await it('should infer the correct dialect name', () => {
+  void describe('sqlite', () => {
+    void it('should infer the correct dialect name', () => {
       deepStrictEqual(
         parser.parse({
           connectionString: 'C:/Program Files/sqlite3/db',

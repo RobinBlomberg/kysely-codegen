@@ -9,6 +9,7 @@ const DEFAULT_OUT_FILE = './node_modules/kysely-codegen/dist/db.d.ts';
 const VALID_DIALECTS = ['mysql', 'postgres', 'sqlite'];
 const VALID_FLAGS = new Set([
   '_',
+  'camel-case',
   'dialect',
   'h',
   'help',
@@ -19,6 +20,7 @@ const VALID_FLAGS = new Set([
 ]);
 
 export type CliOptions = {
+  camelCase: boolean;
   dialectName: DialectName | undefined;
   logLevel: LogLevel;
   outFile: string;
@@ -31,6 +33,8 @@ export type CliOptions = {
  */
 export class Cli {
   async #generate(options: CliOptions) {
+    const { camelCase } = options;
+
     const logger = new Logger(options.logLevel);
 
     const connectionStringParser = new ConnectionStringParser();
@@ -52,7 +56,12 @@ export class Cli {
       options.dialectName ?? inferredDialectName,
     );
 
-    const generator = new Generator({ connectionString, dialect, logger });
+    const generator = new Generator({
+      camelCase,
+      connectionString,
+      dialect,
+      logger,
+    });
     await generator.generate(options);
   }
 
@@ -75,6 +84,7 @@ export class Cli {
     const argv = minimist(args);
 
     const _: string[] = argv._;
+    const camelCase = !!argv['camel-case'];
     const dialectName = argv.dialect as DialectName | undefined;
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
@@ -96,15 +106,18 @@ export class Cli {
 
       if (help) {
         logger.log(
-          '\n' +
-            'kysely-codegen [options]\n' +
-            '\n' +
-            `  --dialect    Set the SQL dialect. (values: [${dialectValues}])\n` +
-            '  --help, -h   Print this message.\n' +
-            '  --log-level  Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)\n' +
-            `  --out-file   Set the file build path. (default: ${DEFAULT_OUT_FILE})\n` +
-            '  --print      Print the generated output to the terminal.\n' +
-            '  --url        Set the database connection string URL. This may point to an environment variable. (default: env(DATABASE_URL))\n',
+          '',
+          'kysely-codegen [options]',
+          '',
+          '  --all         Display all options.',
+          '  --camel-case  Use the Kysely CamelCasePlugin.',
+          `  --dialect     Set the SQL dialect. (values: [${dialectValues}])`,
+          '  --help, -h    Print this message.',
+          '  --log-level   Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)',
+          `  --out-file    Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
+          '  --print       Print the generated output to the terminal.',
+          '  --url         Set the database connection string URL. This may point to an environment variable. (default: env(DATABASE_URL))',
+          '',
         );
 
         process.exit(0);
@@ -140,7 +153,7 @@ export class Cli {
       }
     }
 
-    return { dialectName, logLevel, outFile, print, url };
+    return { camelCase, dialectName, logLevel, outFile, print, url };
   }
 
   async run(argv: string[]) {

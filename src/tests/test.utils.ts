@@ -1,36 +1,19 @@
-import chalk from 'chalk';
+let depth = 0;
 
-type Test = () => Promise<void> | void;
-
-const nameStack: string[] = [];
-let count = 0;
-let startTime = 0;
-
-const log = (string: string) => {
-  console.info(`[${chalk.cyan('TEST')}] ${string}`);
-};
+export type Test = () => Promise<void> | void;
 
 export const describe = async (name: string, test: Test) => {
-  if (!nameStack.length) {
-    log(chalk.blue('• Running tests...'));
-    count = 0;
-    startTime = performance.now();
-  }
-
-  nameStack.push(name);
+  depth++;
   await test();
-  nameStack.pop();
+  depth--;
 
-  if (!nameStack.length) {
-    const elapsedTime = `${Math.round(performance.now() - startTime)} ms`;
-    log(chalk.green(`✓ Finished ${count} tests in ${elapsedTime}.`));
+  if (!depth) {
+    console.log('All tests passed.');
   }
 };
 
 export const it = async (name: string, test: Test) => {
-  nameStack.push(name);
-  log(`  ${nameStack.map((n) => chalk.gray(n)).join(chalk.cyan(' → '))}`);
+  depth++;
   await test();
-  nameStack.pop();
-  count++;
+  depth--;
 };

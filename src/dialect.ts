@@ -1,6 +1,6 @@
 import { Dialect as KyselyDialect, TableMetadata } from 'kysely';
 import { Adapter } from './adapter';
-import { pascalCase } from './util';
+import { toCamelCase, toPascalCase } from './case-converter';
 
 export type DriverInstantiateOptions = {
   connectionString: string;
@@ -26,14 +26,14 @@ export abstract class Dialect {
   /**
    * Returns the name of the table in the exported `DB` interface.
    */
-  getExportedTableName(table: TableMetadata): string {
-    return table.name;
+  getExportedTableName(table: TableMetadata, camelCase: boolean): string {
+    return camelCase ? toCamelCase(table.name) : table.name;
   }
 
   /**
    * Returns the TypeScript symbol name for the given table.
    */
   getSymbolName(table: TableMetadata): string {
-    return pascalCase(table.name);
+    return toPascalCase(table.name);
   }
 }
