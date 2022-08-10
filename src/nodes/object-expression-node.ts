@@ -5,7 +5,7 @@ export class ObjectExpressionNode {
   readonly properties: PropertyNode[];
   readonly type = NodeType.OBJECT_EXPRESSION;
 
-  constructor(body: PropertyNode[]) {
-    this.properties = body;
+  constructor(properties: PropertyNode[]) {
+    this.properties = properties;
   }
 }

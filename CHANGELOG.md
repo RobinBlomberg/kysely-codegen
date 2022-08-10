@@ -1,5 +1,11 @@
 # kysely-codegen changelog
 
+## 0.5.0
+
+### Notable changes
+
+- feat: add camel case support
+
 ## 0.4.0
 
 ### Notable changes

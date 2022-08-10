@@ -1,5 +1,6 @@
 import { ColumnMetadata, TableMetadata } from 'kysely';
 import { AdapterDefinitions, AdapterImports, AdapterTypes } from './adapter';
+import { toCamelCase } from './case-converter';
 import { Definition, DEFINITIONS } from './constants/definitions';
 import { Dialect } from './dialect';
 import { NodeType } from './enums/node-type';
@@ -20,31 +21,49 @@ const SYMBOLS: { [K in string]?: boolean } = Object.fromEntries(
   Object.keys(DEFINITIONS).map((key) => [key, false]),
 );
 
+const initialize = (dialect: Dialect) => {
+  return {
+    declarationNodes: [],
+    defaultType: dialect.adapter.defaultType ?? new IdentifierNode('unknown'),
+    definitions: { ...DEFINITIONS, ...dialect.adapter.definitions },
+    exportedProperties: [],
+    imported: {},
+    imports: { ColumnType: 'kysely', ...dialect.adapter.imports },
+    symbols: { ...SYMBOLS },
+    types: dialect.adapter.types ?? {},
+  };
+};
+
 /**
  * Converts table metadata to a codegen AST.
  */
 export class Transformer {
-  readonly #declarationNodes: DeclarationNode[];
-  readonly #defaultType: ExpressionNode;
-  readonly #definitions: AdapterDefinitions;
+  readonly #camelCase: boolean;
   readonly #dialect: Dialect;
-  readonly #exportedProperties: PropertyNode[];
-  readonly #imported: Record<string, Set<string>>;
-  readonly #imports: AdapterImports;
-  readonly #symbols = SYMBOLS;
-  readonly #types: AdapterTypes;
 
-  constructor(dialect: Dialect) {
-    this.#declarationNodes = [];
-    this.#defaultType =
-      dialect.adapter.defaultType ?? new IdentifierNode('unknown');
-    this.#definitions = { ...DEFINITIONS, ...dialect.adapter.definitions };
+  #declarationNodes: DeclarationNode[];
+  #defaultType: ExpressionNode;
+  #definitions: AdapterDefinitions;
+  #exportedProperties: PropertyNode[];
+  #imported: Record<string, Set<string>>;
+  #imports: AdapterImports;
+  #symbols: typeof SYMBOLS;
+  #types: AdapterTypes;
+
+  constructor(dialect: Dialect, camelCase: boolean) {
+    this.#camelCase = camelCase;
     this.#dialect = dialect;
-    this.#exportedProperties = [];
-    this.#imported = {};
-    this.#imports = { ColumnType: 'kysely', ...dialect.adapter.imports };
-    this.#symbols = { ...SYMBOLS };
-    this.#types = dialect.adapter.types ?? {};
+
+    const options = initialize(dialect);
+
+    this.#declarationNodes = options.declarationNodes;
+    this.#defaultType = options.defaultType;
+    this.#definitions = options.definitions;
+    this.#exportedProperties = options.exportedProperties;
+    this.#imported = options.imported;
+    this.#imports = options.imports;
+    this.#symbols = options.symbols;
+    this.#types = options.types;
   }
 
   #createSymbolName(table: TableMetadata) {
@@ -151,6 +170,8 @@ export class Transformer {
       args.push(new IdentifierNode('null'));
     }
 
+    const key = this.#camelCase ? toCamelCase(column.name) : column.name;
+
     let value = args.length === 1 ? args[0]! : new UnionExpressionNode(args);
 
     if (column.hasDefaultValue || column.isAutoIncrementing) {
@@ -159,7 +180,7 @@ export class Transformer {
 
     this.#instantiateReferencedSymbols(value);
 
-    return new PropertyNode(column.name, value);
+    return new PropertyNode(key, value);
   }
 
   #transformDatabaseExport() {
@@ -197,7 +218,7 @@ export class Transformer {
       this.#declareSymbol(tableSymbolName);
 
       const valueNode = new IdentifierNode(tableSymbolName);
-      const key = this.#dialect.getExportedTableName(table);
+      const key = this.#dialect.getExportedTableName(table, this.#camelCase);
       const exportedPropertyNode = new PropertyNode(key, valueNode);
 
       this.#exportedProperties.push(exportedPropertyNode);
@@ -221,6 +242,17 @@ export class Transformer {
   }
 
   transform(tables: TableMetadata[]): StatementNode[] {
+    const options = initialize(this.#dialect);
+
+    this.#declarationNodes = options.declarationNodes;
+    this.#defaultType = options.defaultType;
+    this.#definitions = options.definitions;
+    this.#exportedProperties = options.exportedProperties;
+    this.#imported = options.imported;
+    this.#imports = options.imports;
+    this.#symbols = options.symbols;
+    this.#types = options.types;
+
     const tableExportNodes = this.#transformTables(tables);
     const importNodes = this.#transformImports();
     const definitionExportNodes = this.#transformDeclarations();

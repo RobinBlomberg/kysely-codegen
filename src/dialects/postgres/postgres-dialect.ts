@@ -2,8 +2,8 @@ import {
   PostgresDialect as KyselyPostgresDialect,
   TableMetadata,
 } from 'kysely';
+import { toPascalCase } from '../../case-converter';
 import { Dialect, DriverInstantiateOptions } from '../../dialect';
-import { pascalCase } from '../../util';
 import { PostgresAdapter } from './postgres-adapter';
 
 export class PostgresDialect extends Dialect {
@@ -20,15 +20,20 @@ export class PostgresDialect extends Dialect {
     });
   }
 
-  override getExportedTableName(table: TableMetadata): string {
+  override getExportedTableName(
+    table: TableMetadata,
+    camelCase: boolean,
+  ): string {
+    const tableName = super.getExportedTableName(table, camelCase);
     return table.schema === 'public'
-      ? super.getExportedTableName(table)
-      : `${table.schema}.${table.name}`;
+      ? tableName
+      : `${table.schema}.${tableName}`;
   }
 
   override getSymbolName(table: TableMetadata): string {
+    const symbolName = super.getSymbolName(table);
     return table.schema === 'public'
-      ? super.getSymbolName(table)
-      : pascalCase(`${table.schema}_${table.name}`);
+      ? symbolName
+      : toPascalCase(`${table.schema}_${symbolName}`);
   }
 }

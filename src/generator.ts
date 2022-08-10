@@ -7,6 +7,7 @@ import { Serializer } from './serializer';
 import { Transformer } from './transformer';
 
 export type GeneratorOptions = {
+  camelCase: boolean;
   connectionString: string;
   dialect: Dialect;
   introspector?: Introspector;
@@ -37,7 +38,9 @@ export class Generator {
     this.introspector = options.introspector ?? new Introspector();
     this.logger = options.logger;
     this.serializer = options.serializer ?? new Serializer();
-    this.transformer = options.transformer ?? new Transformer(options.dialect);
+    this.transformer =
+      options.transformer ??
+      new Transformer(options.dialect, options.camelCase);
   }
 
   async generate(options: GenerateOptions) {
