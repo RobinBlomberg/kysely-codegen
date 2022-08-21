@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "Robin Blomberg",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,6 +21,7 @@
     "docker:get-mysql-ip": "docker inspect -f {{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}} kysely_codegen_mysql",
     "docker:get-postgres-ip": "docker inspect -f {{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}} kysely_codegen_postgres",
     "docker:up": "docker-compose up -d",
+    "prepublishOnly": "pnpm build",
     "start": "node ./dist/bin/index.js",
     "test": "ts-node-dev ./src/tests/index.test.ts",
     "test:watch": "ts-node-dev --quiet --respawn ./src/tests/index.test.ts"
@@ -44,6 +45,7 @@
     "kysely": "^0.19.12",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
+    "pnpm": "^7.9.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.7.4"
   },
