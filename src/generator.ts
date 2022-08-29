@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
+import { performance } from 'perf_hooks';
 import { Dialect } from './dialect';
 import { Introspector } from './introspector';
 import { Logger } from './logger';
