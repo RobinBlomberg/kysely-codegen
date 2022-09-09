@@ -2,6 +2,7 @@ import { ColumnMetadata, TableMetadata } from 'kysely';
 import { AdapterDefinitions, AdapterImports, AdapterTypes } from './adapter';
 import { toCamelCase } from './case-converter';
 import { Definition, DEFINITIONS } from './constants/definitions';
+import { GLOBAL_IMPORTS } from './constants/imports';
 import { Dialect } from './dialect';
 import { NodeType } from './enums/node-type';
 import { StatementNode } from './nodes';
@@ -28,7 +29,7 @@ const initialize = (dialect: Dialect) => {
     definitions: { ...DEFINITIONS, ...dialect.adapter.definitions },
     exportedProperties: [],
     imported: {},
-    imports: { ColumnType: 'kysely', ...dialect.adapter.imports },
+    imports: { ...GLOBAL_IMPORTS, ...dialect.adapter.imports },
     symbols: { ...SYMBOLS },
     types: dialect.adapter.types ?? {},
   };
