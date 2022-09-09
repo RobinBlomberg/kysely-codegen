@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "author": "Robin Blomberg",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,7 +21,7 @@
     "docker:get-mysql-ip": "docker inspect -f {{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}} kysely_codegen_mysql",
     "docker:get-postgres-ip": "docker inspect -f {{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}} kysely_codegen_postgres",
     "docker:up": "docker-compose up -d",
-    "prepublishOnly": "pnpm build",
+    "prepublishOnly": "pnpm test && pnpm build",
     "start": "node ./dist/bin/index.js",
     "test": "ts-node-dev ./src/tests/index.test.ts",
     "test:watch": "ts-node-dev --quiet --respawn ./src/tests/index.test.ts"
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
-    "@robinblomberg/eslint-config-robinblomberg": "0.11.0",
+    "@robinblomberg/eslint-config-robinblomberg": "0.12.0",
     "@robinblomberg/prettier-config": "^0.1.2",
     "@types/better-sqlite3": "^7.5.0",
     "@types/minimist": "^1.2.2",

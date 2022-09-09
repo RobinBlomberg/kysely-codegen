@@ -1,7 +1,7 @@
 import { ColumnMetadata, TableMetadata } from 'kysely';
 import { AdapterDefinitions, AdapterImports, AdapterTypes } from './adapter';
 import { toCamelCase } from './case-converter';
-import { Definition, DEFINITIONS } from './constants/definitions';
+import { Definition, GLOBAL_DEFINITIONS } from './constants/definitions';
 import { Dialect } from './dialect';
 import { NodeType } from './enums/node-type';
 import { StatementNode } from './nodes';
@@ -18,14 +18,14 @@ import { PropertyNode } from './nodes/property-node';
 import { UnionExpressionNode } from './nodes/union-expression-node';
 
 const SYMBOLS: { [K in string]?: boolean } = Object.fromEntries(
-  Object.keys(DEFINITIONS).map((key) => [key, false]),
+  Object.keys(GLOBAL_DEFINITIONS).map((key) => [key, false]),
 );
 
 const initialize = (dialect: Dialect) => {
   return {
     declarationNodes: [],
     defaultType: dialect.adapter.defaultType ?? new IdentifierNode('unknown'),
-    definitions: { ...DEFINITIONS, ...dialect.adapter.definitions },
+    definitions: { ...GLOBAL_DEFINITIONS, ...dialect.adapter.definitions },
     exportedProperties: [],
     imported: {},
     imports: { ColumnType: 'kysely', ...dialect.adapter.imports },
@@ -148,6 +148,9 @@ export class Transformer {
         this.#instantiateReferencedSymbol(node.name);
         break;
       case NodeType.INFER_CLAUSE:
+        break;
+      case NodeType.MAPPED_TYPE:
+        this.#instantiateReferencedSymbols(node.value);
         break;
       case NodeType.OBJECT_EXPRESSION:
         for (const property of node.properties) {

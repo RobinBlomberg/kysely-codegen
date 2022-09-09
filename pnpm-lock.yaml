@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@robinblomberg/eslint-config-prettier': ^0.1.4
-  '@robinblomberg/eslint-config-robinblomberg': 0.11.0
+  '@robinblomberg/eslint-config-robinblomberg': 0.12.0
   '@robinblomberg/prettier-config': ^0.1.2
   '@types/better-sqlite3': ^7.5.0
   '@types/minimist': ^1.2.2
@@ -28,7 +28,7 @@ dependencies:
 
 devDependencies:
   '@robinblomberg/eslint-config-prettier': 0.1.4
-  '@robinblomberg/eslint-config-robinblomberg': 0.11.0
+  '@robinblomberg/eslint-config-robinblomberg': 0.12.0
   '@robinblomberg/prettier-config': 0.1.2
   '@types/better-sqlite3': 7.5.0
   '@types/minimist': 1.2.2
@@ -402,8 +402,8 @@ packages:
     resolution: {integrity: sha512-gAGbmxj3fJFS2VQWfhyNCQ/GS96BrEDak+Axh1usVLkibVh7fTPIulR3RkttQP84BT8EP0OF+Uast4pqpDTKzg==}
     dev: true
 
-  /@robinblomberg/eslint-config-robinblomberg/0.11.0:
-    resolution: {integrity: sha512-m4SaJM2dBrZUJxe6xQmQVY6DcNLAYaqPZeHgnoQO3Ef1WnjGkyybYTAl4FvS6IgoqIQJdvfkBysQgZ+K006MLg==}
+  /@robinblomberg/eslint-config-robinblomberg/0.12.0:
+    resolution: {integrity: sha512-t/nATxwfnRPVkuWHEsue8EaKSTVsxvVbBBDvOoR6va1aQDUMJgQEiq5aslt14RmZkXQg1z8I6azoXESvSWo78A==}
     dependencies:
       '@babel/core': 7.17.8
       '@babel/eslint-parser': 7.17.0_xujkgafwcpm5gwokncqwvv5ure

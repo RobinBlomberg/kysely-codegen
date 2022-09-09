@@ -1,4 +1,11 @@
 import { Adapter } from '../../adapter';
+import {
+  JSON_ARRAY_DEFINITION,
+  JSON_OBJECT_DEFINITION,
+  JSON_PRIMITIVE_DEFINITION,
+  JSON_VALUE_DEFINITION,
+} from '../../constants';
+import { GenericExpressionNode } from '../../nodes';
 import { ArrayExpressionNode } from '../../nodes/array-expression-node';
 import { IdentifierNode } from '../../nodes/identifier-node';
 import { ObjectExpressionNode } from '../../nodes/object-expression-node';
@@ -13,6 +20,15 @@ export class MysqlAdapter extends Adapter {
       new IdentifierNode('Polygon'),
       new ArrayExpressionNode(new IdentifierNode('Geometry')),
     ]),
+    Json: GenericExpressionNode.createColumnType(
+      new IdentifierNode('JsonValue'),
+      new IdentifierNode('string'),
+      new IdentifierNode('string'),
+    ),
+    JsonArray: JSON_ARRAY_DEFINITION,
+    JsonObject: JSON_OBJECT_DEFINITION,
+    JsonPrimitive: JSON_PRIMITIVE_DEFINITION,
+    JsonValue: JSON_VALUE_DEFINITION,
     LineString: new ArrayExpressionNode(new IdentifierNode('Point')),
     Point: new ObjectExpressionNode([
       new PropertyNode('x', new IdentifierNode('number')),
@@ -36,7 +52,7 @@ export class MysqlAdapter extends Adapter {
     geomcollection: new ArrayExpressionNode(new IdentifierNode('Geometry')), // Specified as "geometrycollection" in Adminer.
     geometry: new IdentifierNode('Geometry'),
     int: new IdentifierNode('number'),
-    json: new IdentifierNode('string'),
+    json: new IdentifierNode('Json'),
     linestring: new IdentifierNode('LineString'),
     longblob: new IdentifierNode('Buffer'),
     longtext: new IdentifierNode('string'),
