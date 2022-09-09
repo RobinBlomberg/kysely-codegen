@@ -14,6 +14,13 @@ import { UnionExpressionNode } from '../../nodes/union-expression-node';
 
 export class MysqlAdapter extends Adapter {
   override readonly definitions = {
+    Decimal: GenericExpressionNode.createColumnType(
+      new IdentifierNode('string'),
+      new UnionExpressionNode([
+        new IdentifierNode('string'),
+        new IdentifierNode('number'),
+      ]),
+    ),
     Geometry: new UnionExpressionNode([
       new IdentifierNode('LineString'),
       new IdentifierNode('Point'),
@@ -45,7 +52,7 @@ export class MysqlAdapter extends Adapter {
     char: new IdentifierNode('string'),
     date: new IdentifierNode('Date'),
     datetime: new IdentifierNode('Date'),
-    decimal: new IdentifierNode('string'),
+    decimal: new IdentifierNode('Decimal'),
     double: new IdentifierNode('number'),
     enum: new IdentifierNode('unknown'),
     float: new IdentifierNode('number'),
