@@ -1,4 +1,10 @@
 import { Adapter } from '../../adapter';
+import {
+  JSON_ARRAY_DEFINITION,
+  JSON_OBJECT_DEFINITION,
+  JSON_PRIMITIVE_DEFINITION,
+  JSON_VALUE_DEFINITION,
+} from '../../constants';
 import { GenericExpressionNode } from '../../nodes/generic-expression-node';
 import { IdentifierNode } from '../../nodes/identifier-node';
 import { ObjectExpressionNode } from '../../nodes/object-expression-node';
@@ -33,6 +39,15 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('number'),
       ]),
     ),
+    Json: GenericExpressionNode.createColumnType(
+      new IdentifierNode('JsonValue'),
+      new IdentifierNode('string'),
+      new IdentifierNode('string'),
+    ),
+    JsonArray: JSON_ARRAY_DEFINITION,
+    JsonObject: JSON_OBJECT_DEFINITION,
+    JsonPrimitive: JSON_PRIMITIVE_DEFINITION,
+    JsonValue: JSON_VALUE_DEFINITION,
     Numeric: GenericExpressionNode.createColumnType(
       new IdentifierNode('string'),
       new UnionExpressionNode([
@@ -72,8 +87,8 @@ export class PostgresAdapter extends Adapter {
     int4: new IdentifierNode('number'), // Specified in "pg" source code.
     int8: new IdentifierNode('Int8'), // Specified as "bigint" in Adminer.
     interval: new IdentifierNode('Interval'),
-    json: new IdentifierNode('number'),
-    jsonb: new IdentifierNode('number'),
+    json: new IdentifierNode('Json'),
+    jsonb: new IdentifierNode('Json'),
     line: new IdentifierNode('string'),
     lseg: new IdentifierNode('string'),
     macaddr: new IdentifierNode('string'),

@@ -8,6 +8,7 @@ export const enum NodeType {
   IMPORT_STATEMENT = 'ImportStatement',
   INFER_CLAUSE = 'InferClause',
   INTERFACE_DECLARATION = 'InterfaceDeclaration',
+  MAPPED_TYPE = 'MappedType',
   OBJECT_EXPRESSION = 'ObjectExpression',
   PROPERTY = 'Property',
   UNION_EXPRESSION = 'UnionExpression',
