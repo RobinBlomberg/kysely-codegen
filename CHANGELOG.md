@@ -1,5 +1,13 @@
 # kysely-codegen changelog
 
+## 0.6.0
+
+### Notable changes
+
+- feat: allow inserting numbers into Decimal fields
+- feat: allow RawBuilder in Timestamp fields
+- feat: improve `json` and `jsonb` typings
+
 ## 0.5.0
 
 ### Notable changes
