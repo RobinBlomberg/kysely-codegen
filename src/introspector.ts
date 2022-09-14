@@ -1,44 +1,29 @@
-import { Kysely, TableMetadata } from 'kysely';
+import { Kysely } from 'kysely';
 import { Dialect } from './dialect';
+import { DatabaseMetadata } from './metadata';
 import { TableMatcher } from './table-matcher';
 
-export type CreateKyselyOptions = IntrospectOptions & {
-  ssl: boolean;
-};
-
-export type IntrospectOptions = {
+export type IntrospectionOptions = {
   connectionString: string;
   dialect: Dialect;
   excludePattern?: string;
   includePattern?: string;
 };
 
-/**
- * Uses the Kysely introspector to gather table metadata from a database connection.
- */
-export class Introspector {
-  async createKysely(options: CreateKyselyOptions) {
-    return new Kysely<any>({
-      dialect: await options.dialect.createKyselyDialect({
-        connectionString: options.connectionString,
-        ssl: options.ssl,
-      }),
-    });
-  }
-
-  async introspect(options: IntrospectOptions) {
-    let tables: TableMetadata[] = [];
+export abstract class Introspector<DB> {
+  protected async connect(options: IntrospectionOptions) {
+    let db = undefined as unknown as Kysely<DB>;
 
     // Insane solution in lieu of a better one.
     // We'll create a database connection with SSL, and if it complains about SSL, try without it.
     for (const ssl of [true, false]) {
       try {
-        const db = await this.createKysely({ ...options, ssl });
+        const dialect = await options.dialect.createKyselyDialect({
+          connectionString: options.connectionString,
+          ssl,
+        });
 
-        tables = await db.introspection.getTables();
-
-        await db.destroy();
-        break;
+        db = new Kysely({ dialect });
       } catch (error) {
         const isSslError =
           error instanceof Error && /\bSSL\b/.test(error.message);
@@ -49,6 +34,12 @@ export class Introspector {
         }
       }
     }
+
+    return db;
+  }
+
+  protected async getTables(db: Kysely<DB>, options: IntrospectionOptions) {
+    let tables = await db.introspection.getTables();
 
     if (options.includePattern) {
       const tableMatcher = new TableMatcher(options.includePattern);
@@ -66,4 +57,6 @@ export class Introspector {
 
     return tables;
   }
+
+  abstract introspect(options: IntrospectionOptions): Promise<DatabaseMetadata>;
 }

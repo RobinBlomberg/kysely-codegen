@@ -54,7 +54,6 @@ export class MysqlAdapter extends Adapter {
     datetime: new IdentifierNode('Date'),
     decimal: new IdentifierNode('Decimal'),
     double: new IdentifierNode('number'),
-    enum: new IdentifierNode('unknown'),
     float: new IdentifierNode('number'),
     geomcollection: new ArrayExpressionNode(new IdentifierNode('Geometry')), // Specified as "geometrycollection" in Adminer.
     geometry: new IdentifierNode('Geometry'),

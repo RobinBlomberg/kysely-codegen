@@ -2,7 +2,6 @@ import { promises as fs } from 'fs';
 import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
 import { Dialect } from './dialect';
-import { Introspector } from './introspector';
 import { Logger } from './logger';
 import { Serializer } from './serializer';
 import { Transformer } from './transformer';
@@ -11,7 +10,6 @@ export type GeneratorOptions = {
   camelCase: boolean;
   connectionString: string;
   dialect: Dialect;
-  introspector?: Introspector;
   logger?: Logger;
   serializer?: Serializer;
   transformer?: Transformer;
@@ -28,22 +26,19 @@ export type GenerateOptions = {
  * Generates codegen output using specified options.
  */
 export class Generator {
+  readonly camelCase: boolean;
   readonly connectionString: string;
   readonly dialect: Dialect;
-  readonly introspector: Introspector;
   readonly logger: Logger | undefined;
-  readonly serializer: Serializer;
-  readonly transformer: Transformer;
+  readonly serializer: Serializer | undefined;
+  readonly transformer: Transformer | undefined;
 
   constructor(options: GeneratorOptions) {
+    this.camelCase = options.camelCase;
     this.connectionString = options.connectionString;
     this.dialect = options.dialect;
-    this.introspector = options.introspector ?? new Introspector();
     this.logger = options.logger;
-    this.serializer = options.serializer ?? new Serializer();
-    this.transformer =
-      options.transformer ??
-      new Transformer(options.dialect, options.camelCase);
+    this.transformer = options.transformer;
   }
 
   async generate(options: GenerateOptions) {
@@ -51,7 +46,7 @@ export class Generator {
 
     this.logger?.info('Introspecting database...');
 
-    const tables = await this.introspector.introspect({
+    const metadata = await this.dialect.introspector.introspect({
       connectionString: this.connectionString,
       dialect: this.dialect,
       excludePattern: options.excludePattern,
@@ -59,16 +54,21 @@ export class Generator {
     });
 
     this.logger?.debug();
-    this.logger?.debug(`Found ${tables.length} public tables:`);
+    this.logger?.debug(`Found ${metadata.tables.length} public tables:`);
 
-    for (const table of tables) {
+    for (const table of metadata.tables) {
       this.logger?.debug(` - ${table.name}`);
     }
 
     this.logger?.debug();
 
-    const nodes = this.transformer.transform(tables);
-    const data = this.serializer.serialize(nodes);
+    const transformer =
+      this.transformer ??
+      new Transformer(this.dialect, this.camelCase, metadata.enums);
+    const nodes = transformer.transform(metadata);
+
+    const serializer = this.serializer ?? new Serializer();
+    const data = serializer.serialize(nodes);
 
     if (options.print) {
       this.logger?.log();
@@ -87,8 +87,8 @@ export class Generator {
       const duration = Math.round(endTime - startTime);
 
       this.logger?.success(
-        `Introspected ${tables.length} table${
-          tables.length === 1 ? '' : 's'
+        `Introspected ${metadata.tables.length} table${
+          metadata.tables.length === 1 ? '' : 's'
         } and generated ${relativeOutDir} in ${duration}ms.\n`,
       );
     }

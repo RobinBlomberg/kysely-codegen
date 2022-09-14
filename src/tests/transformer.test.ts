@@ -1,5 +1,7 @@
 import { deepStrictEqual } from 'assert';
 import { PostgresDialect } from '../dialects';
+import { EnumCollection } from '../enum-collection';
+import { ColumnMetadata, DatabaseMetadata, TableMetadata } from '../metadata';
 import {
   AliasDeclarationNode,
   ExportStatementNode,
@@ -19,23 +21,30 @@ import { describe, it } from './test.utils';
 void describe('transformer', () => {
   void it('should be able to transform to camelCase', () => {
     const dialect = new PostgresDialect();
-    const transformer = new Transformer(dialect, true);
+    const enums = new EnumCollection();
+    const transformer = new Transformer(dialect, true, enums);
 
-    const actualAst = transformer.transform([
-      {
-        columns: [
-          {
-            dataType: '',
-            hasDefaultValue: true,
-            isAutoIncrementing: false,
-            isNullable: false,
-            name: 'baz_qux',
-          },
+    const actualAst = transformer.transform(
+      new DatabaseMetadata(
+        [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: '',
+                enumValues: null,
+                hasDefaultValue: true,
+                isAutoIncrementing: false,
+                isNullable: false,
+                name: 'baz_qux',
+              }),
+            ],
+            name: 'foo_bar',
+            schema: 'public',
+          }),
         ],
-        name: 'foo_bar',
-        schema: 'public',
-      },
-    ]);
+        enums,
+      ),
+    );
 
     const expectedAst = [
       new ImportStatementNode('kysely', ['ColumnType']),

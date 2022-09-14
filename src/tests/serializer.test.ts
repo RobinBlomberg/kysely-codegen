@@ -1,5 +1,7 @@
 import { strictEqual } from 'assert';
 import { MysqlDialect } from '../dialects';
+import { EnumCollection } from '../enum-collection';
+import { ColumnMetadata, DatabaseMetadata, TableMetadata } from '../metadata';
 import {
   ArrayExpressionNode,
   IdentifierNode,
@@ -47,23 +49,29 @@ void describe('serializer', () => {
   void describe('serialize', () => {
     void it('should serialize JSON fields properly', () => {
       const dialect = new MysqlDialect();
-      const transformer = new Transformer(dialect, true);
+      const enums = new EnumCollection();
+      const transformer = new Transformer(dialect, true, enums);
 
-      const ast = transformer.transform([
-        {
-          columns: [
-            {
-              dataType: 'json',
-              hasDefaultValue: false,
-              isAutoIncrementing: false,
-              isNullable: false,
-              name: 'json',
-            },
+      const ast = transformer.transform(
+        new DatabaseMetadata(
+          [
+            new TableMetadata({
+              columns: [
+                new ColumnMetadata({
+                  dataType: 'json',
+                  hasDefaultValue: false,
+                  isAutoIncrementing: false,
+                  isNullable: false,
+                  name: 'json',
+                }),
+              ],
+              name: 'foo',
+              schema: 'public',
+            }),
           ],
-          name: 'foo',
-          schema: 'public',
-        },
-      ]);
+          enums,
+        ),
+      );
 
       strictEqual(
         serializer.serialize(ast),

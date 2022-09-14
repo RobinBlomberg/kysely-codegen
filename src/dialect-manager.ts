@@ -19,4 +19,13 @@ export class DialectManager {
         return new SqliteDialect();
     }
   }
+
+  getDialectName(dialect: Dialect): DialectName {
+    if (dialect instanceof MysqlDialect) {
+      return 'mysql';
+    } else if (dialect instanceof PostgresDialect) {
+      return 'postgres';
+    }
+    return 'sqlite';
+  }
 }
