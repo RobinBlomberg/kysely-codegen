@@ -10,6 +10,7 @@ import { IdentifierNode } from './nodes/identifier-node';
 import { ImportStatementNode } from './nodes/import-statement-node';
 import { InferClauseNode } from './nodes/infer-clause-node';
 import { InterfaceDeclarationNode } from './nodes/interface-declaration-node';
+import { LiteralNode } from './nodes/literal-node';
 import { MappedTypeNode } from './nodes/mapped-type-node';
 import { PropertyNode } from './nodes/property-node';
 import { StatementNode } from './nodes/statement-node';
@@ -128,6 +129,8 @@ export class Serializer {
         return this.serializeIdentifier(node);
       case NodeType.INFER_CLAUSE:
         return this.serializeInferClause(node);
+      case NodeType.LITERAL:
+        return this.serializeLiteral(node);
       case NodeType.MAPPED_TYPE:
         return this.serializeMappedType(node);
       case NodeType.OBJECT_EXPRESSION:
@@ -215,6 +218,10 @@ export class Serializer {
     data += this.serializeObjectExpression(node.body);
 
     return data;
+  }
+
+  serializeLiteral(node: LiteralNode) {
+    return JSON.stringify(node.value);
   }
 
   serializeKey(key: string) {

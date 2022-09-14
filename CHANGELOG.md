@@ -1,5 +1,11 @@
 # kysely-codegen changelog
 
+## 0.7.0
+
+- build: use looser peer dependency requirement
+- feat: add MySQL/PostgreSQL enum support
+- feat: add `--include-pattern` and `--exclude-pattern` CLI options
+
 ## 0.6.0
 
 ### Notable changes

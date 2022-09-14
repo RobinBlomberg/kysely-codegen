@@ -5,9 +5,11 @@ import {
 import { toPascalCase } from '../../case-converter';
 import { Dialect, DriverInstantiateOptions } from '../../dialect';
 import { PostgresAdapter } from './postgres-adapter';
+import { PostgresIntrospector } from './postgres-introspector';
 
 export class PostgresDialect extends Dialect {
   readonly adapter = new PostgresAdapter();
+  readonly introspector = new PostgresIntrospector();
 
   async createKyselyDialect(options: DriverInstantiateOptions) {
     const { Pool } = await import('pg');
@@ -30,8 +32,8 @@ export class PostgresDialect extends Dialect {
       : `${table.schema}.${tableName}`;
   }
 
-  override getSymbolName(table: TableMetadata): string {
-    const symbolName = super.getSymbolName(table);
+  override getTableSymbolName(table: TableMetadata): string {
+    const symbolName = super.getTableSymbolName(table);
     return table.schema === 'public'
       ? symbolName
       : toPascalCase(`${table.schema}_${symbolName}`);

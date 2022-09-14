@@ -1,10 +1,11 @@
-import { ColumnMetadata, TableMetadata } from 'kysely';
 import { AdapterDefinitions, AdapterImports, AdapterTypes } from './adapter';
-import { toCamelCase } from './case-converter';
+import { toCamelCase, toPascalCase } from './case-converter';
 import { Definition, GLOBAL_DEFINITIONS } from './constants/definitions';
 import { GLOBAL_IMPORTS } from './constants/imports';
 import { Dialect } from './dialect';
+import { EnumCollection } from './enum-collection';
 import { NodeType } from './enums/node-type';
+import { ColumnMetadata, DatabaseMetadata, TableMetadata } from './metadata';
 import { StatementNode } from './nodes';
 import { AliasDeclarationNode } from './nodes/alias-declaration-node';
 import { DeclarationNode } from './nodes/declaration-node';
@@ -14,6 +15,7 @@ import { GenericExpressionNode } from './nodes/generic-expression-node';
 import { IdentifierNode } from './nodes/identifier-node';
 import { ImportStatementNode } from './nodes/import-statement-node';
 import { InterfaceDeclarationNode } from './nodes/interface-declaration-node';
+import { LiteralNode } from './nodes/literal-node';
 import { ObjectExpressionNode } from './nodes/object-expression-node';
 import { PropertyNode } from './nodes/property-node';
 import { UnionExpressionNode } from './nodes/union-expression-node';
@@ -22,16 +24,28 @@ const SYMBOLS: { [K in string]?: boolean } = Object.fromEntries(
   Object.keys(GLOBAL_DEFINITIONS).map((key) => [key, false]),
 );
 
-const initialize = (dialect: Dialect) => {
+const initialize = (dialect: Dialect, enums: EnumCollection) => {
   return {
     declarationNodes: [],
     defaultType: dialect.adapter.defaultType ?? new IdentifierNode('unknown'),
-    definitions: { ...GLOBAL_DEFINITIONS, ...dialect.adapter.definitions },
+    definitions: {
+      ...GLOBAL_DEFINITIONS,
+      ...dialect.adapter.definitions,
+      ...enums.getDefinitions(),
+    },
     exportedProperties: [],
     imported: {},
-    imports: { ...GLOBAL_IMPORTS, ...dialect.adapter.imports },
-    symbols: { ...SYMBOLS },
-    types: dialect.adapter.types ?? {},
+    imports: {
+      ...GLOBAL_IMPORTS,
+      ...dialect.adapter.imports,
+    },
+    symbols: {
+      ...SYMBOLS,
+    },
+    types: {
+      ...dialect.adapter.types,
+      ...enums.getTypes(),
+    },
   };
 };
 
@@ -51,11 +65,11 @@ export class Transformer {
   #symbols: typeof SYMBOLS;
   #types: AdapterTypes;
 
-  constructor(dialect: Dialect, camelCase: boolean) {
+  constructor(dialect: Dialect, camelCase: boolean, enums: EnumCollection) {
     this.#camelCase = camelCase;
     this.#dialect = dialect;
 
-    const options = initialize(dialect);
+    const options = initialize(dialect, enums);
 
     this.#declarationNodes = options.declarationNodes;
     this.#defaultType = options.defaultType;
@@ -67,8 +81,8 @@ export class Transformer {
     this.#types = options.types;
   }
 
-  #createSymbolName(table: TableMetadata) {
-    let symbolName = this.#dialect.getSymbolName(table);
+  #createSymbolName(symbolName: string) {
+    symbolName = toPascalCase(symbolName);
 
     if (this.#symbols[symbolName] !== undefined) {
       let suffix = 2;
@@ -107,8 +121,9 @@ export class Transformer {
     }
   }
 
-  #declareSymbol(name: string) {
-    this.#symbols[name] = true;
+  #declareSymbol(symbolName: string) {
+    symbolName = this.#createSymbolName(symbolName);
+    this.#symbols[symbolName] = true;
   }
 
   #instantiateReferencedSymbol(name: string) {
@@ -150,6 +165,8 @@ export class Transformer {
         break;
       case NodeType.INFER_CLAUSE:
         break;
+      case NodeType.LITERAL:
+        break;
       case NodeType.MAPPED_TYPE:
         this.#instantiateReferencedSymbols(node.value);
         break;
@@ -167,8 +184,10 @@ export class Transformer {
   }
 
   #transformColumn(column: ColumnMetadata) {
-    const node = this.#types[column.dataType] ?? this.#defaultType;
-    const args: ExpressionNode[] = [node];
+    const type = this.#types[column.dataType];
+    const args = type
+      ? [type]
+      : column.enumValues?.map(LiteralNode.from) ?? [this.#defaultType];
 
     if (column.isNullable) {
       args.push(new IdentifierNode('null'));
@@ -176,7 +195,7 @@ export class Transformer {
 
     const key = this.#camelCase ? toCamelCase(column.name) : column.name;
 
-    let value = args.length === 1 ? args[0]! : new UnionExpressionNode(args);
+    let value = UnionExpressionNode.from(args);
 
     if (column.hasDefaultValue || column.isAutoIncrementing) {
       value = new GenericExpressionNode('Generated', [value]);
@@ -216,8 +235,8 @@ export class Transformer {
     const nodes: ExportStatementNode[] = [];
 
     for (const table of tables) {
-      const tableSymbolName = this.#createSymbolName(table);
       const propertyNodes: PropertyNode[] = [];
+      const tableSymbolName = this.#dialect.getTableSymbolName(table);
 
       this.#declareSymbol(tableSymbolName);
 
@@ -245,8 +264,8 @@ export class Transformer {
     return nodes;
   }
 
-  transform(tables: TableMetadata[]): StatementNode[] {
-    const options = initialize(this.#dialect);
+  transform(metadata: DatabaseMetadata): StatementNode[] {
+    const options = initialize(this.#dialect, metadata.enums);
 
     this.#declarationNodes = options.declarationNodes;
     this.#defaultType = options.defaultType;
@@ -257,7 +276,7 @@ export class Transformer {
     this.#symbols = options.symbols;
     this.#types = options.types;
 
-    const tableExportNodes = this.#transformTables(tables);
+    const tableExportNodes = this.#transformTables(metadata.tables);
     const importNodes = this.#transformImports();
     const definitionExportNodes = this.#transformDeclarations();
     const databaseExportNode = this.#transformDatabaseExport();
