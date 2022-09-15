@@ -8,7 +8,8 @@ export type CreateKyselyOptions = IntrospectOptions & {
 export type IntrospectOptions = {
   connectionString: string;
   dialect: Dialect;
-  ignorePattern?: string;
+  ignoreSchemas?: string;
+  ignoreTables?: string;
 };
 
 /**
@@ -48,9 +49,18 @@ export class Introspector {
       }
     }
 
-    if (options.ignorePattern) {
-      const ignorePattern = new RegExp(options.ignorePattern);
-      tables = tables.filter((table) => !ignorePattern.test(table.name));
+    if (options.ignoreSchemas) {
+      const ignorePattern = new RegExp(options.ignoreSchemas);
+      tables = tables.filter((table) => {
+        return table.schema ? !ignorePattern.test(table.schema) : true;
+      });
+    }
+
+    if (options.ignoreTables) {
+      const ignorePattern = new RegExp(options.ignoreTables);
+      tables = tables.filter((table) => {
+        return !ignorePattern.test(table.name);
+      });
     }
 
     return tables;
