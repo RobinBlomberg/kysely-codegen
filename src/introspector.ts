@@ -8,6 +8,7 @@ export type CreateKyselyOptions = IntrospectOptions & {
 export type IntrospectOptions = {
   connectionString: string;
   dialect: Dialect;
+  ignorePattern?: string;
 };
 
 /**
@@ -45,6 +46,11 @@ export class Introspector {
           throw error;
         }
       }
+    }
+
+    if (options.ignorePattern) {
+      const ignorePattern = new RegExp(options.ignorePattern);
+      tables = tables.filter((table) => !ignorePattern.test(table.name));
     }
 
     return tables;
