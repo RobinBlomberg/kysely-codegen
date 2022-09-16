@@ -53,7 +53,7 @@ export class Introspector {
       tables = tables.filter(
         (table) =>
           !isMatch(
-            table.schema ? `${table.schema}/${table.name}` : table.name,
+            table.schema ? `${table.schema}.${table.name}` : table.name,
             options.ignorePattern!,
           ),
       );

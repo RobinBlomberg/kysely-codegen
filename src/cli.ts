@@ -116,7 +116,7 @@ export class Cli {
           '  --camel-case       Use the Kysely CamelCasePlugin.',
           `  --dialect          Set the SQL dialect. (values: [${dialectValues}])`,
           '  --help, -h         Print this message.',
-          "  --ignore-pattern   Ignore tables matching the pattern, matching SCHEMA/TABLE in glob format. (example: '*/_*')",
+          '  --ignore-pattern   Ignore tables matching the pattern, matching SCHEMA/TABLE in glob format. (examples: *.table, schema.*, *._*)',
           '  --log-level        Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)',
           `  --out-file         Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
           '  --print            Print the generated output to the terminal.',
