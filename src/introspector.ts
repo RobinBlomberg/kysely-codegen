@@ -1,4 +1,5 @@
 import { Kysely, TableMetadata } from 'kysely';
+import { isMatch } from 'micromatch';
 import { Dialect } from './dialect';
 
 export type CreateKyselyOptions = IntrospectOptions & {
@@ -49,8 +50,13 @@ export class Introspector {
     }
 
     if (options.ignorePattern) {
-      const ignorePattern = new RegExp(options.ignorePattern);
-      tables = tables.filter((table) => !ignorePattern.test(table.name));
+      tables = tables.filter(
+        (table) =>
+          !isMatch(
+            table.schema ? `${table.schema}/${table.name}` : table.name,
+            options.ignorePattern!,
+          ),
+      );
     }
 
     return tables;

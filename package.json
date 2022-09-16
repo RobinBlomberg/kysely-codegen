@@ -29,6 +29,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "dotenv": "^16.0.1",
+    "micromatch": "^4.0.5",
     "minimist": "^1.2.6"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "@robinblomberg/eslint-config-robinblomberg": "0.12.0",
     "@robinblomberg/prettier-config": "^0.1.2",
     "@types/better-sqlite3": "^7.5.0",
+    "@types/micromatch": "^4.0.2",
     "@types/minimist": "^1.2.2",
     "@types/node": "^18.6.1",
     "@types/pg": "^8.6.5",
