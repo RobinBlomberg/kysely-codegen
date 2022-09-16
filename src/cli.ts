@@ -13,8 +13,7 @@ const VALID_FLAGS = new Set([
   'dialect',
   'h',
   'help',
-  'ignore-schemas',
-  'ignore-tables',
+  'ignore-pattern',
   'log-level',
   'out-file',
   'print',
@@ -24,8 +23,7 @@ const VALID_FLAGS = new Set([
 export type CliOptions = {
   camelCase: boolean;
   dialectName: DialectName | undefined;
-  ignoreSchemas: string | undefined;
-  ignoreTables: string | undefined;
+  ignorePattern: string | undefined;
   logLevel: LogLevel;
   outFile: string;
   print: boolean;
@@ -92,8 +90,7 @@ export class Cli {
     const dialectName = argv.dialect as DialectName | undefined;
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
-    const ignoreSchemas = argv['ignore-schemas'] as string | undefined;
-    const ignoreTables = argv['ignore-tables'] as string | undefined;
+    const ignorePattern = argv['ignore-pattern'] as string | undefined;
     const logLevel = this.#getLogLevel(argv['log-level']);
     const outFile = (argv['out-file'] as string) ?? DEFAULT_OUT_FILE;
     const print = !!argv.print;
@@ -119,8 +116,7 @@ export class Cli {
           '  --camel-case       Use the Kysely CamelCasePlugin.',
           `  --dialect          Set the SQL dialect. (values: [${dialectValues}])`,
           '  --help, -h         Print this message.',
-          "  --ignore-schemas   Ignore schemas matching the pattern. (example: '^_')",
-          "  --ignore-tables    Ignore tables matching the pattern. (example: '^_')",
+          "  --ignore-pattern   Ignore tables matching the pattern. (example: '^_')",
           '  --log-level        Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)',
           `  --out-file         Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
           '  --print            Print the generated output to the terminal.',
@@ -164,8 +160,7 @@ export class Cli {
     return {
       camelCase,
       dialectName,
-      ignoreSchemas,
-      ignoreTables,
+      ignorePattern,
       logLevel,
       outFile,
       print,
