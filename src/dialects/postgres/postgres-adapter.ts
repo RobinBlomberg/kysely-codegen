@@ -5,11 +5,14 @@ import {
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
 } from '../../constants';
-import { GenericExpressionNode } from '../../nodes/generic-expression-node';
-import { IdentifierNode } from '../../nodes/identifier-node';
-import { ObjectExpressionNode } from '../../nodes/object-expression-node';
-import { PropertyNode } from '../../nodes/property-node';
-import { UnionExpressionNode } from '../../nodes/union-expression-node';
+import {
+  IdentifierNode,
+  ModuleReferenceNode,
+  ObjectExpressionNode,
+  PropertyNode,
+  UnionExpressionNode,
+} from '../../nodes';
+import { ColumnType } from '../../nodes/column-type-node';
 
 export class PostgresAdapter extends Adapter {
   // From https://node-postgres.com/features/types:
@@ -17,14 +20,15 @@ export class PostgresAdapter extends Adapter {
   // registered type parser for the database type. Furthermore, you can send any type to the
   // PostgreSQL server as a string and node-postgres will pass it through without modifying it in
   // any way."
-  override readonly defaultType = new IdentifierNode('string');
+  override readonly defaultScalar = new IdentifierNode('string');
+  override readonly defaultSchema = 'public';
   override readonly definitions = {
     Circle: new ObjectExpressionNode([
       new PropertyNode('x', new IdentifierNode('number')),
       new PropertyNode('y', new IdentifierNode('number')),
       new PropertyNode('radius', new IdentifierNode('number')),
     ]),
-    Int8: GenericExpressionNode.createColumnType(
+    Int8: new ColumnType(
       new IdentifierNode('string'),
       new UnionExpressionNode([
         new IdentifierNode('string'),
@@ -32,14 +36,14 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('bigint'),
       ]),
     ),
-    Interval: GenericExpressionNode.createColumnType(
+    Interval: new ColumnType(
       new IdentifierNode('IPostgresInterval'),
       new UnionExpressionNode([
         new IdentifierNode('IPostgresInterval'),
         new IdentifierNode('number'),
       ]),
     ),
-    Json: GenericExpressionNode.createColumnType(
+    Json: new ColumnType(
       new IdentifierNode('JsonValue'),
       new IdentifierNode('string'),
       new IdentifierNode('string'),
@@ -48,7 +52,7 @@ export class PostgresAdapter extends Adapter {
     JsonObject: JSON_OBJECT_DEFINITION,
     JsonPrimitive: JSON_PRIMITIVE_DEFINITION,
     JsonValue: JSON_VALUE_DEFINITION,
-    Numeric: GenericExpressionNode.createColumnType(
+    Numeric: new ColumnType(
       new IdentifierNode('string'),
       new UnionExpressionNode([
         new IdentifierNode('string'),
@@ -59,7 +63,7 @@ export class PostgresAdapter extends Adapter {
       new PropertyNode('x', new IdentifierNode('number')),
       new PropertyNode('y', new IdentifierNode('number')),
     ]),
-    Timestamp: GenericExpressionNode.createColumnType(
+    Timestamp: new ColumnType(
       new UnionExpressionNode([
         new IdentifierNode('Date'),
         new IdentifierNode('RawBuilder'),
@@ -72,10 +76,10 @@ export class PostgresAdapter extends Adapter {
     ),
   };
   override readonly imports = {
-    IPostgresInterval: 'postgres-interval',
+    IPostgresInterval: new ModuleReferenceNode('postgres-interval'),
   };
   // These types have been found through experimentation in Adminer and in the 'pg' source code.
-  override readonly types = {
+  override readonly scalars = {
     bit: new IdentifierNode('string'),
     bool: new IdentifierNode('boolean'), // Specified as "boolean" in Adminer.
     box: new IdentifierNode('string'),
@@ -87,8 +91,8 @@ export class PostgresAdapter extends Adapter {
     float4: new IdentifierNode('number'), // Specified as "real" in Adminer.
     float8: new IdentifierNode('number'), // Specified as "double precision" in Adminer.
     inet: new IdentifierNode('string'),
-    int2: new IdentifierNode('number'), // Specified in "pg" source code.
-    int4: new IdentifierNode('number'), // Specified in "pg" source code.
+    int2: new IdentifierNode('number'), // Specified in 'pg' source code.
+    int4: new IdentifierNode('number'), // Specified in 'pg' source code.
     int8: new IdentifierNode('Int8'), // Specified as "bigint" in Adminer.
     interval: new IdentifierNode('Interval'),
     json: new IdentifierNode('Json'),
@@ -98,7 +102,7 @@ export class PostgresAdapter extends Adapter {
     macaddr: new IdentifierNode('string'),
     money: new IdentifierNode('string'),
     numeric: new IdentifierNode('Numeric'),
-    oid: new IdentifierNode('number'), // Specified in "pg" source code.
+    oid: new IdentifierNode('number'), // Specified in 'pg' source code.
     path: new IdentifierNode('string'),
     point: new IdentifierNode('Point'),
     polygon: new IdentifierNode('string'),

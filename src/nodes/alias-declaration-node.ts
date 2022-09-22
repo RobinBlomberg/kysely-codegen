@@ -1,15 +1,14 @@
-import { NodeType } from '../enums/node-type';
+import { NodeType } from '../enums';
 import { ExpressionNode } from './expression-node';
+import { TemplateNode } from './template-node';
 
 export class AliasDeclarationNode {
-  readonly args: string[];
-  readonly body: ExpressionNode;
+  readonly body: ExpressionNode | TemplateNode;
   readonly name: string;
   readonly type = NodeType.ALIAS_DECLARATION;
 
-  constructor(name: string, args: string[], body: ExpressionNode) {
+  constructor(name: string, body: ExpressionNode | TemplateNode) {
     this.name = name;
-    this.args = args;
     this.body = body;
   }
 }

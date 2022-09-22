@@ -3,15 +3,18 @@ import { Dialect } from './dialect';
 import { DatabaseMetadata } from './metadata';
 import { TableMatcher } from './table-matcher';
 
-export type IntrospectionOptions = {
+export type IntrospectOptions = {
   connectionString: string;
   dialect: Dialect;
   excludePattern?: string;
   includePattern?: string;
 };
 
+/**
+ * Analyzes and returns metadata for a connected database.
+ */
 export abstract class Introspector<DB> {
-  protected async connect(options: IntrospectionOptions) {
+  protected async connect(options: IntrospectOptions) {
     let db = undefined as unknown as Kysely<DB>;
 
     // Insane solution in lieu of a better one.
@@ -38,7 +41,7 @@ export abstract class Introspector<DB> {
     return db;
   }
 
-  protected async getTables(db: Kysely<DB>, options: IntrospectionOptions) {
+  protected async getTables(db: Kysely<DB>, options: IntrospectOptions) {
     let tables = await db.introspection.getTables();
 
     if (options.includePattern) {
@@ -58,5 +61,5 @@ export abstract class Introspector<DB> {
     return tables;
   }
 
-  abstract introspect(options: IntrospectionOptions): Promise<DatabaseMetadata>;
+  abstract introspect(options: IntrospectOptions): Promise<DatabaseMetadata>;
 }

@@ -5,16 +5,18 @@ import {
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
 } from '../../constants';
-import { GenericExpressionNode } from '../../nodes';
-import { ArrayExpressionNode } from '../../nodes/array-expression-node';
-import { IdentifierNode } from '../../nodes/identifier-node';
-import { ObjectExpressionNode } from '../../nodes/object-expression-node';
-import { PropertyNode } from '../../nodes/property-node';
-import { UnionExpressionNode } from '../../nodes/union-expression-node';
+import {
+  ArrayExpressionNode,
+  IdentifierNode,
+  ObjectExpressionNode,
+  PropertyNode,
+  UnionExpressionNode,
+} from '../../nodes';
+import { ColumnType } from '../../nodes/column-type-node';
 
 export class MysqlAdapter extends Adapter {
   override readonly definitions = {
-    Decimal: GenericExpressionNode.createColumnType(
+    Decimal: new ColumnType(
       new IdentifierNode('string'),
       new UnionExpressionNode([
         new IdentifierNode('string'),
@@ -27,7 +29,7 @@ export class MysqlAdapter extends Adapter {
       new IdentifierNode('Polygon'),
       new ArrayExpressionNode(new IdentifierNode('Geometry')),
     ]),
-    Json: GenericExpressionNode.createColumnType(
+    Json: new ColumnType(
       new IdentifierNode('JsonValue'),
       new IdentifierNode('string'),
       new IdentifierNode('string'),
@@ -44,7 +46,7 @@ export class MysqlAdapter extends Adapter {
     Polygon: new ArrayExpressionNode(new IdentifierNode('LineString')),
   };
   // These types have been found through experimentation in Adminer.
-  override readonly types = {
+  override readonly scalars = {
     bigint: new IdentifierNode('number'),
     binary: new IdentifierNode('Buffer'),
     bit: new IdentifierNode('Buffer'),

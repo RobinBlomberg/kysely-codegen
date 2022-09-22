@@ -1,9 +1,9 @@
 import { Adapter } from '../../adapter';
-import { IdentifierNode } from '../../nodes/identifier-node';
+import { IdentifierNode } from '../../nodes';
 
 export class SqliteAdapter extends Adapter {
-  override readonly defaultType = new IdentifierNode('string');
-  override readonly types = {
+  override readonly defaultScalar = new IdentifierNode('string');
+  override readonly scalars = {
     ANY: new IdentifierNode('unknown'),
     BLOB: new IdentifierNode('Buffer'),
     INTEGER: new IdentifierNode('number'),

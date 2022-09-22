@@ -1,9 +1,9 @@
 export type ColumnMetadataOptions = {
   dataType: string;
   enumValues?: string[] | null;
-  hasDefaultValue: boolean;
-  isAutoIncrementing: boolean;
-  isNullable: boolean;
+  hasDefaultValue?: boolean;
+  isAutoIncrementing?: boolean;
+  isNullable?: boolean;
   name: string;
 };
 
@@ -18,9 +18,9 @@ export class ColumnMetadata {
   constructor(options: ColumnMetadataOptions) {
     this.dataType = options.dataType;
     this.enumValues = options.enumValues ?? null;
-    this.hasDefaultValue = options.hasDefaultValue;
-    this.isAutoIncrementing = options.isAutoIncrementing;
-    this.isNullable = options.isNullable;
+    this.hasDefaultValue = options.hasDefaultValue ?? false;
+    this.isAutoIncrementing = options.isAutoIncrementing ?? false;
+    this.isNullable = options.isNullable ?? false;
     this.name = options.name;
   }
 }

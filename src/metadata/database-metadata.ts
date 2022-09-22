@@ -1,4 +1,4 @@
-import { EnumCollection } from '../enum-collection';
+import { EnumCollection } from '../collections';
 import { TableMetadata, TableMetadataOptions } from './table-metadata';
 
 export class DatabaseMetadata {

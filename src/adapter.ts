@@ -1,19 +1,23 @@
-import { Definition } from './constants/definitions';
-import { ExpressionNode } from './nodes/expression-node';
-import { IdentifierNode } from './nodes/identifier-node';
+import {
+  DefinitionNode,
+  ExpressionNode,
+  IdentifierNode,
+  ModuleReferenceNode,
+} from './nodes';
 
-export type AdapterDefinitions = { [K in string]?: Definition };
+export type Definitions = { [K in string]?: DefinitionNode };
 
-export type AdapterImports = { [K in string]?: string };
+export type Imports = { [K in string]?: ModuleReferenceNode };
 
-export type AdapterTypes = { [K in string]?: ExpressionNode };
+export type Scalars = { [K in string]?: ExpressionNode };
 
 /**
- * Specifies how code should be generated for a given database library.
+ * Specifies settings for how code should be generated for the given database library.
  */
 export abstract class Adapter {
-  readonly defaultType: ExpressionNode = new IdentifierNode('unknown');
-  readonly definitions: AdapterDefinitions = {};
-  readonly imports: AdapterImports = {};
-  readonly types: AdapterTypes = {};
+  readonly defaultScalar: ExpressionNode = new IdentifierNode('unknown');
+  readonly defaultSchema: string | null = null;
+  readonly definitions: Definitions = {};
+  readonly imports: Imports = {};
+  readonly scalars: Scalars = {};
 }

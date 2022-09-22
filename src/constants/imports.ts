@@ -1,4 +1,6 @@
+import { ModuleReferenceNode } from '../nodes';
+
 export const GLOBAL_IMPORTS = {
-  ColumnType: 'kysely',
-  RawBuilder: 'kysely',
+  ColumnType: new ModuleReferenceNode('kysely'),
+  RawBuilder: new ModuleReferenceNode('kysely'),
 };

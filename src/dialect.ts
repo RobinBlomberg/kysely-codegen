@@ -1,9 +1,8 @@
-import { Dialect as KyselyDialect, TableMetadata } from 'kysely';
+import { Dialect as KyselyDialect } from 'kysely';
 import { Adapter } from './adapter';
-import { toCamelCase, toPascalCase } from './case-converter';
 import { Introspector } from './introspector';
 
-export type DriverInstantiateOptions = {
+export type CreateKyselyDialectOptions = {
   connectionString: string;
   ssl?: boolean;
 };
@@ -26,20 +25,6 @@ export abstract class Dialect {
    * Creates a Kysely dialect.
    */
   abstract createKyselyDialect(
-    options: DriverInstantiateOptions,
+    options: CreateKyselyDialectOptions,
   ): Promise<KyselyDialect>;
-
-  /**
-   * Returns the name of the table in the exported `DB` interface.
-   */
-  getExportedTableName(table: TableMetadata, camelCase: boolean): string {
-    return camelCase ? toCamelCase(table.name) : table.name;
-  }
-
-  /**
-   * Returns the TypeScript symbol name for the given table.
-   */
-  getTableSymbolName(table: TableMetadata): string {
-    return toPascalCase(table.name);
-  }
 }

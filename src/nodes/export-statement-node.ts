@@ -1,4 +1,4 @@
-import { NodeType } from '../enums/node-type';
+import { NodeType } from '../enums';
 import { AliasDeclarationNode } from './alias-declaration-node';
 import { InterfaceDeclarationNode } from './interface-declaration-node';
 

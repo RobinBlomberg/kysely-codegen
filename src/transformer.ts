@@ -1,291 +1,295 @@
-import { AdapterDefinitions, AdapterImports, AdapterTypes } from './adapter';
-import { toCamelCase, toPascalCase } from './case-converter';
-import { Definition, GLOBAL_DEFINITIONS } from './constants/definitions';
-import { GLOBAL_IMPORTS } from './constants/imports';
+import { Definitions, Imports, Scalars } from './adapter';
+import { toCamelCase } from './case-converter';
+import { EnumCollection, SymbolCollection, SymbolType } from './collections';
+import { GLOBAL_DEFINITIONS, GLOBAL_IMPORTS } from './constants';
 import { Dialect } from './dialect';
-import { EnumCollection } from './enum-collection';
-import { NodeType } from './enums/node-type';
+import { NodeType } from './enums';
 import { ColumnMetadata, DatabaseMetadata, TableMetadata } from './metadata';
-import { StatementNode } from './nodes';
-import { AliasDeclarationNode } from './nodes/alias-declaration-node';
-import { DeclarationNode } from './nodes/declaration-node';
-import { ExportStatementNode } from './nodes/export-statement-node';
-import { ExpressionNode } from './nodes/expression-node';
-import { GenericExpressionNode } from './nodes/generic-expression-node';
-import { IdentifierNode } from './nodes/identifier-node';
-import { ImportStatementNode } from './nodes/import-statement-node';
-import { InterfaceDeclarationNode } from './nodes/interface-declaration-node';
-import { LiteralNode } from './nodes/literal-node';
-import { ObjectExpressionNode } from './nodes/object-expression-node';
-import { PropertyNode } from './nodes/property-node';
-import { UnionExpressionNode } from './nodes/union-expression-node';
+import {
+  AliasDeclarationNode,
+  ExportStatementNode,
+  ExpressionNode,
+  GenericExpressionNode,
+  IdentifierNode,
+  ImportClauseNode,
+  ImportStatementNode,
+  InterfaceDeclarationNode,
+  LiteralNode,
+  ObjectExpressionNode,
+  PropertyNode,
+  TemplateNode,
+} from './nodes';
+import { unionize } from './utils';
 
-const SYMBOLS: { [K in string]?: boolean } = Object.fromEntries(
-  Object.keys(GLOBAL_DEFINITIONS).map((key) => [key, false]),
-);
+export type TransformContext = {
+  camelCase: boolean;
+  defaultScalar: ExpressionNode;
+  defaultSchema: string | null;
+  definitions: Definitions;
+  enums: EnumCollection;
+  imports: Imports;
+  metadata: DatabaseMetadata;
+  scalars: Scalars;
+  symbols: SymbolCollection;
+};
 
-const initialize = (dialect: Dialect, enums: EnumCollection) => {
-  return {
-    declarationNodes: [],
-    defaultType: dialect.adapter.defaultType ?? new IdentifierNode('unknown'),
-    definitions: {
-      ...GLOBAL_DEFINITIONS,
-      ...dialect.adapter.definitions,
-      ...enums.getDefinitions(),
-    },
-    exportedProperties: [],
-    imported: {},
-    imports: {
-      ...GLOBAL_IMPORTS,
-      ...dialect.adapter.imports,
-    },
-    symbols: {
-      ...SYMBOLS,
-    },
-    types: {
-      ...dialect.adapter.types,
-      ...enums.getTypes(),
-    },
-  };
+export type TransformOptions = {
+  camelCase: boolean;
+  dialect: Dialect;
+  metadata: DatabaseMetadata;
 };
 
 /**
- * Converts table metadata to a codegen AST.
+ * Transforms database metadata into a TypeScript-compatible AST.
  */
 export class Transformer {
-  readonly #camelCase: boolean;
-  readonly #dialect: Dialect;
-
-  #declarationNodes: DeclarationNode[];
-  #defaultType: ExpressionNode;
-  #definitions: AdapterDefinitions;
-  #exportedProperties: PropertyNode[];
-  #imported: Record<string, Set<string>>;
-  #imports: AdapterImports;
-  #symbols: typeof SYMBOLS;
-  #types: AdapterTypes;
-
-  constructor(dialect: Dialect, camelCase: boolean, enums: EnumCollection) {
-    this.#camelCase = camelCase;
-    this.#dialect = dialect;
-
-    const options = initialize(dialect, enums);
-
-    this.#declarationNodes = options.declarationNodes;
-    this.#defaultType = options.defaultType;
-    this.#definitions = options.definitions;
-    this.#exportedProperties = options.exportedProperties;
-    this.#imported = options.imported;
-    this.#imports = options.imports;
-    this.#symbols = options.symbols;
-    this.#types = options.types;
-  }
-
-  #createSymbolName(symbolName: string) {
-    symbolName = toPascalCase(symbolName);
-
-    if (this.#symbols[symbolName] !== undefined) {
-      let suffix = 2;
-
-      while (this.#symbols[`${symbolName}${suffix}`] !== undefined) {
-        suffix++;
+  #collectSymbol(name: string, context: TransformContext) {
+    const definition = context.definitions[name];
+    if (definition) {
+      if (context.symbols.has(name)) {
+        return;
       }
 
-      symbolName += suffix;
-    }
-
-    return symbolName;
-  }
-
-  #declareDefinition(name: string, definition: Definition) {
-    if (this.#symbols[name]) {
+      context.symbols.set(name, {
+        node: definition,
+        type: SymbolType.DEFINITION,
+      });
+      this.#collectSymbols(definition, context);
       return;
     }
 
-    const [generics, expression] = Array.isArray(definition)
-      ? definition
-      : [[], definition];
+    const moduleReference = context.imports[name];
+    if (moduleReference) {
+      if (context.symbols.has(name)) {
+        return;
+      }
 
-    this.#declareSymbol(name);
-
-    if (expression.type === NodeType.OBJECT_EXPRESSION) {
-      this.#declarationNodes.push(
-        new InterfaceDeclarationNode(name, expression),
-      );
-    } else {
-      this.#declareSymbol(name);
-      this.#instantiateReferencedSymbols(expression);
-      this.#declarationNodes.push(
-        new AliasDeclarationNode(name, generics, expression),
-      );
+      context.symbols.set(name, {
+        node: moduleReference,
+        type: SymbolType.MODULE_REFERENCE,
+      });
     }
   }
 
-  #declareSymbol(symbolName: string) {
-    symbolName = this.#createSymbolName(symbolName);
-    this.#symbols[symbolName] = true;
-  }
-
-  #instantiateReferencedSymbol(name: string) {
-    const definition = this.#definitions[name];
-    if (definition && !this.#symbols[name]) {
-      this.#declareDefinition(name, definition);
-      return;
-    }
-
-    const importModuleName = this.#imports[name];
-    if (importModuleName) {
-      this.#declareSymbol(name);
-      this.#imported[importModuleName] ??= new Set();
-      this.#imported[importModuleName]!.add(name);
-    }
-  }
-
-  #instantiateReferencedSymbols(node: ExpressionNode) {
+  #collectSymbols(
+    node: ExpressionNode | TemplateNode,
+    context: TransformContext,
+  ) {
     switch (node.type) {
       case NodeType.ARRAY_EXPRESSION:
-        this.#instantiateReferencedSymbols(node.values);
+        this.#collectSymbols(node.values, context);
         break;
       case NodeType.EXTENDS_CLAUSE:
-        this.#instantiateReferencedSymbols(node.test);
-        this.#instantiateReferencedSymbols(node.consequent);
-        this.#instantiateReferencedSymbols(node.alternate);
+        this.#collectSymbols(node.test, context);
+        this.#collectSymbols(node.consequent, context);
+        this.#collectSymbols(node.alternate, context);
         break;
       case NodeType.GENERIC_EXPRESSION: {
-        this.#instantiateReferencedSymbol(node.name);
+        this.#collectSymbol(node.name, context);
 
         for (const arg of node.args) {
-          this.#instantiateReferencedSymbols(arg);
+          this.#collectSymbols(arg, context);
         }
 
         break;
       }
       case NodeType.IDENTIFIER:
-        this.#instantiateReferencedSymbol(node.name);
+        this.#collectSymbol(node.name, context);
         break;
       case NodeType.INFER_CLAUSE:
         break;
       case NodeType.LITERAL:
         break;
       case NodeType.MAPPED_TYPE:
-        this.#instantiateReferencedSymbols(node.value);
+        this.#collectSymbols(node.value, context);
         break;
       case NodeType.OBJECT_EXPRESSION:
         for (const property of node.properties) {
-          this.#instantiateReferencedSymbols(property.value);
+          this.#collectSymbols(property.value, context);
         }
+
+        break;
+      case NodeType.TEMPLATE:
+        this.#collectSymbols(node.expression, context);
         break;
       case NodeType.UNION_EXPRESSION:
         for (const arg of node.args) {
-          this.#instantiateReferencedSymbols(arg);
+          this.#collectSymbols(arg, context);
         }
+
         break;
     }
   }
 
-  #transformColumn(column: ColumnMetadata) {
-    const type = this.#types[column.dataType];
-    const args = type
-      ? [type]
-      : column.enumValues?.map(LiteralNode.from) ?? [this.#defaultType];
+  #createContext(options: TransformOptions): TransformContext {
+    return {
+      camelCase: options.camelCase,
+      defaultScalar:
+        options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
+      defaultSchema: options.dialect.adapter.defaultSchema,
+      definitions: {
+        ...GLOBAL_DEFINITIONS,
+        ...options.dialect.adapter.definitions,
+      },
+      enums: options.metadata.enums,
+      imports: {
+        ...GLOBAL_IMPORTS,
+        ...options.dialect.adapter.imports,
+      },
+      metadata: options.metadata,
+      scalars: {
+        ...options.dialect.adapter.scalars,
+      },
+      symbols: new SymbolCollection(),
+    };
+  }
+
+  #createDatabaseExportNode(context: TransformContext) {
+    const properties: PropertyNode[] = [];
+
+    for (const table of context.metadata.tables) {
+      const identifier = this.#getTableIdentifier(table, context);
+      const symbolName = context.symbols.getName(identifier);
+
+      if (symbolName) {
+        const value = new IdentifierNode(symbolName);
+        const property = new PropertyNode(identifier, value);
+        properties.push(property);
+      }
+    }
+
+    properties.sort((a, b) => a.key.localeCompare(b.key));
+
+    const body = new ObjectExpressionNode(properties);
+    const argument = new InterfaceDeclarationNode('DB', body);
+    return new ExportStatementNode(argument);
+  }
+
+  #createDefinitionNodes(context: TransformContext) {
+    const definitionNodes: ExportStatementNode[] = [];
+
+    for (const { name, symbol } of context.symbols.entries()) {
+      if (symbol.type === SymbolType.DEFINITION) {
+        const argument = new AliasDeclarationNode(name, symbol.node);
+        const definitionNode = new ExportStatementNode(argument);
+        definitionNodes.push(definitionNode);
+      }
+    }
+
+    return definitionNodes.sort((a, b) =>
+      a.argument.name.localeCompare(b.argument.name),
+    );
+  }
+
+  #createImportNodes(context: TransformContext) {
+    const imports: { [K in string]?: ImportClauseNode[] } = {};
+    const importNodes: ImportStatementNode[] = [];
+
+    for (const { id, name, symbol } of context.symbols.entries()) {
+      if (symbol.type === SymbolType.MODULE_REFERENCE) {
+        (imports[symbol.node.name] ??= []).push(
+          new ImportClauseNode(id, name === id ? null : name),
+        );
+      }
+    }
+
+    for (const [moduleName, symbolImports] of Object.entries(imports)) {
+      importNodes.push(new ImportStatementNode(moduleName, symbolImports!));
+    }
+
+    return importNodes.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
+  }
+
+  #getTableKey(column: ColumnMetadata, context: TransformContext) {
+    return context.camelCase ? toCamelCase(column.name) : column.name;
+  }
+
+  #getTableIdentifier(table: TableMetadata, context: TransformContext) {
+    return table.schema &&
+      context.defaultSchema &&
+      table.schema !== context.defaultSchema
+      ? `${table.schema}.${table.name}`
+      : table.name;
+  }
+
+  #transformColumn(column: ColumnMetadata, context: TransformContext) {
+    const args: ExpressionNode[] = [];
+    let enumValues: string[] | undefined;
+    let node: ExpressionNode;
+    let scalarNode: ExpressionNode | undefined;
+    let symbolName: string | undefined;
+
+    if ((scalarNode = context.scalars[column.dataType])) {
+      args.push(scalarNode);
+    } else if ((enumValues = context.enums.get(column.dataType))) {
+      const enumSymbolName = context.symbols.set(column.dataType, {
+        node: unionize(
+          enumValues.map((enumValue) => new LiteralNode(enumValue)),
+        ),
+        type: SymbolType.DEFINITION,
+      });
+      args.push(new IdentifierNode(enumSymbolName));
+    } else if ((symbolName = context.symbols.getName(column.dataType))) {
+      args.push(new IdentifierNode(symbolName ?? 'unknown'));
+    } else if (column.enumValues) {
+      for (const value of column.enumValues) {
+        args.push(new LiteralNode(value));
+      }
+    } else {
+      args.push(context.defaultScalar);
+    }
 
     if (column.isNullable) {
       args.push(new IdentifierNode('null'));
     }
 
-    const key = this.#camelCase ? toCamelCase(column.name) : column.name;
-
-    let value = UnionExpressionNode.from(args);
+    node = unionize(args);
 
     if (column.hasDefaultValue || column.isAutoIncrementing) {
-      value = new GenericExpressionNode('Generated', [value]);
+      node = new GenericExpressionNode('Generated', [node]);
     }
 
-    this.#instantiateReferencedSymbols(value);
+    this.#collectSymbols(node, context);
 
-    return new PropertyNode(key, value);
+    return node;
   }
 
-  #transformDatabaseExport() {
-    return new ExportStatementNode(
-      new InterfaceDeclarationNode(
-        'DB',
-        new ObjectExpressionNode(this.#exportedProperties),
-      ),
-    );
-  }
+  #transformTables(context: TransformContext) {
+    const tableNodes: ExportStatementNode[] = [];
 
-  #transformDeclarations() {
-    return this.#declarationNodes
-      .sort((a, b) => {
-        return a.type === b.type
-          ? a.name.localeCompare(b.name)
-          : a.type.localeCompare(b.type);
-      })
-      .map((node) => new ExportStatementNode(node));
-  }
-
-  #transformImports() {
-    return Object.entries(this.#imported).map(([moduleName, importNames]) => {
-      return new ImportStatementNode(moduleName, [...importNames]);
-    });
-  }
-
-  #transformTables(tables: TableMetadata[]) {
-    const nodes: ExportStatementNode[] = [];
-
-    for (const table of tables) {
-      const propertyNodes: PropertyNode[] = [];
-      const tableSymbolName = this.#dialect.getTableSymbolName(table);
-
-      this.#declareSymbol(tableSymbolName);
-
-      const valueNode = new IdentifierNode(tableSymbolName);
-      const key = this.#dialect.getExportedTableName(table, this.#camelCase);
-      const exportedPropertyNode = new PropertyNode(key, valueNode);
-
-      this.#exportedProperties.push(exportedPropertyNode);
+    for (const table of context.metadata.tables) {
+      const properties: PropertyNode[] = [];
 
       for (const column of table.columns) {
-        const propertyNode = this.#transformColumn(column);
-        propertyNodes.push(propertyNode);
+        const key = this.#getTableKey(column, context);
+        const value = this.#transformColumn(column, context);
+        const property = new PropertyNode(key, value);
+        properties.push(property);
       }
 
-      const objectNode = new ObjectExpressionNode(propertyNodes);
-      const interfaceNode = new InterfaceDeclarationNode(
-        tableSymbolName,
-        objectNode,
+      const expression = new ObjectExpressionNode(properties);
+      const identifier = this.#getTableIdentifier(table, context);
+      const symbolName = context.symbols.set(identifier, {
+        type: SymbolType.TABLE,
+      });
+      const node = new ExportStatementNode(
+        new InterfaceDeclarationNode(symbolName, expression),
       );
-      const exportStatementNode = new ExportStatementNode(interfaceNode);
-
-      nodes.push(exportStatementNode);
+      tableNodes.push(node);
     }
 
-    return nodes;
+    tableNodes.sort((a, b) => a.argument.name.localeCompare(b.argument.name));
+
+    return tableNodes;
   }
 
-  transform(metadata: DatabaseMetadata): StatementNode[] {
-    const options = initialize(this.#dialect, metadata.enums);
+  transform(options: TransformOptions) {
+    const context = this.#createContext(options);
+    const tableNodes = this.#transformTables(context);
+    const importNodes = this.#createImportNodes(context);
+    const definitionNodes = this.#createDefinitionNodes(context);
+    const databaseNode = this.#createDatabaseExportNode(context);
 
-    this.#declarationNodes = options.declarationNodes;
-    this.#defaultType = options.defaultType;
-    this.#definitions = options.definitions;
-    this.#exportedProperties = options.exportedProperties;
-    this.#imported = options.imported;
-    this.#imports = options.imports;
-    this.#symbols = options.symbols;
-    this.#types = options.types;
-
-    const tableExportNodes = this.#transformTables(metadata.tables);
-    const importNodes = this.#transformImports();
-    const definitionExportNodes = this.#transformDeclarations();
-    const databaseExportNode = this.#transformDatabaseExport();
-    const exportNodes = [
-      ...definitionExportNodes,
-      ...tableExportNodes,
-      databaseExportNode,
-    ];
-
-    return [...importNodes, ...exportNodes];
+    return [...importNodes, ...definitionNodes, ...tableNodes, databaseNode];
   }
 }
