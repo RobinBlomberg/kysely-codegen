@@ -1,25 +1,16 @@
 import minimist from 'minimist';
 import { ConnectionStringParser } from './connection-string-parser';
+import {
+  DEFAULT_OUT_FILE,
+  DEFAULT_URL,
+  LOG_LEVEL_NAMES,
+  VALID_DIALECTS,
+  VALID_FLAGS,
+} from './constants';
 import { DialectManager, DialectName } from './dialect-manager';
-import { LogLevel } from './enums/log-level';
+import { LogLevel } from './enums';
 import { Generator } from './generator';
 import { Logger } from './logger';
-
-const DEFAULT_OUT_FILE = './node_modules/kysely-codegen/dist/db.d.ts';
-const VALID_DIALECTS = ['mysql', 'postgres', 'sqlite'];
-const VALID_FLAGS = new Set([
-  '_',
-  'camel-case',
-  'dialect',
-  'exclude-pattern',
-  'h',
-  'help',
-  'include-pattern',
-  'log-level',
-  'out-file',
-  'print',
-  'url',
-]);
 
 export type CliOptions = {
   camelCase: boolean;
@@ -27,24 +18,27 @@ export type CliOptions = {
   excludePattern: string | undefined;
   includePattern: string | undefined;
   logLevel: LogLevel;
-  outFile: string;
+  outFile: string | undefined;
   print: boolean;
   url: string;
 };
+
+export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
 
 /**
  * Creates a kysely-codegen command-line interface.
  */
 export class Cli {
   async #generate(options: CliOptions) {
-    const { camelCase } = options;
+    const camelCase = !!options.camelCase;
+    const outFile = options.outFile;
 
     const logger = new Logger(options.logLevel);
 
     const connectionStringParser = new ConnectionStringParser();
     const { connectionString, inferredDialectName } =
       connectionStringParser.parse({
-        connectionString: options.url,
+        connectionString: options.url ?? DEFAULT_URL,
         dialectName: options.dialectName,
         logger,
       });
@@ -60,16 +54,18 @@ export class Cli {
       options.dialectName ?? inferredDialectName,
     );
 
-    const generator = new Generator({
+    const generator = new Generator();
+
+    await generator.generate({
       camelCase,
       connectionString,
       dialect,
       logger,
+      outFile,
     });
-    await generator.generate(options);
   }
 
-  #getLogLevel(name?: 'silent' | 'info' | 'warn' | 'error' | 'debug') {
+  #getLogLevel(name?: LogLevelName) {
     switch (name) {
       case 'silent':
         return LogLevel.SILENT;
@@ -95,11 +91,11 @@ export class Cli {
     const excludePattern = argv['exclude-pattern'] as string | undefined;
     const includePattern = argv['include-pattern'] as string | undefined;
     const logLevel = this.#getLogLevel(argv['log-level']);
-    const outFile = (argv['out-file'] as string) ?? DEFAULT_OUT_FILE;
+    const outFile =
+      (argv['out-file'] as string | undefined) ??
+      (argv.print ? undefined : DEFAULT_OUT_FILE);
     const print = !!argv.print;
-    const url = (argv.url as string) ?? 'env(DATABASE_URL)';
-
-    const logger = new Logger(logLevel);
+    const url = (argv.url as string) ?? DEFAULT_URL;
 
     try {
       for (const key in argv) {
@@ -111,7 +107,7 @@ export class Cli {
       const dialectValues = VALID_DIALECTS.join(', ');
 
       if (help) {
-        logger.log(
+        console.info(
           '',
           'kysely-codegen [options]',
           '',
@@ -124,7 +120,7 @@ export class Cli {
           '  --log-level        Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)',
           `  --out-file         Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
           '  --print            Print the generated output to the terminal.',
-          '  --url              Set the database connection string URL. This may point to an environment variable. (default: env(DATABASE_URL))',
+          `  --url              Set the database connection string URL. This may point to an environment variable. (default: ${DEFAULT_URL})`,
           '',
         );
 
@@ -147,7 +143,7 @@ export class Cli {
     } catch (error) {
       if (logLevel > LogLevel.SILENT) {
         if (error instanceof Error) {
-          console.error(logger.serializeError(error.message));
+          console.error(new Logger().serializeError(error.message));
 
           if (logLevel >= LogLevel.DEBUG) {
             console.error();

@@ -1,5 +1,8 @@
 export * from './adapter';
+export * from './bin';
+export * from './case-converter';
 export * from './cli';
+export * from './collections';
 export * from './connection-string-parser';
 export * from './constants';
 export * from './db';
@@ -10,6 +13,7 @@ export * from './enums';
 export * from './generator';
 export * from './introspector';
 export * from './logger';
+export * from './metadata';
 export * from './nodes';
 export * from './serializer';
 export * from './transformer';

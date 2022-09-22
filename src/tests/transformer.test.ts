@@ -1,16 +1,17 @@
 import { deepStrictEqual } from 'assert';
-import { PostgresDialect } from '../dialects';
-import { EnumCollection } from '../enum-collection';
+import { EnumCollection } from '../collections';
+import { GLOBAL_DEFINITIONS } from '../constants';
+import { PostgresAdapter, PostgresDialect } from '../dialects';
 import { ColumnMetadata, DatabaseMetadata, TableMetadata } from '../metadata';
 import {
   AliasDeclarationNode,
   ExportStatementNode,
-  ExtendsClauseNode,
   GenericExpressionNode,
   IdentifierNode,
+  ImportClauseNode,
   ImportStatementNode,
-  InferClauseNode,
   InterfaceDeclarationNode,
+  LiteralNode,
   ObjectExpressionNode,
   PropertyNode,
   UnionExpressionNode,
@@ -18,23 +19,100 @@ import {
 import { Transformer } from '../transformer';
 import { describe, it } from './test.utils';
 
-void describe('transformer', () => {
-  void it('should be able to transform to camelCase', () => {
-    const dialect = new PostgresDialect();
-    const enums = new EnumCollection();
-    const transformer = new Transformer(dialect, true, enums);
+export const testTransformer = () => {
+  void describe('transformer', () => {
+    const enums = new EnumCollection({
+      mood: ['happy', 'ok', 'sad'],
+      mood_: ['', ',', "'", "'','"],
+    });
 
-    const actualAst = transformer.transform(
-      new DatabaseMetadata(
+    const transform = (tables: TableMetadata[], camelCase: boolean) => {
+      const dialect = new PostgresDialect();
+      const transformer = new Transformer();
+      const metadata = new DatabaseMetadata(tables, enums);
+      const nodes = transformer.transform({ camelCase, dialect, metadata });
+      return nodes;
+    };
+
+    void it('should transform correctly', () => {
+      const nodes = transform(
+        [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'interval',
+                hasDefaultValue: true,
+                name: 'interval',
+              }),
+              new ColumnMetadata({
+                dataType: 'mood',
+                name: 'mood',
+              }),
+            ],
+            name: 'table',
+            schema: 'public',
+          }),
+        ],
+        false,
+      );
+
+      deepStrictEqual(nodes, [
+        new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
+        new ImportStatementNode('postgres-interval', [
+          new ImportClauseNode('IPostgresInterval'),
+        ]),
+        new ExportStatementNode(
+          new AliasDeclarationNode('Generated', GLOBAL_DEFINITIONS.Generated),
+        ),
+        new ExportStatementNode(
+          new AliasDeclarationNode(
+            'Interval',
+            new PostgresAdapter().definitions.Interval,
+          ),
+        ),
+        new ExportStatementNode(
+          new AliasDeclarationNode(
+            'Mood',
+            new UnionExpressionNode([
+              new LiteralNode('happy'),
+              new LiteralNode('ok'),
+              new LiteralNode('sad'),
+            ]),
+          ),
+        ),
+        new ExportStatementNode(
+          new InterfaceDeclarationNode(
+            'Table',
+            new ObjectExpressionNode([
+              new PropertyNode(
+                'interval',
+                new GenericExpressionNode('Generated', [
+                  new IdentifierNode('Interval'),
+                ]),
+              ),
+              new PropertyNode('mood', new IdentifierNode('Mood')),
+            ]),
+          ),
+        ),
+        new ExportStatementNode(
+          new InterfaceDeclarationNode(
+            'DB',
+            new ObjectExpressionNode([
+              new PropertyNode('table', new IdentifierNode('Table')),
+            ]),
+          ),
+        ),
+      ]);
+    });
+
+    void it('should be able to transform to camelCase', () => {
+      const nodes = transform(
         [
           new TableMetadata({
             columns: [
               new ColumnMetadata({
                 dataType: '',
-                enumValues: null,
                 hasDefaultValue: true,
-                isAutoIncrementing: false,
-                isNullable: false,
                 name: 'baz_qux',
               }),
             ],
@@ -42,65 +120,110 @@ void describe('transformer', () => {
             schema: 'public',
           }),
         ],
-        enums,
-      ),
-    );
+        true,
+      );
 
-    const expectedAst = [
-      new ImportStatementNode('kysely', ['ColumnType']),
-      new ExportStatementNode(
-        new AliasDeclarationNode(
-          'Generated',
-          ['T'],
-          new ExtendsClauseNode(
-            'T',
-            new GenericExpressionNode('ColumnType', [
-              new InferClauseNode('S'),
-              new InferClauseNode('I'),
-              new InferClauseNode('U'),
-            ]),
-            new GenericExpressionNode('ColumnType', [
-              new IdentifierNode('S'),
-              new UnionExpressionNode([
-                new IdentifierNode('I'),
-                new IdentifierNode('undefined'),
-              ]),
-              new IdentifierNode('U'),
-            ]),
-            new GenericExpressionNode('ColumnType', [
-              new IdentifierNode('T'),
-              new UnionExpressionNode([
-                new IdentifierNode('T'),
-                new IdentifierNode('undefined'),
-              ]),
-              new IdentifierNode('T'),
+      deepStrictEqual(nodes, [
+        new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
+        new ExportStatementNode(
+          new AliasDeclarationNode('Generated', GLOBAL_DEFINITIONS.Generated),
+        ),
+        new ExportStatementNode(
+          new InterfaceDeclarationNode(
+            'FooBar',
+            new ObjectExpressionNode([
+              new PropertyNode(
+                'bazQux',
+                new GenericExpressionNode('Generated', [
+                  new IdentifierNode('string'),
+                ]),
+              ),
             ]),
           ),
         ),
-      ),
-      new ExportStatementNode(
-        new InterfaceDeclarationNode(
-          'FooBar',
-          new ObjectExpressionNode([
-            new PropertyNode(
-              'bazQux',
-              new GenericExpressionNode('Generated', [
-                new IdentifierNode('string'),
-              ]),
-            ),
-          ]),
+        new ExportStatementNode(
+          new InterfaceDeclarationNode(
+            'DB',
+            new ObjectExpressionNode([
+              new PropertyNode('foo_bar', new IdentifierNode('FooBar')),
+            ]),
+          ),
         ),
-      ),
-      new ExportStatementNode(
-        new InterfaceDeclarationNode(
-          'DB',
-          new ObjectExpressionNode([
-            new PropertyNode('fooBar', new IdentifierNode('FooBar')),
-          ]),
-        ),
-      ),
-    ];
+      ]);
+    });
 
-    deepStrictEqual(actualAst, expectedAst);
+    void it('should transform Postgres enums correctly', () => {
+      const nodes = transform(
+        [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'mood',
+                hasDefaultValue: false,
+                name: 'column1',
+              }),
+              new ColumnMetadata({
+                dataType: 'mood_',
+                hasDefaultValue: true,
+                name: 'column2',
+              }),
+            ],
+            name: 'table',
+            schema: 'public',
+          }),
+        ],
+        false,
+      );
+
+      deepStrictEqual(nodes, [
+        new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
+        new ExportStatementNode(
+          new AliasDeclarationNode('Generated', GLOBAL_DEFINITIONS.Generated),
+        ),
+        new ExportStatementNode(
+          new AliasDeclarationNode(
+            'Mood',
+            new UnionExpressionNode([
+              new LiteralNode('happy'),
+              new LiteralNode('ok'),
+              new LiteralNode('sad'),
+            ]),
+          ),
+        ),
+        new ExportStatementNode(
+          new AliasDeclarationNode(
+            'Mood2',
+            new UnionExpressionNode([
+              new LiteralNode(''),
+              new LiteralNode(','),
+              new LiteralNode("'"),
+              new LiteralNode("'','"),
+            ]),
+          ),
+        ),
+        new ExportStatementNode(
+          new InterfaceDeclarationNode(
+            'Table',
+            new ObjectExpressionNode([
+              new PropertyNode('column1', new IdentifierNode('Mood')),
+              new PropertyNode(
+                'column2',
+                new GenericExpressionNode('Generated', [
+                  new IdentifierNode('Mood2'),
+                ]),
+              ),
+            ]),
+          ),
+        ),
+        new ExportStatementNode(
+          new InterfaceDeclarationNode(
+            'DB',
+            new ObjectExpressionNode([
+              new PropertyNode('table', new IdentifierNode('Table')),
+            ]),
+          ),
+        ),
+      ]);
+    });
   });
-});
+};

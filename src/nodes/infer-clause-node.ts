@@ -1,4 +1,4 @@
-import { NodeType } from '../enums/node-type';
+import { NodeType } from '../enums';
 
 export class InferClauseNode {
   readonly name: string;

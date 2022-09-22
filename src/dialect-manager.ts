@@ -1,7 +1,5 @@
 import { Dialect } from './dialect';
-import { MysqlDialect } from './dialects/mysql/mysql-dialect';
-import { PostgresDialect } from './dialects/postgres/postgres-dialect';
-import { SqliteDialect } from './dialects/sqlite/sqlite-dialect';
+import { MysqlDialect, PostgresDialect, SqliteDialect } from './dialects';
 
 export type DialectName = 'mysql' | 'postgres' | 'sqlite';
 
@@ -18,14 +16,5 @@ export class DialectManager {
       default:
         return new SqliteDialect();
     }
-  }
-
-  getDialectName(dialect: Dialect): DialectName {
-    if (dialect instanceof MysqlDialect) {
-      return 'mysql';
-    } else if (dialect instanceof PostgresDialect) {
-      return 'postgres';
-    }
-    return 'sqlite';
   }
 }

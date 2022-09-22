@@ -1,4 +1,4 @@
-import { NodeType } from '../enums/node-type';
+import { NodeType } from '../enums';
 import { ObjectExpressionNode } from './object-expression-node';
 
 export class InterfaceDeclarationNode {

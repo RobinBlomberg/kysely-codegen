@@ -1,9 +1,5 @@
-import {
-  PostgresDialect as KyselyPostgresDialect,
-  TableMetadata,
-} from 'kysely';
-import { toPascalCase } from '../../case-converter';
-import { Dialect, DriverInstantiateOptions } from '../../dialect';
+import { PostgresDialect as KyselyPostgresDialect } from 'kysely';
+import { CreateKyselyDialectOptions, Dialect } from '../../dialect';
 import { PostgresAdapter } from './postgres-adapter';
 import { PostgresIntrospector } from './postgres-introspector';
 
@@ -11,7 +7,7 @@ export class PostgresDialect extends Dialect {
   readonly adapter = new PostgresAdapter();
   readonly introspector = new PostgresIntrospector();
 
-  async createKyselyDialect(options: DriverInstantiateOptions) {
+  async createKyselyDialect(options: CreateKyselyDialectOptions) {
     const { Pool } = await import('pg');
 
     return new KyselyPostgresDialect({
@@ -20,22 +16,5 @@ export class PostgresDialect extends Dialect {
         ssl: options.ssl ? { rejectUnauthorized: false } : false,
       }),
     });
-  }
-
-  override getExportedTableName(
-    table: TableMetadata,
-    camelCase: boolean,
-  ): string {
-    const tableName = super.getExportedTableName(table, camelCase);
-    return table.schema === 'public'
-      ? tableName
-      : `${table.schema}.${tableName}`;
-  }
-
-  override getTableSymbolName(table: TableMetadata): string {
-    const symbolName = super.getTableSymbolName(table);
-    return table.schema === 'public'
-      ? symbolName
-      : toPascalCase(`${table.schema}_${symbolName}`);
   }
 }

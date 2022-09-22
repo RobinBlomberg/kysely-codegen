@@ -6,74 +6,58 @@ import { Logger } from './logger';
 import { Serializer } from './serializer';
 import { Transformer } from './transformer';
 
-export type GeneratorOptions = {
-  camelCase: boolean;
+export type GenerateOptions = {
+  camelCase?: boolean;
   connectionString: string;
   dialect: Dialect;
-  logger?: Logger;
-  serializer?: Serializer;
-  transformer?: Transformer;
-};
-
-export type GenerateOptions = {
   excludePattern?: string;
   includePattern?: string;
-  outFile: string;
+  logger?: Logger;
+  outFile?: string;
   print?: boolean;
+  serializer?: Serializer;
+  transformer?: Transformer;
 };
 
 /**
  * Generates codegen output using specified options.
  */
 export class Generator {
-  readonly camelCase: boolean;
-  readonly connectionString: string;
-  readonly dialect: Dialect;
-  readonly logger: Logger | undefined;
-  readonly serializer: Serializer | undefined;
-  readonly transformer: Transformer | undefined;
-
-  constructor(options: GeneratorOptions) {
-    this.camelCase = options.camelCase;
-    this.connectionString = options.connectionString;
-    this.dialect = options.dialect;
-    this.logger = options.logger;
-    this.transformer = options.transformer;
-  }
-
   async generate(options: GenerateOptions) {
     const startTime = performance.now();
 
-    this.logger?.info('Introspecting database...');
+    options.logger?.info('Introspecting database...');
 
-    const metadata = await this.dialect.introspector.introspect({
-      connectionString: this.connectionString,
-      dialect: this.dialect,
+    const metadata = await options.dialect.introspector.introspect({
+      connectionString: options.connectionString,
+      dialect: options.dialect,
       excludePattern: options.excludePattern,
       includePattern: options.includePattern,
     });
 
-    this.logger?.debug();
-    this.logger?.debug(`Found ${metadata.tables.length} public tables:`);
+    options.logger?.debug();
+    options.logger?.debug(`Found ${metadata.tables.length} public tables:`);
 
     for (const table of metadata.tables) {
-      this.logger?.debug(` - ${table.name}`);
+      options.logger?.debug(` - ${table.name}`);
     }
 
-    this.logger?.debug();
+    options.logger?.debug();
 
-    const transformer =
-      this.transformer ??
-      new Transformer(this.dialect, this.camelCase, metadata.enums);
-    const nodes = transformer.transform(metadata);
+    const transformer = options.transformer ?? new Transformer();
+    const nodes = transformer.transform({
+      camelCase: !!options.camelCase,
+      dialect: options.dialect,
+      metadata,
+    });
 
-    const serializer = this.serializer ?? new Serializer();
+    const serializer = options.serializer ?? new Serializer();
     const data = serializer.serialize(nodes);
 
     if (options.print) {
-      this.logger?.log();
-      this.logger?.log(data);
-    } else {
+      console.log();
+      console.log(data);
+    } else if (options.outFile) {
       const outDir = parse(options.outFile).dir;
 
       await fs.mkdir(outDir, { recursive: true });
@@ -85,12 +69,14 @@ export class Generator {
         options.outFile,
       )}`;
       const duration = Math.round(endTime - startTime);
+      const tableCount = metadata.tables.length;
+      const s = tableCount === 1 ? '' : 's';
 
-      this.logger?.success(
-        `Introspected ${metadata.tables.length} table${
-          metadata.tables.length === 1 ? '' : 's'
-        } and generated ${relativeOutDir} in ${duration}ms.\n`,
+      options.logger?.success(
+        `Introspected ${tableCount} table${s} and generated ${relativeOutDir} in ${duration}ms.\n`,
       );
     }
+
+    return data;
   }
 }

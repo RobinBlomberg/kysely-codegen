@@ -1,4 +1,4 @@
-import { NodeType } from '../enums/node-type';
+import { NodeType } from '../enums';
 import { ExpressionNode } from './expression-node';
 
 export class MappedTypeNode {

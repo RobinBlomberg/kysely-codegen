@@ -75,7 +75,8 @@
     "extends": [
       "@robinblomberg/robinblomberg",
       "@robinblomberg/prettier"
-    ]
+    ],
+    "ignorePatterns": "**/src/tests/outputs/*.ts"
   },
   "prettier": "@robinblomberg/prettier-config"
 }

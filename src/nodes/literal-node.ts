@@ -1,10 +1,6 @@
-import { NodeType } from '../enums/node-type';
+import { NodeType } from '../enums';
 
 export class LiteralNode {
-  static from(value: string) {
-    return new LiteralNode(value);
-  }
-
   readonly type = NodeType.LITERAL;
   readonly value: string;
 

@@ -1,17 +1,17 @@
-import { AdapterDefinitions } from '../adapter';
-import { ArrayExpressionNode } from '../nodes';
-import { ExpressionNode } from '../nodes/expression-node';
-import { ExtendsClauseNode } from '../nodes/extends-clause-node';
-import { GenericExpressionNode } from '../nodes/generic-expression-node';
-import { IdentifierNode } from '../nodes/identifier-node';
-import { InferClauseNode } from '../nodes/infer-clause-node';
-import { MappedTypeNode } from '../nodes/mapped-type-node';
-import { UnionExpressionNode } from '../nodes/union-expression-node';
+import {
+  ArrayExpressionNode,
+  ExtendsClauseNode,
+  GenericExpressionNode,
+  IdentifierNode,
+  InferClauseNode,
+  MappedTypeNode,
+  TemplateNode,
+  UnionExpressionNode,
+} from '../nodes';
+import { DefinitionNode } from '../nodes/definition-node';
 
-export type Definition = ExpressionNode | [string[], ExpressionNode];
-
-export const GLOBAL_DEFINITIONS: AdapterDefinitions = {
-  Generated: [
+export const GLOBAL_DEFINITIONS = {
+  Generated: new TemplateNode(
     ['T'],
     new ExtendsClauseNode(
       'T',
@@ -37,25 +37,26 @@ export const GLOBAL_DEFINITIONS: AdapterDefinitions = {
         new IdentifierNode('T'),
       ]),
     ),
-  ],
+  ),
 };
 
-export const JSON_ARRAY_DEFINITION: Definition = new ArrayExpressionNode(
+export const JSON_ARRAY_DEFINITION: DefinitionNode = new ArrayExpressionNode(
   new IdentifierNode('JsonValue'),
 );
 
-export const JSON_OBJECT_DEFINITION: Definition = new MappedTypeNode(
+export const JSON_OBJECT_DEFINITION: DefinitionNode = new MappedTypeNode(
   new IdentifierNode('JsonValue'),
 );
 
-export const JSON_PRIMITIVE_DEFINITION: Definition = new UnionExpressionNode([
-  new IdentifierNode('boolean'),
-  new IdentifierNode('null'),
-  new IdentifierNode('number'),
-  new IdentifierNode('string'),
-]);
+export const JSON_PRIMITIVE_DEFINITION: DefinitionNode =
+  new UnionExpressionNode([
+    new IdentifierNode('boolean'),
+    new IdentifierNode('null'),
+    new IdentifierNode('number'),
+    new IdentifierNode('string'),
+  ]);
 
-export const JSON_VALUE_DEFINITION: Definition = new UnionExpressionNode([
+export const JSON_VALUE_DEFINITION: DefinitionNode = new UnionExpressionNode([
   new IdentifierNode('JsonArray'),
   new IdentifierNode('JsonObject'),
   new IdentifierNode('JsonPrimitive'),

@@ -1,6 +1,6 @@
 import { Kysely, TableMetadata as KyselyTableMetadata } from 'kysely';
-import { EnumCollection } from '../../enum-collection';
-import { IntrospectionOptions, Introspector } from '../../introspector';
+import { EnumCollection } from '../../collections';
+import { IntrospectOptions, Introspector } from '../../introspector';
 import { DatabaseMetadata } from '../../metadata';
 import { MysqlDB } from './mysql-db';
 import { MysqlParser } from './mysql-parser';
@@ -45,7 +45,7 @@ export class MysqlIntrospector extends Introspector<MysqlDB> {
     return enums;
   }
 
-  async introspect(options: IntrospectionOptions) {
+  async introspect(options: IntrospectOptions) {
     const db = await this.connect(options);
     const tables = await this.getTables(db, options);
     const enums = await this.#getEnums(db);

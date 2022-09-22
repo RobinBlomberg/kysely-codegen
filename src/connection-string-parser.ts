@@ -91,6 +91,9 @@ export class ConnectionStringParser {
       }
     }
 
-    return { connectionString, inferredDialectName };
+    return {
+      connectionString,
+      inferredDialectName,
+    };
   }
 }
