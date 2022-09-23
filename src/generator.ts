@@ -18,7 +18,8 @@ export type GeneratorOptions = {
 };
 
 export type GenerateOptions = {
-  ignorePattern?: string;
+  excludePattern?: string;
+  includePattern?: string;
   outFile: string;
   print?: boolean;
 };
@@ -53,7 +54,8 @@ export class Generator {
     const tables = await this.introspector.introspect({
       connectionString: this.connectionString,
       dialect: this.dialect,
-      ignorePattern: options.ignorePattern,
+      excludePattern: options.excludePattern,
+      includePattern: options.includePattern,
     });
 
     this.logger?.debug();

@@ -1,6 +1,6 @@
 import { Kysely, TableMetadata } from 'kysely';
-import { isMatch } from 'micromatch';
 import { Dialect } from './dialect';
+import { TableMatcher } from './table-matcher';
 
 export type CreateKyselyOptions = IntrospectOptions & {
   ssl: boolean;
@@ -9,7 +9,8 @@ export type CreateKyselyOptions = IntrospectOptions & {
 export type IntrospectOptions = {
   connectionString: string;
   dialect: Dialect;
-  ignorePattern?: string;
+  excludePattern?: string;
+  includePattern?: string;
 };
 
 /**
@@ -49,13 +50,17 @@ export class Introspector {
       }
     }
 
-    if (options.ignorePattern) {
+    if (options.includePattern) {
+      const tableMatcher = new TableMatcher(options.includePattern);
+      tables = tables.filter(({ name, schema }) =>
+        tableMatcher.match(schema, name),
+      );
+    }
+
+    if (options.excludePattern) {
+      const tableMatcher = new TableMatcher(options.excludePattern);
       tables = tables.filter(
-        (table) =>
-          !isMatch(
-            table.schema ? `${table.schema}.${table.name}` : table.name,
-            options.ignorePattern!,
-          ),
+        ({ name, schema }) => !tableMatcher.match(schema, name),
       );
     }
 

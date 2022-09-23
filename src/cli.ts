@@ -11,9 +11,10 @@ const VALID_FLAGS = new Set([
   '_',
   'camel-case',
   'dialect',
+  'exclude-pattern',
   'h',
   'help',
-  'ignore-pattern',
+  'include-pattern',
   'log-level',
   'out-file',
   'print',
@@ -23,7 +24,8 @@ const VALID_FLAGS = new Set([
 export type CliOptions = {
   camelCase: boolean;
   dialectName: DialectName | undefined;
-  ignorePattern: string | undefined;
+  excludePattern: string | undefined;
+  includePattern: string | undefined;
   logLevel: LogLevel;
   outFile: string;
   print: boolean;
@@ -90,7 +92,8 @@ export class Cli {
     const dialectName = argv.dialect as DialectName | undefined;
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
-    const ignorePattern = argv['ignore-pattern'] as string | undefined;
+    const excludePattern = argv['exclude-pattern'] as string | undefined;
+    const includePattern = argv['include-pattern'] as string | undefined;
     const logLevel = this.#getLogLevel(argv['log-level']);
     const outFile = (argv['out-file'] as string) ?? DEFAULT_OUT_FILE;
     const print = !!argv.print;
@@ -116,7 +119,8 @@ export class Cli {
           '  --camel-case       Use the Kysely CamelCasePlugin.',
           `  --dialect          Set the SQL dialect. (values: [${dialectValues}])`,
           '  --help, -h         Print this message.',
-          '  --ignore-pattern   Ignore tables matching the pattern, matching "schema.table" in glob format. (examples: *.table, schema.*, *._*)',
+          '  --exclude-pattern  Exclude tables matching the specified glob pattern. (examples: users, *.table, secrets.*, *._*)',
+          '  --include-pattern  Only include tables matching the specified glob pattern. (examples: users, *.table, secrets.*, *._*)',
           '  --log-level        Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)',
           `  --out-file         Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
           '  --print            Print the generated output to the terminal.',
@@ -160,7 +164,8 @@ export class Cli {
     return {
       camelCase,
       dialectName,
-      ignorePattern,
+      excludePattern,
+      includePattern,
       logLevel,
       outFile,
       print,
