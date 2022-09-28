@@ -145,7 +145,7 @@ export class Transformer {
   }
 
   #createDatabaseExportNode(context: TransformContext) {
-    const properties: PropertyNode[] = [];
+    const tableProperties: PropertyNode[] = [];
 
     for (const table of context.metadata.tables) {
       const identifier = this.#getTableIdentifier(table, context);
@@ -153,14 +153,14 @@ export class Transformer {
 
       if (symbolName) {
         const value = new IdentifierNode(symbolName);
-        const property = new PropertyNode(identifier, value);
-        properties.push(property);
+        const tableProperty = new PropertyNode(identifier, value);
+        tableProperties.push(tableProperty);
       }
     }
 
-    properties.sort((a, b) => a.key.localeCompare(b.key));
+    tableProperties.sort((a, b) => a.key.localeCompare(b.key));
 
-    const body = new ObjectExpressionNode(properties);
+    const body = new ObjectExpressionNode(tableProperties);
     const argument = new InterfaceDeclarationNode('DB', body);
     return new ExportStatementNode(argument);
   }
@@ -258,24 +258,24 @@ export class Transformer {
     const tableNodes: ExportStatementNode[] = [];
 
     for (const table of context.metadata.tables) {
-      const properties: PropertyNode[] = [];
+      const tableProperties: PropertyNode[] = [];
 
       for (const column of table.columns) {
         const key = this.#getTableKey(column, context);
         const value = this.#transformColumn(column, context);
-        const property = new PropertyNode(key, value);
-        properties.push(property);
+        const tableProperty = new PropertyNode(key, value);
+        tableProperties.push(tableProperty);
       }
 
-      const expression = new ObjectExpressionNode(properties);
+      const expression = new ObjectExpressionNode(tableProperties);
       const identifier = this.#getTableIdentifier(table, context);
       const symbolName = context.symbols.set(identifier, {
         type: SymbolType.TABLE,
       });
-      const node = new ExportStatementNode(
+      const tableNode = new ExportStatementNode(
         new InterfaceDeclarationNode(symbolName, expression),
       );
-      tableNodes.push(node);
+      tableNodes.push(tableNode);
     }
 
     tableNodes.sort((a, b) => a.argument.name.localeCompare(b.argument.name));
