@@ -1,4 +1,4 @@
-import { Kysely } from 'kysely';
+import { Kysely, sql } from 'kysely';
 import { Dialect } from './dialect';
 import { DatabaseMetadata } from './metadata';
 import { TableMatcher } from './table-matcher';
@@ -14,6 +14,10 @@ export type IntrospectOptions = {
  * Analyzes and returns metadata for a connected database.
  */
 export abstract class Introspector<DB> {
+  private async establishDatabaseConnection(db: Kysely<DB>) {
+    return await sql`SELECT 1;`.execute(db);
+  }
+
   protected async connect(options: IntrospectOptions) {
     // Insane solution in lieu of a better one.
     // We'll create a database connection with SSL, and if it complains about SSL, try without it.
@@ -24,7 +28,11 @@ export abstract class Introspector<DB> {
           ssl,
         });
 
-        return new Kysely({ dialect });
+        const db = new Kysely<DB>({ dialect });
+
+        await this.establishDatabaseConnection(db);
+
+        return db;
       } catch (error) {
         const isSslError =
           error instanceof Error && /\bSSL\b/.test(error.message);
