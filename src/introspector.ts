@@ -15,8 +15,6 @@ export type IntrospectOptions = {
  */
 export abstract class Introspector<DB> {
   protected async connect(options: IntrospectOptions) {
-    let db = undefined as unknown as Kysely<DB>;
-
     // Insane solution in lieu of a better one.
     // We'll create a database connection with SSL, and if it complains about SSL, try without it.
     for (const ssl of [true, false]) {
@@ -26,7 +24,7 @@ export abstract class Introspector<DB> {
           ssl,
         });
 
-        db = new Kysely({ dialect });
+        return new Kysely({ dialect });
       } catch (error) {
         const isSslError =
           error instanceof Error && /\bSSL\b/.test(error.message);
@@ -38,7 +36,7 @@ export abstract class Introspector<DB> {
       }
     }
 
-    return db;
+    throw new Error('Failed to connect to database.');
   }
 
   protected async getTables(db: Kysely<DB>, options: IntrospectOptions) {
