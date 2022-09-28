@@ -188,7 +188,7 @@ export class Serializer {
     data += node.name;
 
     if (node.alias) {
-      data += ' ';
+      data += ' as ';
       data += node.alias;
     }
 
@@ -203,7 +203,7 @@ export class Serializer {
 
     for (const importClause of node.imports) {
       if (i >= 1) {
-        data += ', ';
+        data += ',';
       }
 
       data += ' ';
