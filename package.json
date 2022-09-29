@@ -18,8 +18,6 @@
   "scripts": {
     "build": "tsc",
     "dev": "ts-node-dev --quiet --respawn ./src/bin/index.ts",
-    "docker:get-mysql-ip": "docker inspect -f {{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}} kysely_codegen_mysql",
-    "docker:get-postgres-ip": "docker inspect -f {{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}} kysely_codegen_postgres",
     "docker:up": "docker-compose up -d",
     "prepublishOnly": "pnpm test && pnpm build",
     "start": "node ./dist/bin/index.js",
