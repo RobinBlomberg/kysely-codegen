@@ -212,7 +212,11 @@ export class Transformer {
       : table.name;
   }
 
-  #transformColumn(column: ColumnMetadata, context: TransformContext) {
+  #transformColumn(
+    column: ColumnMetadata,
+    context: TransformContext,
+    schema?: string,
+  ) {
     const args: ExpressionNode[] = [];
     let enumValues: string[] | undefined;
     let node: ExpressionNode;
@@ -221,7 +225,9 @@ export class Transformer {
 
     if ((scalarNode = context.scalars[column.dataType])) {
       args.push(scalarNode);
-    } else if ((enumValues = context.enums.get(column.dataType))) {
+    } else if (
+      (enumValues = context.enums.get(`${schema}.${column.dataType}`))
+    ) {
       const enumSymbolName = context.symbols.set(column.dataType, {
         node: unionize(
           enumValues.map((enumValue) => new LiteralNode(enumValue)),
@@ -262,7 +268,7 @@ export class Transformer {
 
       for (const column of table.columns) {
         const key = this.#getTableKey(column, context);
-        const value = this.#transformColumn(column, context);
+        const value = this.#transformColumn(column, context, table.schema);
         const tableProperty = new PropertyNode(key, value);
         tableProperties.push(tableProperty);
       }

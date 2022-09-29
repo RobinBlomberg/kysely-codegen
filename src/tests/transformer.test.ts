@@ -22,8 +22,8 @@ import { describe, it } from './test.utils';
 export const testTransformer = () => {
   void describe('transformer', () => {
     const enums = new EnumCollection({
-      mood: ['happy', 'ok', 'sad'],
-      mood_: ['', ',', "'", "'','"],
+      'public.mood': ['happy', 'ok', 'sad'],
+      'public.mood_': ['', ',', "'", "'','"],
     });
 
     const transform = (tables: TableMetadata[], camelCase: boolean) => {
