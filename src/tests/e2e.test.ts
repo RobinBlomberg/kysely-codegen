@@ -38,8 +38,9 @@ export const testE2E = async () => {
     await it('should generate the correct output', async () => {
       const tests = await createTests();
 
-      for await (const { connectionString, dialect, expectedOutput } of tests) {
+      for (const { connectionString, dialect, expectedOutput } of tests) {
         const db = await migrate(dialect, connectionString);
+
         const output = await new Generator().generate({
           camelCase: true,
           connectionString,

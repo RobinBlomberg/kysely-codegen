@@ -1,4 +1,8 @@
 export type PostgresDB = {
+  'pg_catalog.pg_namespace': {
+    nspname: string;
+    oid: number;
+  };
   pg_enum: {
     enumlabel: string;
     enumtypid: number;
@@ -6,5 +10,6 @@ export type PostgresDB = {
   pg_type: {
     oid: number;
     typname: string;
+    typnamespace: number;
   };
 };

@@ -25,7 +25,7 @@ export class MysqlIntrospector extends Introspector<MysqlDB> {
     return new DatabaseMetadata(tablesMetadata, new EnumCollection());
   }
 
-  async #getEnums(db: Kysely<MysqlDB>) {
+  async #introspectEnums(db: Kysely<MysqlDB>) {
     const enums = new EnumCollection();
 
     const rows = await db
@@ -48,7 +48,7 @@ export class MysqlIntrospector extends Introspector<MysqlDB> {
   async introspect(options: IntrospectOptions) {
     const db = await this.connect(options);
     const tables = await this.getTables(db, options);
-    const enums = await this.#getEnums(db);
+    const enums = await this.#introspectEnums(db);
 
     await db.destroy();
 
