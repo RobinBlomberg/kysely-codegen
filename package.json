@@ -42,7 +42,7 @@
     "@typescript-eslint/parser": "^5.31.0",
     "better-sqlite3": "^7.6.2",
     "eslint": "^8.20.0",
-    "kysely": "^0.19.12",
+    "kysely": "^0.22.0",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
     "pnpm": "^7.9.3",

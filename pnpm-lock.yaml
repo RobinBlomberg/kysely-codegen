@@ -14,7 +14,7 @@ specifiers:
   chalk: ^4.1.2
   dotenv: ^16.0.1
   eslint: ^8.20.0
-  kysely: ^0.19.12
+  kysely: ^0.22.0
   micromatch: ^4.0.5
   minimist: ^1.2.6
   mysql2: ^2.3.3
@@ -41,7 +41,7 @@ devDependencies:
   '@typescript-eslint/parser': 5.31.0_he2ccbldppg44uulnyq4rwocfa
   better-sqlite3: 7.6.2
   eslint: 8.20.0
-  kysely: 0.19.12
+  kysely: 0.22.0
   mysql2: 2.3.3
   pg: 8.7.3
   pnpm: 7.9.3
@@ -2044,8 +2044,8 @@ packages:
       object.assign: 4.1.2
     dev: true
 
-  /kysely/0.19.12:
-    resolution: {integrity: sha512-1Td7J9o5nPywsyofr0C7jIT5HCan5OknxbmGl43n6QrrfW/4UTi+Majq5RYxAjuKjNmexFWsMpizHPcspX3SoA==}
+  /kysely/0.22.0:
+    resolution: {integrity: sha512-ZE3qWtnqLOalodzfK5QUEcm7AEulhxsPNuKaGFsC3XiqO92vMLm+mAHk/NnbSIOtC4RmGm0nsv700i8KDp1gfQ==}
     engines: {node: '>=14.0.0'}
     dev: true
 
