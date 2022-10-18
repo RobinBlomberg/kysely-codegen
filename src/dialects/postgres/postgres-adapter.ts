@@ -64,10 +64,7 @@ export class PostgresAdapter extends Adapter {
       new PropertyNode('y', new IdentifierNode('number')),
     ]),
     Timestamp: new ColumnType(
-      new UnionExpressionNode([
-        new IdentifierNode('Date'),
-        new IdentifierNode('RawBuilder'),
-      ]),
+      new IdentifierNode('Date'),
       new UnionExpressionNode([
         new IdentifierNode('Date'),
         new IdentifierNode('string'),
