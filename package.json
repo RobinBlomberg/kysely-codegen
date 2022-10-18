@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "author": "Robin Blomberg",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
