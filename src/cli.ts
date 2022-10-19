@@ -107,7 +107,7 @@ export class Cli {
       const dialectValues = VALID_DIALECTS.join(', ');
 
       if (help) {
-        console.info(
+        console.info([
           '',
           'kysely-codegen [options]',
           '',
@@ -122,7 +122,7 @@ export class Cli {
           '  --print            Print the generated output to the terminal.',
           `  --url              Set the database connection string URL. This may point to an environment variable. (default: ${DEFAULT_URL})`,
           '',
-        );
+        ].join('\n'));
 
         process.exit(0);
       }
