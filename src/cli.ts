@@ -107,22 +107,23 @@ export class Cli {
       const dialectValues = VALID_DIALECTS.join(', ');
 
       if (help) {
-        console.info([
-          '',
-          'kysely-codegen [options]',
-          '',
-          '  --all              Display all options.',
-          '  --camel-case       Use the Kysely CamelCasePlugin.',
-          `  --dialect          Set the SQL dialect. (values: [${dialectValues}])`,
-          '  --help, -h         Print this message.',
-          '  --exclude-pattern  Exclude tables matching the specified glob pattern. (examples: users, *.table, secrets.*, *._*)',
-          '  --include-pattern  Only include tables matching the specified glob pattern. (examples: users, *.table, secrets.*, *._*)',
-          '  --log-level        Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)',
-          `  --out-file         Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
-          '  --print            Print the generated output to the terminal.',
-          `  --url              Set the database connection string URL. This may point to an environment variable. (default: ${DEFAULT_URL})`,
-          '',
-        ].join('\n'));
+        console.info(
+          [
+            '',
+            'kysely-codegen [options]',
+            '',
+            '  --camel-case       Use the Kysely CamelCasePlugin.',
+            `  --dialect          Set the SQL dialect. (values: [${dialectValues}])`,
+            '  --help, -h         Print this message.',
+            '  --exclude-pattern  Exclude tables matching the specified glob pattern. (examples: users, *.table, secrets.*, *._*)',
+            '  --include-pattern  Only include tables matching the specified glob pattern. (examples: users, *.table, secrets.*, *._*)',
+            '  --log-level        Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)',
+            `  --out-file         Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
+            '  --print            Print the generated output to the terminal.',
+            `  --url              Set the database connection string URL. This may point to an environment variable. (default: ${DEFAULT_URL})`,
+            '',
+          ].join('\n'),
+        );
 
         process.exit(0);
       }
