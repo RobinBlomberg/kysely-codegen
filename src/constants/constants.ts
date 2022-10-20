@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { LogLevel } from '../enums';
 
 export const DEFAULT_OUT_FILE = join(
   process.cwd(),
@@ -7,6 +8,8 @@ export const DEFAULT_OUT_FILE = join(
   'dist',
   'db.d.ts',
 );
+
+export const DEFAULT_LOG_LEVEL = LogLevel.WARN;
 
 export const DEFAULT_URL = 'env(DATABASE_URL)';
 

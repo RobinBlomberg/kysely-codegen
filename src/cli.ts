@@ -1,6 +1,7 @@
 import minimist from 'minimist';
 import { ConnectionStringParser } from './connection-string-parser';
 import {
+  DEFAULT_LOG_LEVEL,
   DEFAULT_OUT_FILE,
   DEFAULT_URL,
   FLAGS,
@@ -75,12 +76,45 @@ export class Cli {
         return LogLevel.ERROR;
       case 'debug':
         return LogLevel.DEBUG;
-      default:
+      case 'warn':
         return LogLevel.WARN;
+      default:
+        return DEFAULT_LOG_LEVEL;
     }
   }
 
-  #parseOptions(args: string[]): CliOptions {
+  #serializeFlags() {
+    const lines: { description: string; line: string }[] = [];
+    let maxLineLength = 0;
+
+    for (const { description, longName, shortName } of FLAGS) {
+      let line = `  --${longName}`;
+
+      if (shortName) {
+        line += `, -${shortName}`;
+      }
+
+      if (line.length > maxLineLength) {
+        maxLineLength = line.length;
+      }
+
+      lines.push({ description, line });
+    }
+
+    return lines.map(({ description, line }) => {
+      const padding = ' '.repeat(maxLineLength - line.length + 2);
+      return `${line}${padding}${description}`;
+    });
+  }
+
+  #showHelp() {
+    const flagLines = this.#serializeFlags();
+    const lines = ['', 'kysely-codegen [options]', '', ...flagLines, ''];
+    console.info(lines.join('\n'));
+    process.exit(0);
+  }
+
+  parseOptions(args: string[], options?: { silent?: boolean }): CliOptions {
     const argv = minimist(args);
 
     const _: string[] = argv._;
@@ -107,7 +141,7 @@ export class Cli {
         }
       }
 
-      if (help) {
+      if (help && !options?.silent) {
         this.#showHelp();
       }
 
@@ -154,39 +188,8 @@ export class Cli {
     };
   }
 
-  #serializeFlags() {
-    const lines: { description: string; line: string }[] = [];
-    let maxLineLength = 0;
-
-    for (const { description, longName, shortName } of FLAGS) {
-      let line = `  --${longName}`;
-
-      if (shortName) {
-        line += `, -${shortName}`;
-      }
-
-      if (line.length > maxLineLength) {
-        maxLineLength = line.length;
-      }
-
-      lines.push({ description, line });
-    }
-
-    return lines.map(({ description, line }) => {
-      const padding = ' '.repeat(maxLineLength - line.length + 2);
-      return `${line}${padding}${description}`;
-    });
-  }
-
-  #showHelp() {
-    const flagLines = this.#serializeFlags();
-    const lines = ['', 'kysely-codegen [options]', '', ...flagLines, ''];
-    console.info(lines.join('\n'));
-    process.exit(0);
-  }
-
   async run(argv: string[]) {
-    const options = this.#parseOptions(argv);
+    const options = this.parseOptions(argv);
     await this.#generate(options);
   }
 }
