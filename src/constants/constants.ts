@@ -1,9 +1,7 @@
 import { join } from 'path';
 
 export const DEFAULT_OUT_FILE = join(
-  __dirname,
-  '..',
-  '..',
+  process.cwd(),
   'node_modules',
   'kysely-codegen',
   'dist',
