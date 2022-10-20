@@ -19,17 +19,3 @@ export const LOG_LEVEL_NAMES = [
 ] as const;
 
 export const VALID_DIALECTS = ['mysql', 'postgres', 'sqlite'];
-
-export const VALID_FLAGS = new Set([
-  '_',
-  'camel-case',
-  'dialect',
-  'exclude-pattern',
-  'h',
-  'help',
-  'include-pattern',
-  'log-level',
-  'out-file',
-  'print',
-  'url',
-]);

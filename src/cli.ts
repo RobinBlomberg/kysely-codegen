@@ -3,9 +3,9 @@ import { ConnectionStringParser } from './connection-string-parser';
 import {
   DEFAULT_OUT_FILE,
   DEFAULT_URL,
+  FLAGS,
   LOG_LEVEL_NAMES,
   VALID_DIALECTS,
-  VALID_FLAGS,
 } from './constants';
 import { DialectManager, DialectName } from './dialect-manager';
 import { LogLevel } from './enums';
@@ -99,36 +99,20 @@ export class Cli {
 
     try {
       for (const key in argv) {
-        if (!VALID_FLAGS.has(key)) {
+        if (
+          key !== '_' &&
+          !FLAGS.some((flag) => [flag.longName, flag.shortName].includes(key))
+        ) {
           throw new RangeError(`Invalid flag: "${key}"`);
         }
       }
 
-      const dialectValues = VALID_DIALECTS.join(', ');
-
       if (help) {
-        console.info(
-          [
-            '',
-            'kysely-codegen [options]',
-            '',
-            '  --camel-case       Use the Kysely CamelCasePlugin.',
-            `  --dialect          Set the SQL dialect. (values: [${dialectValues}])`,
-            '  --help, -h         Print this message.',
-            '  --exclude-pattern  Exclude tables matching the specified glob pattern. (examples: users, *.table, secrets.*, *._*)',
-            '  --include-pattern  Only include tables matching the specified glob pattern. (examples: users, *.table, secrets.*, *._*)',
-            '  --log-level        Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)',
-            `  --out-file         Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
-            '  --print            Print the generated output to the terminal.',
-            `  --url              Set the database connection string URL. This may point to an environment variable. (default: ${DEFAULT_URL})`,
-            '',
-          ].join('\n'),
-        );
-
-        process.exit(0);
+        this.#showHelp();
       }
 
       if (dialectName && !VALID_DIALECTS.includes(dialectName)) {
+        const dialectValues = VALID_DIALECTS.join(', ');
         throw new RangeError(
           `Parameter '--dialect' must have one of the following values: ${dialectValues}`,
         );
@@ -168,6 +152,37 @@ export class Cli {
       print,
       url,
     };
+  }
+
+  #serializeFlags() {
+    const lines: { description: string; line: string }[] = [];
+    let maxLineLength = 0;
+
+    for (const { description, longName, shortName } of FLAGS) {
+      let line = `  --${longName}`;
+
+      if (shortName) {
+        line += `, -${shortName}`;
+      }
+
+      if (line.length > maxLineLength) {
+        maxLineLength = line.length;
+      }
+
+      lines.push({ description, line });
+    }
+
+    return lines.map(({ description, line }) => {
+      const padding = ' '.repeat(maxLineLength - line.length + 2);
+      return `${line}${padding}${description}`;
+    });
+  }
+
+  #showHelp() {
+    const flagLines = this.#serializeFlags();
+    const lines = ['', 'kysely-codegen [options]', '', ...flagLines, ''];
+    console.info(lines.join('\n'));
+    process.exit(0);
   }
 
   async run(argv: string[]) {
