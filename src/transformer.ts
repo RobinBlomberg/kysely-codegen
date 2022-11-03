@@ -225,11 +225,7 @@ export class Transformer {
     let symbolName: string | undefined;
 
     if ((scalarNode = context.scalars[column.dataType])) {
-      if (column.isArray) {
-        args.push(new ArrayNode(scalarNode));
-      } else {
-        args.push(scalarNode);
-      }
+      args.push(scalarNode);
     } else if (
       (enumValues = context.enums.get(`${schema}.${column.dataType}`))
     ) {
@@ -248,6 +244,12 @@ export class Transformer {
       }
     } else {
       args.push(context.defaultScalar);
+    }
+
+    if (column.isArray) {
+      for (const [index, arg] of args.entries()) {
+        args[index] = new ArrayNode(arg);
+      }
     }
 
     if (column.isNullable) {
