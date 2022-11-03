@@ -11,10 +11,16 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
   ) {
     const tablesMetadata = tables.map((table) => ({
       ...table,
-      columns: table.columns.map((column) => ({
-        ...column,
-        enumValues: enums.get(column.dataType),
-      })),
+      columns: table.columns.map((column) => {
+        const isArray = column.dataType.startsWith('_');
+
+        return {
+          ...column,
+          isArray,
+          dataType: isArray ? column.dataType.substring(1) : column.dataType,
+          enumValues: enums.get(column.dataType),
+        };
+      }),
     }));
     return new DatabaseMetadata(tablesMetadata, enums);
   }

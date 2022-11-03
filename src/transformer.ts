@@ -7,6 +7,7 @@ import { NodeType } from './enums';
 import { ColumnMetadata, DatabaseMetadata, TableMetadata } from './metadata';
 import {
   AliasDeclarationNode,
+  ArrayNode,
   ExportStatementNode,
   ExpressionNode,
   GenericExpressionNode,
@@ -224,7 +225,11 @@ export class Transformer {
     let symbolName: string | undefined;
 
     if ((scalarNode = context.scalars[column.dataType])) {
-      args.push(scalarNode);
+      if (column.isArray) {
+        args.push(new ArrayNode(scalarNode));
+      } else {
+        args.push(scalarNode);
+      }
     } else if (
       (enumValues = context.enums.get(`${schema}.${column.dataType}`))
     ) {
