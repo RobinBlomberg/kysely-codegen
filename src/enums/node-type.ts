@@ -1,6 +1,5 @@
 export const enum NodeType {
   ALIAS_DECLARATION = 'AliasDeclaration',
-  ARRAY = 'Array',
   ARRAY_EXPRESSION = 'ArrayExpression',
   EXPORT_STATEMENT = 'ExportStatement',
   EXTENDS_CLAUSE = 'ExtendsClause',
