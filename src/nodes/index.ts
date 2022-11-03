@@ -1,5 +1,4 @@
 export * from './alias-declaration-node';
-export * from './array-node';
 export * from './array-expression-node';
 export * from './declaration-node';
 export * from './definition-node';

@@ -7,7 +7,7 @@ import { NodeType } from './enums';
 import { ColumnMetadata, DatabaseMetadata, TableMetadata } from './metadata';
 import {
   AliasDeclarationNode,
-  ArrayNode,
+  ArrayExpressionNode,
   ExportStatementNode,
   ExpressionNode,
   GenericExpressionNode,
@@ -248,7 +248,7 @@ export class Transformer {
 
     if (column.isArray) {
       for (const [index, arg] of args.entries()) {
-        args[index] = new ArrayNode(arg);
+        args[index] = new ArrayExpressionNode(arg);
       }
     }
 

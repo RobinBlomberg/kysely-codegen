@@ -1,7 +1,6 @@
 import { NodeType } from './enums';
 import {
   AliasDeclarationNode,
-  ArrayNode,
   ArrayExpressionNode,
   ExportStatementNode,
   ExpressionNode,
@@ -85,14 +84,6 @@ export class Serializer {
     return data;
   }
 
-  serializeArray(node: ArrayNode): string {
-    let data = this.serializeExpression(node.value);
-
-    data += '[]';
-
-    return data;
-  }
-
   serializeArrayExpression(node: ArrayExpressionNode) {
     const shouldParenthesize =
       node.values.type === NodeType.UNION_EXPRESSION &&
@@ -133,8 +124,6 @@ export class Serializer {
 
   serializeExpression(node: ExpressionNode) {
     switch (node.type) {
-      case NodeType.ARRAY:
-        return this.serializeArray(node);
       case NodeType.ARRAY_EXPRESSION:
         return this.serializeArrayExpression(node);
       case NodeType.EXTENDS_CLAUSE:
