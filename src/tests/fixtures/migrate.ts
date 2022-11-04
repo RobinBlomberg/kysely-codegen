@@ -4,7 +4,7 @@ import { MysqlDialect, PostgresDialect } from '../../dialects';
 
 const down = async (db: Kysely<any>, dialect: Dialect) => {
   await db.transaction().execute(async (trx) => {
-    await trx.schema.dropTable('users').ifExists().execute();
+    await trx.schema.dropTable('user_test').ifExists().execute();
 
     if (dialect instanceof PostgresDialect) {
       await trx.schema
@@ -33,7 +33,7 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
         .execute();
     }
 
-    let builder = trx.schema.createTable('users').addColumn('id', 'serial');
+    let builder = trx.schema.createTable('user_test').addColumn('id', 'serial');
 
     if (dialect instanceof MysqlDialect) {
       builder = builder.addColumn(

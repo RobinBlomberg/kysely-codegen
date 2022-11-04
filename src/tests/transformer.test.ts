@@ -155,7 +155,7 @@ export const testTransformer = () => {
           new InterfaceDeclarationNode(
             'DB',
             new ObjectExpressionNode([
-              new PropertyNode('foo_bar', new IdentifierNode('FooBar')),
+              new PropertyNode('fooBar', new IdentifierNode('FooBar')),
             ]),
           ),
         ),

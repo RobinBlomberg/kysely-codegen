@@ -201,16 +201,14 @@ export class Transformer {
     return importNodes.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
   }
 
-  #getTableKey(column: ColumnMetadata, context: TransformContext) {
-    return context.camelCase ? toCamelCase(column.name) : column.name;
-  }
-
   #getTableIdentifier(table: TableMetadata, context: TransformContext) {
-    return table.schema &&
+    const name =
+      table.schema &&
       context.defaultSchema &&
       table.schema !== context.defaultSchema
-      ? `${table.schema}.${table.name}`
-      : table.name;
+        ? `${table.schema}.${table.name}`
+        : table.name;
+    return this.#transformName(name, context);
   }
 
   #transformColumn(
@@ -279,6 +277,10 @@ export class Transformer {
     return enumValues.map((enumValue) => new LiteralNode(enumValue));
   }
 
+  #transformName(name: string, context: TransformContext) {
+    return context.camelCase ? toCamelCase(name) : name;
+  }
+
   #transformTables(context: TransformContext) {
     const tableNodes: ExportStatementNode[] = [];
 
@@ -286,7 +288,7 @@ export class Transformer {
       const tableProperties: PropertyNode[] = [];
 
       for (const column of table.columns) {
-        const key = this.#getTableKey(column, context);
+        const key = this.#transformName(column.name, context);
         const value = this.#transformColumn(column, context, table.schema);
         const tableProperty = new PropertyNode(key, value);
         tableProperties.push(tableProperty);
