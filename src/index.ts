@@ -1,5 +1,4 @@
 export * from './adapter';
-export * from './bin';
 export * from './case-converter';
 export * from './cli';
 export * from './collections';
@@ -16,4 +15,6 @@ export * from './logger';
 export * from './metadata';
 export * from './nodes';
 export * from './serializer';
+export * from './table-matcher';
 export * from './transformer';
+export * from './utils';
