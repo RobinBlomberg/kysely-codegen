@@ -1,6 +1,8 @@
-import { Kysely, sql } from 'kysely';
+import { deepStrictEqual } from 'assert';
+import { CamelCasePlugin, Kysely, sql } from 'kysely';
 import { Dialect } from '../../dialect';
 import { MysqlDialect, PostgresDialect } from '../../dialects';
+import { DB } from '../outputs/postgres.output';
 
 const down = async (db: Kysely<any>, dialect: Dialect) => {
   await db.transaction().execute(async (trx) => {
@@ -16,6 +18,15 @@ const down = async (db: Kysely<any>, dialect: Dialect) => {
       await trx.schema.dropType('status').ifExists().execute();
     }
   });
+};
+
+/**
+ * Sanity test: expect a type error or a run-time error if the
+ * `kysely` introspection result and the `kysely-codegen` output don't match.
+ */
+const testCamelCasePlugin = async (db: Kysely<DB>) => {
+  const rows = await db.selectFrom('userTest').selectAll().execute();
+  deepStrictEqual(rows, []);
 };
 
 const up = async (db: Kysely<any>, dialect: Dialect) => {
@@ -54,12 +65,14 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
 };
 
 export const migrate = async (dialect: Dialect, connectionString: string) => {
-  const db = new Kysely<any>({
+  const db = new Kysely<DB>({
     dialect: await dialect.createKyselyDialect({ connectionString }),
+    plugins: [new CamelCasePlugin()],
   });
 
   await down(db, dialect);
   await up(db, dialect);
+  await testCamelCasePlugin(db);
 
   return db;
 };
