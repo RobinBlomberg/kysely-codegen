@@ -7,6 +7,7 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 export type Status = "CONFIRMED" | "UNCONFIRMED";
 
 export interface Users {
+  array: string[] | null;
   id: Generated<number>;
   userStatus: Status | null;
   userStatus2: Status | null;

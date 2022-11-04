@@ -5,6 +5,7 @@ import { PostgresAdapter, PostgresDialect } from '../dialects';
 import { ColumnMetadata, DatabaseMetadata, TableMetadata } from '../metadata';
 import {
   AliasDeclarationNode,
+  ArrayExpressionNode,
   ExportStatementNode,
   GenericExpressionNode,
   IdentifierNode,
@@ -47,6 +48,11 @@ export const testTransformer = () => {
               new ColumnMetadata({
                 dataType: 'mood',
                 name: 'mood',
+              }),
+              new ColumnMetadata({
+                dataType: 'text',
+                isArray: true,
+                name: 'array',
               }),
             ],
             name: 'table',
@@ -91,6 +97,10 @@ export const testTransformer = () => {
                 ]),
               ),
               new PropertyNode('mood', new IdentifierNode('Mood')),
+              new PropertyNode(
+                'array',
+                new ArrayExpressionNode(new IdentifierNode('string')),
+              ),
             ]),
           ),
         ),

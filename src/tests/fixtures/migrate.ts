@@ -43,7 +43,8 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
     } else if (dialect instanceof PostgresDialect) {
       builder = builder
         .addColumn('user_status', sql`status`)
-        .addColumn('user_status_2', sql`test.status`);
+        .addColumn('user_status_2', sql`test.status`)
+        .addColumn('array', sql`text[]`);
     } else {
       builder = builder.addColumn('user_status', 'text');
     }

@@ -1,7 +1,11 @@
 import { Kysely, TableMetadata as KyselyTableMetadata } from 'kysely';
 import { EnumCollection } from '../../collections';
 import { IntrospectOptions, Introspector } from '../../introspector';
-import { DatabaseMetadata } from '../../metadata';
+import {
+  ColumnMetadata,
+  DatabaseMetadata,
+  TableMetadata,
+} from '../../metadata';
 import { PostgresDB } from './postgres-db';
 
 export class PostgresIntrospector extends Introspector<PostgresDB> {
@@ -9,13 +13,20 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     tables: KyselyTableMetadata[],
     enums: EnumCollection,
   ) {
-    const tablesMetadata = tables.map((table) => ({
-      ...table,
-      columns: table.columns.map((column) => ({
-        ...column,
-        enumValues: enums.get(column.dataType),
-      })),
-    }));
+    const tablesMetadata = tables.map(
+      (table): TableMetadata => ({
+        ...table,
+        columns: table.columns.map((column): ColumnMetadata => {
+          const isArray = column.dataType.startsWith('_');
+          return {
+            ...column,
+            dataType: isArray ? column.dataType.slice(1) : column.dataType,
+            enumValues: enums.get(column.dataType),
+            isArray,
+          };
+        }),
+      }),
+    );
     return new DatabaseMetadata(tablesMetadata, enums);
   }
 

@@ -14,7 +14,7 @@ export class EnumCollection {
   }
 
   get(key: string) {
-    return this.enums[key]?.sort((a, b) => a.localeCompare(b));
+    return this.enums[key]?.sort((a, b) => a.localeCompare(b)) ?? null;
   }
 
   has(key: string) {

@@ -7,6 +7,7 @@ import { NodeType } from './enums';
 import { ColumnMetadata, DatabaseMetadata, TableMetadata } from './metadata';
 import {
   AliasDeclarationNode,
+  ArrayExpressionNode,
   ExportStatementNode,
   ExpressionNode,
   GenericExpressionNode,
@@ -217,47 +218,65 @@ export class Transformer {
     context: TransformContext,
     schema?: string,
   ) {
-    const args: ExpressionNode[] = [];
-    let enumValues: string[] | undefined;
-    let node: ExpressionNode;
-    let scalarNode: ExpressionNode | undefined;
-    let symbolName: string | undefined;
+    let args = this.#transformColumnToArgs(column, context, schema);
 
-    if ((scalarNode = context.scalars[column.dataType])) {
-      args.push(scalarNode);
-    } else if (
-      (enumValues = context.enums.get(`${schema}.${column.dataType}`))
-    ) {
-      const enumSymbolName = context.symbols.set(column.dataType, {
-        node: unionize(
-          enumValues.map((enumValue) => new LiteralNode(enumValue)),
-        ),
-        type: SymbolType.DEFINITION,
-      });
-      args.push(new IdentifierNode(enumSymbolName));
-    } else if ((symbolName = context.symbols.getName(column.dataType))) {
-      args.push(new IdentifierNode(symbolName ?? 'unknown'));
-    } else if (column.enumValues) {
-      for (const value of column.enumValues) {
-        args.push(new LiteralNode(value));
-      }
-    } else {
-      args.push(context.defaultScalar);
+    if (column.isArray) {
+      args = [new ArrayExpressionNode(unionize(args))];
     }
 
     if (column.isNullable) {
       args.push(new IdentifierNode('null'));
     }
 
-    node = unionize(args);
+    let node = unionize(args);
 
-    if (column.hasDefaultValue || column.isAutoIncrementing) {
+    const isGenerated = column.hasDefaultValue || column.isAutoIncrementing;
+    if (isGenerated) {
       node = new GenericExpressionNode('Generated', [node]);
     }
 
     this.#collectSymbols(node, context);
 
     return node;
+  }
+
+  #transformColumnToArgs(
+    column: ColumnMetadata,
+    context: TransformContext,
+    schema?: string,
+  ) {
+    const scalarNode = context.scalars[column.dataType];
+    if (scalarNode) {
+      return [scalarNode];
+    }
+
+    const enumKey = `${schema}.${column.dataType}`;
+    const enumValues = context.enums.get(enumKey);
+    if (enumValues) {
+      const enumNode = unionize(this.#transformEnum(enumValues));
+      const symbolName = context.symbols.set(column.dataType, {
+        node: enumNode,
+        type: SymbolType.DEFINITION,
+      });
+      const node = new IdentifierNode(symbolName);
+      return [node];
+    }
+
+    const symbolName = context.symbols.getName(column.dataType);
+    if (symbolName) {
+      const node = new IdentifierNode(symbolName ?? 'unknown');
+      return [node];
+    }
+
+    if (column.enumValues) {
+      return this.#transformEnum(column.enumValues);
+    }
+
+    return [context.defaultScalar];
+  }
+
+  #transformEnum(enumValues: string[]) {
+    return enumValues.map((enumValue) => new LiteralNode(enumValue));
   }
 
   #transformTables(context: TransformContext) {
