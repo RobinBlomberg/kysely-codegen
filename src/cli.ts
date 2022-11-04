@@ -33,6 +33,8 @@ export class Cli {
   async #generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
     const outFile = options.outFile;
+    const excludePattern = options.excludePattern;
+    const includePattern = options.includePattern;
 
     const logger = new Logger(options.logLevel);
 
@@ -61,6 +63,8 @@ export class Cli {
       camelCase,
       connectionString,
       dialect,
+      excludePattern,
+      includePattern,
       logger,
       outFile,
     });
