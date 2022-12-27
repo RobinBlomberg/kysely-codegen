@@ -50,7 +50,7 @@
     "typescript": "^4.7.4"
   },
   "peerDependencies": {
-    "better-sqlite3": "^7.6.2",
+    "better-sqlite3": ">=7.6.2",
     "kysely": ">=0.19.12",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3"
