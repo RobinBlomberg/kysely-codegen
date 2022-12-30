@@ -6,6 +6,7 @@ export class SqliteAdapter extends Adapter {
   override readonly scalars = {
     ANY: new IdentifierNode('unknown'),
     BLOB: new IdentifierNode('Buffer'),
+    BOOLEAN: new IdentifierNode('number'),
     INTEGER: new IdentifierNode('number'),
     NUMERIC: new IdentifierNode('number'),
     REAL: new IdentifierNode('number'),
