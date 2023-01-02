@@ -2,7 +2,10 @@
 
 ## 0.9.0-alpha1
 
+- chore!: upgrade dependencies
+  - This means that the generated column order is no longer alphabetical (see https://github.com/koskimas/kysely/pull/262)
 - feat!: allow passing database connection to generator
+- chore: update better-sqlite3 peerDependency version - thanks @spa5k!
 - test: make tests platform-agnostic (use SQLite `:memory:` connection)
 
 ## 0.8.0

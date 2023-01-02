@@ -9,7 +9,7 @@ import { Transformer } from './transformer';
 
 export type GenerateOptions = {
   camelCase?: boolean;
-  db: Kysely<unknown>;
+  db: Kysely<any>;
   dialect: Dialect;
   excludePattern?: string;
   includePattern?: string;
