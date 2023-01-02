@@ -3,6 +3,7 @@
 ## 0.9.0-alpha1
 
 - feat!: allow passing database connection to generator
+- test: make tests platform-agnostic (use SQLite `:memory:` connection)
 
 ## 0.8.0
 

@@ -25,7 +25,7 @@ const createTests = async () => [
     ),
   },
   {
-    connectionString: 'C:/Program Files/sqlite3/db',
+    connectionString: ':memory:',
     dialect: new SqliteDialect(),
     expectedOutput: await readFile(
       join(__dirname, 'outputs', 'sqlite.output.ts'),
