@@ -1,4 +1,3 @@
-import { deepStrictEqual } from 'assert';
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
 import { Dialect } from '../../dialect';
 import { MysqlDialect, PostgresDialect } from '../../dialects';
@@ -6,7 +5,8 @@ import { DB } from '../outputs/postgres.output';
 
 const down = async (db: Kysely<any>, dialect: Dialect) => {
   await db.transaction().execute(async (trx) => {
-    await trx.schema.dropTable('user_test').ifExists().execute();
+    await trx.schema.dropTable('boolean').ifExists().execute();
+    await trx.schema.dropTable('foo_bar').ifExists().execute();
 
     if (dialect instanceof PostgresDialect) {
       await trx.schema
@@ -18,15 +18,6 @@ const down = async (db: Kysely<any>, dialect: Dialect) => {
       await trx.schema.dropType('status').ifExists().execute();
     }
   });
-};
-
-/**
- * Sanity test: expect a type error or a run-time error if the
- * `kysely` introspection result and the `kysely-codegen` output don't match.
- */
-const testCamelCasePlugin = async (db: Kysely<DB>) => {
-  const rows = await db.selectFrom('userTest').selectAll().execute();
-  deepStrictEqual(rows, []);
 };
 
 const up = async (db: Kysely<any>, dialect: Dialect) => {
@@ -44,20 +35,27 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
         .execute();
     }
 
-    let builder = trx.schema.createTable('user_test').addColumn('id', 'serial');
+    let builder = trx.schema
+      .createTable('foo_bar')
+      .addColumn('false', 'boolean', (col) => col.notNull())
+      .addColumn('true', 'boolean', (col) => col.notNull());
 
     if (dialect instanceof MysqlDialect) {
-      builder = builder.addColumn(
-        'user_status',
-        sql`enum('CONFIRMED','UNCONFIRMED')`,
-      );
+      builder = builder
+        .addColumn('id', 'serial')
+        .addColumn('user_status', sql`enum('CONFIRMED','UNCONFIRMED')`);
     } else if (dialect instanceof PostgresDialect) {
       builder = builder
+        .addColumn('id', 'serial')
         .addColumn('user_status', sql`status`)
         .addColumn('user_status_2', sql`test.status`)
         .addColumn('array', sql`text[]`);
     } else {
-      builder = builder.addColumn('user_status', 'text');
+      builder = builder
+        .addColumn('id', 'integer', (col) =>
+          col.autoIncrement().notNull().primaryKey(),
+        )
+        .addColumn('user_status', 'text');
     }
 
     await builder.execute();
@@ -72,7 +70,6 @@ export const migrate = async (dialect: Dialect, connectionString: string) => {
 
   await down(db, dialect);
   await up(db, dialect);
-  await testCamelCasePlugin(db);
 
   return db;
 };

@@ -4,12 +4,12 @@ import { IdentifierNode } from '../../nodes';
 export class SqliteAdapter extends Adapter {
   override readonly defaultScalar = new IdentifierNode('string');
   override readonly scalars = {
-    ANY: new IdentifierNode('unknown'),
-    BLOB: new IdentifierNode('Buffer'),
-    BOOLEAN: new IdentifierNode('number'),
-    INTEGER: new IdentifierNode('number'),
-    NUMERIC: new IdentifierNode('number'),
-    REAL: new IdentifierNode('number'),
-    TEXT: new IdentifierNode('string'),
+    any: new IdentifierNode('unknown'),
+    blob: new IdentifierNode('Buffer'),
+    boolean: new IdentifierNode('number'),
+    integer: new IdentifierNode('number'),
+    numeric: new IdentifierNode('number'),
+    real: new IdentifierNode('number'),
+    text: new IdentifierNode('string'),
   };
 }

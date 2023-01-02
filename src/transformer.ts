@@ -243,16 +243,18 @@ export class Transformer {
     context: TransformContext,
     schema?: string,
   ) {
-    const scalarNode = context.scalars[column.dataType];
+    const dataType = column.dataType.toLowerCase();
+
+    const scalarNode = context.scalars[dataType];
     if (scalarNode) {
       return [scalarNode];
     }
 
-    const enumKey = `${schema}.${column.dataType}`;
+    const enumKey = `${schema}.${dataType}`;
     const enumValues = context.enums.get(enumKey);
     if (enumValues) {
       const enumNode = unionize(this.#transformEnum(enumValues));
-      const symbolName = context.symbols.set(column.dataType, {
+      const symbolName = context.symbols.set(dataType, {
         node: enumNode,
         type: SymbolType.DEFINITION,
       });
@@ -260,7 +262,7 @@ export class Transformer {
       return [node];
     }
 
-    const symbolName = context.symbols.getName(column.dataType);
+    const symbolName = context.symbols.getName(dataType);
     if (symbolName) {
       const node = new IdentifierNode(symbolName ?? 'unknown');
       return [node];
