@@ -21,6 +21,7 @@ export type CliOptions = {
   logLevel: LogLevel;
   outFile: string | undefined;
   print: boolean;
+  typeOnlyImports: boolean;
   url: string;
 };
 
@@ -35,6 +36,7 @@ export class Cli {
     const outFile = options.outFile;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
+    const typeOnlyImports = options.typeOnlyImports;
 
     const logger = new Logger(options.logLevel);
 
@@ -72,6 +74,7 @@ export class Cli {
       includePattern,
       logger,
       outFile,
+      typeOnlyImports,
     });
 
     await db.destroy();
@@ -92,6 +95,10 @@ export class Cli {
       default:
         return DEFAULT_LOG_LEVEL;
     }
+  }
+
+  #parseBoolean(input?: boolean | string) {
+    return !!input && input !== 'false';
   }
 
   #serializeFlags() {
@@ -129,7 +136,7 @@ export class Cli {
     const argv = minimist(args);
 
     const _: string[] = argv._;
-    const camelCase = !!argv['camel-case'];
+    const camelCase = this.#parseBoolean(argv['camel-case']);
     const dialectName = argv.dialect as DialectName | undefined;
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
@@ -139,7 +146,10 @@ export class Cli {
     const outFile =
       (argv['out-file'] as string | undefined) ??
       (argv.print ? undefined : DEFAULT_OUT_FILE);
-    const print = !!argv.print;
+    const print = this.#parseBoolean(argv.print);
+    const typeOnlyImports = this.#parseBoolean(
+      argv['type-only-imports'] ?? true,
+    );
     const url = (argv.url as string) ?? DEFAULT_URL;
 
     try {
@@ -195,6 +205,7 @@ export class Cli {
       logLevel,
       outFile,
       print,
+      typeOnlyImports,
       url,
     };
   }

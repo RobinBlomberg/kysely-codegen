@@ -15,6 +15,7 @@ export const testCli = () => {
     logLevel: DEFAULT_LOG_LEVEL,
     outFile: DEFAULT_OUT_FILE,
     print: false,
+    typeOnlyImports: true,
     url: DEFAULT_URL,
   };
 
@@ -38,6 +39,10 @@ export const testCli = () => {
       assert(['--log-level=debug'], { logLevel: LogLevel.DEBUG });
       assert(['--out-file=./db.ts'], { outFile: './db.ts' });
       assert(['--print'], { outFile: undefined, print: true });
+      assert(['--type-only-imports'], { typeOnlyImports: true });
+      assert(['--type-only-imports=true'], { typeOnlyImports: true });
+      assert(['--type-only-imports=false'], { typeOnlyImports: false });
+      assert(['--no-type-only-imports'], { typeOnlyImports: false });
       assert(['--url=postgres://u:p@s/d'], { url: 'postgres://u:p@s/d' });
     });
   });

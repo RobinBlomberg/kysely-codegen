@@ -1,9 +1,11 @@
 # kysely-codegen changelog
 
-## 0.9.0-alpha1
+## 0.9.0
 
-- chore!: upgrade dependencies - This means that the generated column order is no longer alphabetical (see https://github.com/koskimas/kysely/pull/262)
+- chore!: upgrade dependencies
+  - This means that the generated column order is no longer alphabetical (see https://github.com/koskimas/kysely/pull/262)
 - feat!: allow passing database connection to generator
+- feat!: generate type-only imports and add `--type-only-imports` CLI option (default: `true`)
 - feat!: parse SQLite booleans as numbers
 - chore: update better-sqlite3 peerDependency version - thanks @spa5k!
 - fix: remove usage of `RawBuilder`

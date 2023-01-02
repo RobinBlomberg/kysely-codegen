@@ -21,10 +21,20 @@ import {
 
 const IDENTIFIER_REGEXP = /^[a-zA-Z_$][a-zA-Z_0-9$]*$/;
 
+export type SerializerOptions = {
+  typeOnlyImports?: boolean;
+};
+
 /**
  * Creates a TypeScript output string from a codegen AST.
  */
 export class Serializer {
+  readonly typeOnlyImports: boolean;
+
+  constructor(options: SerializerOptions = {}) {
+    this.typeOnlyImports = options.typeOnlyImports ?? true;
+  }
+
   serialize(nodes: StatementNode[]) {
     let data = '';
     let i = 0;
@@ -199,7 +209,13 @@ export class Serializer {
     let data = '';
     let i = 0;
 
-    data += 'import {';
+    data += 'import ';
+
+    if (this.typeOnlyImports) {
+      data += 'type ';
+    }
+
+    data += '{';
 
     for (const importClause of node.imports) {
       if (i >= 1) {
@@ -211,9 +227,9 @@ export class Serializer {
       i++;
     }
 
-    data += ' } from "';
-    data += node.moduleName;
-    data += '";';
+    data += ' } from ';
+    data += JSON.stringify(node.moduleName);
+    data += ';';
 
     return data;
   }

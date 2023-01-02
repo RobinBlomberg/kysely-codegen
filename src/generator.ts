@@ -18,6 +18,7 @@ export type GenerateOptions = {
   print?: boolean;
   serializer?: Serializer;
   transformer?: Transformer;
+  typeOnlyImports?: boolean;
 };
 
 /**
@@ -51,7 +52,9 @@ export class Generator {
       metadata,
     });
 
-    const serializer = options.serializer ?? new Serializer();
+    const serializer =
+      options.serializer ??
+      new Serializer({ typeOnlyImports: options.typeOnlyImports });
     const data = serializer.serialize(nodes);
 
     if (options.print) {

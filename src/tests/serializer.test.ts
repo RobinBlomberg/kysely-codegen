@@ -126,7 +126,7 @@ export const testSerializer = () => {
             new ImportClauseNode('RawBuilder', 'R'),
           ]),
         ),
-        'import { ColumnType, RawBuilder as R } from "kysely";',
+        'import type { ColumnType, RawBuilder as R } from "kysely";',
       );
     });
 
@@ -239,7 +239,7 @@ export const testSerializer = () => {
 
         strictEqual(
           serializer.serialize(ast),
-          'import { ColumnType } from "kysely";\n' +
+          'import type { ColumnType } from "kysely";\n' +
             '\n' +
             'export type Json = ColumnType<JsonValue, string, string>;\n' +
             '\n' +

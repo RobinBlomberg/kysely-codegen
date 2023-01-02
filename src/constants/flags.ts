@@ -49,6 +49,11 @@ export const FLAGS: Flag[] = [
   },
   {
     description:
+      'Generate TypeScript 3.8+ `import type` syntax (default: true).',
+    longName: 'type-only-imports',
+  },
+  {
+    description:
       'Set the database connection string URL. ' +
       `This may point to an environment variable. (default: ${DEFAULT_URL})`,
     longName: 'url',
