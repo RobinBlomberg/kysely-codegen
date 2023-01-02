@@ -3,9 +3,13 @@ import { Dialect } from './dialect';
 import { DatabaseMetadata } from './metadata';
 import { TableMatcher } from './table-matcher';
 
-export type IntrospectOptions = {
+export type ConnectOptions = {
   connectionString: string;
   dialect: Dialect;
+};
+
+export type IntrospectOptions<DB> = {
+  db: Kysely<DB>;
   excludePattern?: string;
   includePattern?: string;
 };
@@ -18,7 +22,7 @@ export abstract class Introspector<DB> {
     return await sql`SELECT 1;`.execute(db);
   }
 
-  protected async connect(options: IntrospectOptions) {
+  async connect(options: ConnectOptions) {
     // Insane solution in lieu of a better one.
     // We'll create a database connection with SSL, and if it complains about SSL, try without it.
     for (const ssl of [true, false]) {
@@ -47,8 +51,8 @@ export abstract class Introspector<DB> {
     throw new Error('Failed to connect to database.');
   }
 
-  protected async getTables(db: Kysely<DB>, options: IntrospectOptions) {
-    let tables = await db.introspection.getTables();
+  protected async getTables(options: IntrospectOptions<DB>) {
+    let tables = await options.db.introspection.getTables();
 
     if (options.includePattern) {
       const tableMatcher = new TableMatcher(options.includePattern);
@@ -67,5 +71,7 @@ export abstract class Introspector<DB> {
     return tables;
   }
 
-  abstract introspect(options: IntrospectOptions): Promise<DatabaseMetadata>;
+  abstract introspect(
+    options: IntrospectOptions<DB>,
+  ): Promise<DatabaseMetadata>;
 }

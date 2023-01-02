@@ -34,6 +34,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     const enums = new EnumCollection();
 
     const rows = await db
+      .withoutPlugins()
       .selectFrom('pg_type as type')
       .innerJoin('pg_enum as enum', 'type.oid', 'enum.enumtypid')
       .innerJoin(
@@ -55,14 +56,9 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     return enums;
   }
 
-  async introspect(options: IntrospectOptions) {
-    const db = await this.connect(options);
-    const tables = await this.getTables(db, options);
-    const enums = await this.#introspectEnums(db);
-
-    await db.destroy();
-
-    const metadata = this.#createDatabaseMetadata(tables, enums);
-    return metadata;
+  async introspect(options: IntrospectOptions<PostgresDB>) {
+    const tables = await this.getTables(options);
+    const enums = await this.#introspectEnums(options.db);
+    return this.#createDatabaseMetadata(tables, enums);
   }
 }

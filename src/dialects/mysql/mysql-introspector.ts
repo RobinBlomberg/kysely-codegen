@@ -29,6 +29,7 @@ export class MysqlIntrospector extends Introspector<MysqlDB> {
     const enums = new EnumCollection();
 
     const rows = await db
+      .withoutPlugins()
       .selectFrom('information_schema.COLUMNS')
       .select(['COLUMN_NAME', 'COLUMN_TYPE', 'TABLE_NAME', 'TABLE_SCHEMA'])
       .execute();
@@ -45,13 +46,9 @@ export class MysqlIntrospector extends Introspector<MysqlDB> {
     return enums;
   }
 
-  async introspect(options: IntrospectOptions) {
-    const db = await this.connect(options);
-    const tables = await this.getTables(db, options);
-    const enums = await this.#introspectEnums(db);
-
-    await db.destroy();
-
+  async introspect(options: IntrospectOptions<MysqlDB>) {
+    const tables = await this.getTables(options);
+    const enums = await this.#introspectEnums(options.db);
     return this.#createDatabaseMetadata(tables, enums);
   }
 }

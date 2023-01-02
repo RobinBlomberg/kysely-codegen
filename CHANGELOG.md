@@ -1,5 +1,9 @@
 # kysely-codegen changelog
 
+## 0.9.0-alpha1
+
+- feat!: allow passing database connection to generator
+
 ## 0.8.0
 
 - feat: add support for PostgreSQL scalar arrays (e.g. TEXT[]) - thanks @johynpapin!

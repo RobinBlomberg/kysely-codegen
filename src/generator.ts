@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import { Kysely } from 'kysely';
 import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
 import { Dialect } from './dialect';
@@ -8,7 +9,7 @@ import { Transformer } from './transformer';
 
 export type GenerateOptions = {
   camelCase?: boolean;
-  connectionString: string;
+  db: Kysely<unknown>;
   dialect: Dialect;
   excludePattern?: string;
   includePattern?: string;
@@ -29,8 +30,7 @@ export class Generator {
     options.logger?.info('Introspecting database...');
 
     const metadata = await options.dialect.introspector.introspect({
-      connectionString: options.connectionString,
-      dialect: options.dialect,
+      db: options.db,
       excludePattern: options.excludePattern,
       includePattern: options.includePattern,
     });

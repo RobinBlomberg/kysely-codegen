@@ -57,17 +57,24 @@ export class Cli {
       options.dialectName ?? inferredDialectName,
     );
 
+    const db = await dialect.introspector.connect({
+      connectionString,
+      dialect,
+    });
+
     const generator = new Generator();
 
     await generator.generate({
       camelCase,
-      connectionString,
+      db,
       dialect,
       excludePattern,
       includePattern,
       logger,
       outFile,
     });
+
+    await db.destroy();
   }
 
   #getLogLevel(name?: LogLevelName) {

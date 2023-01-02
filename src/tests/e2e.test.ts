@@ -3,6 +3,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { MysqlDialect, PostgresDialect, SqliteDialect } from '../dialects';
 import { Generator } from '../generator';
+import { Logger } from '../logger';
 import { migrate } from './fixtures';
 import { describe, it } from './test.utils';
 
@@ -39,17 +40,19 @@ export const testE2E = async () => {
       const tests = await createTests();
 
       for (const { connectionString, dialect, expectedOutput } of tests) {
+        new Logger().info(`Testing ${dialect.constructor.name}...`);
+
         const db = await migrate(dialect, connectionString);
 
         const output = await new Generator().generate({
           camelCase: true,
-          connectionString,
+          db,
           dialect,
         });
 
-        strictEqual(output, expectedOutput);
-
         await db.destroy();
+
+        strictEqual(output, expectedOutput);
       }
     });
   });
