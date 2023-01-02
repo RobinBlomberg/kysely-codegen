@@ -6,7 +6,7 @@
   - This means that the generated column order is no longer alphabetical (see https://github.com/koskimas/kysely/pull/262)
 - feat!: allow passing database connection to generator
 - feat!: generate type-only imports and add `--type-only-imports` CLI option (default: `true`)
-- feat!: parse SQLite booleans as numbers
+- feat!: parse SQLite booleans as numbers - thanks @valtyr!
 - chore: update better-sqlite3 peerDependency version - thanks @spa5k!
 - fix: remove usage of `RawBuilder`
 - test: make tests platform-agnostic (use SQLite `:memory:` connection)
