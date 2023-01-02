@@ -1,5 +1,12 @@
 # kysely-codegen changelog
 
+## 0.8.0
+
+- feat: add support for PostgreSQL scalar arrays (e.g. TEXT[]) - thanks @johynpapin!
+- feat: include --include-pattern and --exclude-pattern options in programatic API - thanks @antoineneff!
+- fix: avoid crash when using programmatic API
+- fix: correct camel-case output
+
 ## 0.7.0
 
 - build: use looser peer dependency requirement
