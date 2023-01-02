@@ -6,6 +6,7 @@
 - feat!: allow passing database connection to generator
 - feat!: parse SQLite booleans as numbers
 - chore: update better-sqlite3 peerDependency version - thanks @spa5k!
+- fix: remove usage of `RawBuilder`
 - test: make tests platform-agnostic (use SQLite `:memory:` connection)
 
 ## 0.8.0

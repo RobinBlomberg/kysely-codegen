@@ -68,7 +68,6 @@ export class PostgresAdapter extends Adapter {
       new UnionExpressionNode([
         new IdentifierNode('Date'),
         new IdentifierNode('string'),
-        new IdentifierNode('RawBuilder'),
       ]),
     ),
   };
