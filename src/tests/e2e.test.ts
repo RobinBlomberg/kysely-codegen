@@ -43,7 +43,7 @@ const TESTS: Test[] = [
 const readDialectOutput = async (dialect: Dialect) => {
   const dialectName = dialect.constructor.name.slice(0, -'Dialect'.length);
   return await readFile(
-    join(__dirname, 'outputs', `${dialectName}.output.ts`),
+    join(__dirname, 'outputs', `${dialectName.toLowerCase()}.output.ts`),
     'utf-8',
   );
 };
