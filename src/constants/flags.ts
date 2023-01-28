@@ -58,4 +58,8 @@ export const FLAGS: Flag[] = [
       `This may point to an environment variable. (default: ${DEFAULT_URL})`,
     longName: 'url',
   },
+  {
+    description: 'Set the default schema of the database connection.',
+    longName: 'schema',
+  },
 ];

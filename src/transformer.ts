@@ -36,6 +36,7 @@ export type TransformContext = {
 
 export type TransformOptions = {
   camelCase: boolean;
+  defaultSchema?: string;
   dialect: Dialect;
   metadata: DatabaseMetadata;
 };
@@ -127,7 +128,8 @@ export class Transformer {
       camelCase: options.camelCase,
       defaultScalar:
         options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
-      defaultSchema: options.dialect.adapter.defaultSchema,
+      defaultSchema:
+        options.defaultSchema ?? options.dialect.adapter.defaultSchema,
       definitions: {
         ...GLOBAL_DEFINITIONS,
         ...options.dialect.adapter.definitions,
