@@ -15,6 +15,7 @@ export const testCli = () => {
     logLevel: DEFAULT_LOG_LEVEL,
     outFile: DEFAULT_OUT_FILE,
     print: false,
+    schema: undefined,
     typeOnlyImports: true,
     url: DEFAULT_URL,
   };
@@ -44,6 +45,7 @@ export const testCli = () => {
       assert(['--type-only-imports=false'], { typeOnlyImports: false });
       assert(['--no-type-only-imports'], { typeOnlyImports: false });
       assert(['--url=postgres://u:p@s/d'], { url: 'postgres://u:p@s/d' });
+      assert(['--schema=foo'], { schema: 'foo' });
     });
   });
 };

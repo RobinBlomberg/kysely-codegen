@@ -16,6 +16,7 @@ export type GenerateOptions = {
   logger?: Logger;
   outFile?: string;
   print?: boolean;
+  schema?: string;
   serializer?: Serializer;
   transformer?: Transformer;
   typeOnlyImports?: boolean;
@@ -48,6 +49,7 @@ export class Generator {
     const transformer = options.transformer ?? new Transformer();
     const nodes = transformer.transform({
       camelCase: !!options.camelCase,
+      defaultSchema: options.schema,
       dialect: options.dialect,
       metadata,
     });
