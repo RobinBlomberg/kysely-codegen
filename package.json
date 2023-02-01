@@ -4,7 +4,7 @@
   "author": "Robin Blomberg",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "type": "module",
+  "module": "./dist/index.mjs",
   "bin": {
     "kysely-codegen": "./dist/bin/index.js"
   },
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/RobinBlomberg/kysely-codegen#readme",
   "scripts": {
-    "build": "tsc",
+    "build": "tsup ./src/index.ts --format cjs,esm --dts",
     "dev": "ts-node-dev --quiet --respawn ./src/bin/index.ts",
     "docker:up": "docker-compose up -d",
     "prepublishOnly": "pnpm build",
@@ -50,6 +50,7 @@
     "pg": "^8.8.0",
     "pnpm": "^7.21.0",
     "ts-node-dev": "^2.0.0",
+    "tsup": "^6.5.0",
     "typescript": "^4.9.4"
   },
   "peerDependencies": {
