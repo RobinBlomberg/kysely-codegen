@@ -31,6 +31,7 @@
     "minimist": "^1.2.7"
   },
   "devDependencies": {
+    "@planetscale/database": "^1.5.0",
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
     "@robinblomberg/eslint-config-robinblomberg": "0.13.0",
     "@robinblomberg/prettier-config": "^0.1.2",
@@ -41,6 +42,7 @@
     "@types/pg": "^8.6.6",
     "@typescript-eslint/parser": "^5.47.1",
     "better-sqlite3": "^8.0.1",
+    "date-fns": "^2.29.3",
     "eslint": "^8.31.0",
     "kysely": "^0.23.3",
     "mysql2": "^2.3.3",

@@ -30,6 +30,10 @@ export class ConnectionStringParser {
       return 'postgres';
     }
 
+    if (connectionString.includes('connect.psdb.cloud')) {
+      return 'planetscale';
+    }
+
     if (MYSQL_URI_CONNECTION_STRING_REGEXP.test(connectionString)) {
       return 'mysql';
     }

@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@planetscale/database': ^1.5.0
   '@robinblomberg/eslint-config-prettier': ^0.1.4
   '@robinblomberg/eslint-config-robinblomberg': 0.13.0
   '@robinblomberg/prettier-config': ^0.1.2
@@ -12,6 +13,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.47.1
   better-sqlite3: ^8.0.1
   chalk: ^4.1.2
+  date-fns: ^2.29.3
   dotenv: ^16.0.3
   eslint: ^8.31.0
   kysely: ^0.23.3
@@ -30,6 +32,7 @@ dependencies:
   minimist: 1.2.7
 
 devDependencies:
+  '@planetscale/database': 1.5.0
   '@robinblomberg/eslint-config-prettier': 0.1.4
   '@robinblomberg/eslint-config-robinblomberg': 0.13.0
   '@robinblomberg/prettier-config': 0.1.2
@@ -40,6 +43,7 @@ devDependencies:
   '@types/pg': 8.6.6
   '@typescript-eslint/parser': 5.47.1_iukboom6ndih5an6iafl45j2fe
   better-sqlite3: 8.0.1
+  date-fns: 2.29.3
   eslint: 8.31.0
   kysely: 0.23.3
   mysql2: 2.3.3
@@ -388,6 +392,11 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
+    dev: true
+
+  /@planetscale/database/1.5.0:
+    resolution: {integrity: sha512-Qwh7Or1W5dB5mZ9EQqDkgvkDKhBBmQe58KIVUy0SGocNtr5fP4JAWtvZ6EdLAV6C6hVpzNlCA2xIg9lKTswm1Q==}
+    engines: {node: '>=16'}
     dev: true
 
   /@robinblomberg/eslint-config-prettier/0.1.4:
@@ -972,6 +981,11 @@ packages:
 
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
+    dev: true
+
+  /date-fns/2.29.3:
+    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
+    engines: {node: '>=0.11'}
     dev: true
 
   /debug/2.6.9:
