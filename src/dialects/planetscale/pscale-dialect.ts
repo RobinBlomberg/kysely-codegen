@@ -1,12 +1,7 @@
 /* eslint-disable import/exports-last */
 /* eslint-disable max-classes-per-file */
-import {
-  cast,
-  Config,
-  connect,
-  Connection,
-  Field,
-} from '@planetscale/database';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import type { Config, Connection, Field } from '@planetscale/database';
 import { parseJSON } from 'date-fns';
 import {
   CompiledQuery,
@@ -110,12 +105,20 @@ class PlanetScaleDriver implements Driver {
 
 class PlanetScaleConnection implements DatabaseConnection {
   #config: PlanetScaleDialectConfig;
-  #conn: Connection;
+  #conn?: Connection;
   #transactionClient?: PlanetScaleConnection;
 
   constructor(config: PlanetScaleDialectConfig) {
     this.#config = config;
-    this.#conn = connect({ cast: inflateDates, ...config });
+  }
+
+  async con() {
+    if (!this.#conn) {
+      const { connect, cast } = await import('@planetscale/database');
+      this.#conn = connect({ cast: inflateDates(cast), ...this.#config });
+    }
+
+    return this.#conn;
   }
 
   async executeQuery<O>(compiledQuery: CompiledQuery): Promise<QueryResult<O>> {
@@ -129,10 +132,14 @@ class PlanetScaleConnection implements DatabaseConnection {
           return param instanceof Date ? formatDate(param) : param;
         });
 
-    const results = await this.#conn.execute(compiledQuery.sql, parameters);
+    const results = await this.con().then((c) =>
+      c.execute(compiledQuery.sql, parameters),
+    );
 
     // @planetscale/database versions older than 1.3.0 return errors directly, rather than throwing
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     if ((results as any).error) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       throw (results as any).error;
     }
 
@@ -156,13 +163,13 @@ class PlanetScaleConnection implements DatabaseConnection {
   async beginTransaction() {
     this.#transactionClient =
       this.#transactionClient ?? new PlanetScaleConnection(this.#config);
-    await this.#transactionClient.#conn.execute('BEGIN');
+    await this.#transactionClient.con().then((c) => c.execute('BEGIN'));
   }
 
   async commitTransaction() {
     if (!this.#transactionClient) throw new Error('No transaction to commit');
     try {
-      await this.#transactionClient.#conn.execute('COMMIT');
+      await this.#transactionClient.con().then((c) => c.execute('COMMIT'));
     } finally {
       this.#transactionClient = undefined;
     }
@@ -171,7 +178,7 @@ class PlanetScaleConnection implements DatabaseConnection {
   async rollbackTransaction() {
     if (!this.#transactionClient) throw new Error('No transaction to rollback');
     try {
-      await this.#transactionClient.#conn.execute('ROLLBACK');
+      await this.#transactionClient.con().then((c) => c.execute('ROLLBACK'));
     } finally {
       this.#transactionClient = undefined;
     }
@@ -190,11 +197,13 @@ class PlanetScaleConnection implements DatabaseConnection {
  * `cast` function passed to the `@planetscale/database` library, but you can override it by
  * passing your own alternative `cast` function to {@link Config}.
  */
-export const inflateDates = (field: Field, value: string | null) => {
-  if (field.type === 'DATETIME' && value) return parseJSON(value);
-  if (field.type === 'TIMESTAMP' && value) return parseJSON(value);
-  return cast(field, value);
-};
+export const inflateDates =
+  (cast: (field: Field, value: string | null) => any) =>
+  (field: Field, value: string | null) => {
+    if (field.type === 'DATETIME' && value) return parseJSON(value);
+    if (field.type === 'TIMESTAMP' && value) return parseJSON(value);
+    return cast(field, value);
+  };
 
 const formatDate = (date: Date): string => {
   return date.toISOString().replace(/[TZ]/g, ' ').trim();
