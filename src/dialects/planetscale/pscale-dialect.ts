@@ -114,7 +114,7 @@ class PlanetScaleConnection implements DatabaseConnection {
 
   async con() {
     if (!this.#conn) {
-      const { connect, cast } = await import('@planetscale/database');
+      const { connect, cast } = await import('@planetscale/database/dist');
       this.#conn = connect({ cast: inflateDates(cast), ...this.#config });
     }
 
