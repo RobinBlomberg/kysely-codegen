@@ -48,7 +48,6 @@
     "kysely": "^0.23.3",
     "kysely-planetscale": "^1.2.1",
     "mysql2": "^2.3.3",
-    "node-fetch": "^3.3.0",
     "pg": "^8.8.0",
     "pnpm": "^7.21.0",
     "ts-node-dev": "^2.0.0",
@@ -61,7 +60,6 @@
     "kysely": ">=0.19.12",
     "kysely-planetscale": "^1.2.1",
     "mysql2": "^2.3.3",
-    "node-fetch": "^3.3.0",
     "pg": "^8.8.0"
   },
   "peerDependenciesMeta": {
