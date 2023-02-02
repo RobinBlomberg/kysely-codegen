@@ -4,9 +4,11 @@
 
 ## Table of contents
 
-- [Installation](#installation)
-- [Generating type definitions](#generating-type-definitions)
-- [Using the type definitions](#using-the-type-definitions)
+- [Kysely Codegen](#kysely-codegen)
+  - [Table of contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Generating type definitions](#generating-type-definitions)
+  - [Using the type definitions](#using-the-type-definitions)
 
 ## Installation
 
@@ -17,6 +19,7 @@ npm install --save-dev kysely-codegen
 npm install kysely pg
 npm install kysely mysql2
 npm install kysely better-sqlite3
+npm install kysely @planetscale/database kysely-planetscale node-fetch
 ```
 
 ## Generating type definitions
@@ -32,6 +35,10 @@ DATABASE_URL=mysql://username:password@yourdomain.com/database
 
 # SQLite
 DATABASE_URL=C:/Program Files/sqlite3/db
+
+# Planetscale
+DATABASE_URL=DATABASE_URL='mysql://<USERNAME>:<PLAIN_TEXT_PASSWORD>@<ACCESS_HOST_URL>/<DATABASE_NAME>?ssl={"rejectUnauthorized":true}'
+
 ```
 
 Then run:
