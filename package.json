@@ -53,14 +53,14 @@
     "pnpm": "^7.21.0",
     "ts-node-dev": "^2.0.0",
     "tsup": "^6.5.0",
-    "typescript": "^4.9.4",
-    "undici": "^5.16.0"
+    "typescript": "^4.9.4"
   },
   "peerDependencies": {
     "better-sqlite3": ">=7.6.2",
     "kysely": ">=0.19.12",
     "mysql2": "^2.3.3",
-    "pg": "^8.8.0"
+    "pg": "^8.8.0",
+    "@planetscale/database": "^1.5.0"
   },
   "peerDependenciesMeta": {
     "better-sqlite3": {
