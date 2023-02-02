@@ -32,7 +32,7 @@ export class ConnectionStringParser {
 
     if (
       connectionString.startsWith('mysql://') &&
-      connectionString.endsWith('?ssl={"rejectUnauthorized":true}')
+      connectionString.includes(`?ssl={"rejectUnauthorized"`)
     ) {
       return 'planetscale';
     }
