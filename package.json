@@ -77,9 +77,6 @@
     },
     "planetscale": {
       "optional": true
-    },
-    "node-fetch": {
-      "optional": true
     }
   },
   "eslintConfig": {

@@ -19,7 +19,7 @@ npm install --save-dev kysely-codegen
 npm install kysely pg
 npm install kysely mysql2
 npm install kysely better-sqlite3
-npm install kysely @planetscale/database kysely-planetscale node-fetch
+npm install kysely @planetscale/database kysely-planetscale
 ```
 
 ## Generating type definitions
