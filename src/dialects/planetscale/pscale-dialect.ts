@@ -18,6 +18,7 @@ import {
   QueryCompiler,
   QueryResult,
 } from 'kysely';
+import fetch from 'node-fetch';
 
 /**
  * Config for the PlanetScale dialect. It extends {@link Config} from `@planetscale/database`,
@@ -55,7 +56,7 @@ export class PlanetScaleDialect implements Dialect {
   #config: PlanetScaleDialectConfig;
 
   constructor(config: PlanetScaleDialectConfig) {
-    this.#config = config;
+    this.#config = { fetch, ...config };
   }
 
   createAdapter() {
