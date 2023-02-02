@@ -30,7 +30,10 @@ export class ConnectionStringParser {
       return 'postgres';
     }
 
-    if (connectionString.includes('connect.psdb.cloud')) {
+    if (
+      connectionString.startsWith('mysql://') &&
+      connectionString.endsWith('?ssl={"rejectUnauthorized":true}')
+    ) {
       return 'planetscale';
     }
 

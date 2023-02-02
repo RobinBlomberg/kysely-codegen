@@ -47,6 +47,7 @@
     "date-fns": "^2.29.3",
     "eslint": "^8.31.0",
     "kysely": "^0.23.3",
+    "kysely-planetscale": "^1.2.1",
     "mysql2": "^2.3.3",
     "node-fetch": "^3.3.0",
     "pg": "^8.8.0",
@@ -56,11 +57,12 @@
     "typescript": "^4.9.4"
   },
   "peerDependencies": {
+    "@planetscale/database": "^1.5.0",
+    "kysely-planetscale": "^1.2.1",
     "better-sqlite3": ">=7.6.2",
     "kysely": ">=0.19.12",
     "mysql2": "^2.3.3",
-    "pg": "^8.8.0",
-    "@planetscale/database": "^1.5.0"
+    "pg": "^8.8.0"
   },
   "peerDependenciesMeta": {
     "better-sqlite3": {
@@ -73,6 +75,9 @@
       "optional": true
     },
     "pg": {
+      "optional": true
+    },
+    "planetscale": {
       "optional": true
     }
   },
