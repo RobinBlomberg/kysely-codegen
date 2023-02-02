@@ -18,13 +18,14 @@
   },
   "homepage": "https://github.com/RobinBlomberg/kysely-codegen#readme",
   "scripts": {
-    "build": "tsup src/index.ts src/bin/index.ts --format esm --dts",
+    "build": "tsup src/index.ts src/bin/index.ts --format esm --dts --clean",
     "dev": "ts-node-dev --quiet --respawn ./src/bin/index.ts",
     "docker:up": "docker-compose up -d",
     "prepublishOnly": "pnpm build",
     "start": "node dist/bin/index.js",
     "test": "ts-node-dev src/tests/index.test.ts",
-    "test:watch": "ts-node-dev --quiet --respawn ./src/tests/index.test.ts"
+    "test:watch": "ts-node-dev --quiet --respawn ./src/tests/index.test.ts",
+    "prepare": "pnpm build"
   },
   "dependencies": {
     "chalk": "^4.1.2",
