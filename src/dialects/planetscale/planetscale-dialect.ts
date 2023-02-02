@@ -7,10 +7,10 @@ export class PlanetscaleDialect extends Dialect {
   readonly introspector = new MysqlIntrospector();
 
   async createKyselyDialect(options: CreateKyselyDialectOptions) {
-    const { default: fetch } = await import('node-fetch');
-    const { PlanetScaleDialect: KyselyPlanetScaleDialect } = await import(
-      'kysely-planetscale'
-    );
+    const [
+      { default: fetch },
+      { PlanetScaleDialect: KyselyPlanetScaleDialect },
+    ] = await Promise.all([import('node-fetch'), import('kysely-planetscale')]);
 
     return new KyselyPlanetScaleDialect({
       fetch,
