@@ -22,7 +22,7 @@
     "docker:up": "docker-compose up -d",
     "prepublishOnly": "pnpm build",
     "start": "node ./dist/bin/index.js",
-    "test": "ts-node-dev src/tests/index.test.ts",
+    "test": "ts-node-dev ./src/tests/index.test.ts",
     "test:watch": "ts-node-dev --quiet --respawn ./src/tests/index.test.ts",
     "prepare": "pnpm build"
   },
@@ -44,7 +44,6 @@
     "@types/pg": "^8.6.6",
     "@typescript-eslint/parser": "^5.47.1",
     "better-sqlite3": "^8.0.1",
-    "date-fns": "^2.29.3",
     "eslint": "^8.31.0",
     "kysely": "^0.23.3",
     "kysely-planetscale": "^1.2.1",
@@ -58,11 +57,11 @@
   },
   "peerDependencies": {
     "@planetscale/database": "^1.5.0",
-    "kysely-planetscale": "^1.2.1",
-    "node-fetch": "^3.3.0",
     "better-sqlite3": ">=7.6.2",
     "kysely": ">=0.19.12",
+    "kysely-planetscale": "^1.2.1",
     "mysql2": "^2.3.3",
+    "node-fetch": "^3.3.0",
     "pg": "^8.8.0"
   },
   "peerDependenciesMeta": {

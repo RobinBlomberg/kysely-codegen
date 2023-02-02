@@ -13,7 +13,6 @@ specifiers:
   '@typescript-eslint/parser': ^5.47.1
   better-sqlite3: ^8.0.1
   chalk: ^4.1.2
-  date-fns: ^2.29.3
   dotenv: ^16.0.3
   eslint: ^8.31.0
   kysely: ^0.23.3
@@ -46,7 +45,6 @@ devDependencies:
   '@types/pg': 8.6.6
   '@typescript-eslint/parser': 5.47.1_iukboom6ndih5an6iafl45j2fe
   better-sqlite3: 8.0.1
-  date-fns: 2.29.3
   eslint: 8.31.0
   kysely: 0.23.3
   kysely-planetscale: 1.2.1_z7hkwvucbgukbaukm7lodlcsym
