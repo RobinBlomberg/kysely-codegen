@@ -83,14 +83,6 @@ export class ConnectionStringParser {
     const inferredDialectName =
       options.dialectName ?? this.#inferDialectName(connectionString);
 
-    if (inferredDialectName !== 'sqlite') {
-      try {
-        void new URL(connectionString);
-      } catch {
-        throw new SyntaxError(`Invalid URL: '${connectionString}'`);
-      }
-    }
-
     return {
       connectionString,
       inferredDialectName,
