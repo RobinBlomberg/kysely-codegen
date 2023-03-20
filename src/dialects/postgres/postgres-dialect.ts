@@ -5,7 +5,7 @@ import { PostgresIntrospector } from './postgres-introspector';
 
 export class PostgresDialect extends Dialect {
   readonly adapter = new PostgresAdapter();
-  readonly introspector = new PostgresIntrospector();
+  readonly introspector = new PostgresIntrospector(this.adapter);
 
   async createKyselyDialect(options: CreateKyselyDialectOptions) {
     const { Pool } = await import('pg');

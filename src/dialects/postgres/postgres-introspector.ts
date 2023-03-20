@@ -6,9 +6,17 @@ import {
   DatabaseMetadata,
   TableMetadata,
 } from '../../metadata';
+import { PostgresAdapter } from './postgres-adapter';
 import { PostgresDB } from './postgres-db';
 
 export class PostgresIntrospector extends Introspector<PostgresDB> {
+  readonly adapter: PostgresAdapter;
+
+  constructor(adapter: PostgresAdapter) {
+    super();
+    this.adapter = adapter;
+  }
+
   #createDatabaseMetadata(
     tables: KyselyTableMetadata[],
     enums: EnumCollection,
@@ -18,10 +26,16 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
         ...table,
         columns: table.columns.map((column): ColumnMetadata => {
           const isArray = column.dataType.startsWith('_');
+
           return {
             ...column,
             dataType: isArray ? column.dataType.slice(1) : column.dataType,
-            enumValues: enums.get(column.dataType),
+            dataTypeSchema: column.dataTypeSchema,
+            enumValues: enums.get(
+              `${column.dataTypeSchema ?? this.adapter.defaultSchema}.${
+                column.dataType
+              }`,
+            ),
             isArray,
           };
         }),

@@ -1,5 +1,6 @@
 export type ColumnMetadataOptions = {
   dataType: string;
+  dataTypeSchema?: string;
   enumValues?: string[] | null;
   hasDefaultValue?: boolean;
   isArray?: boolean;
@@ -10,6 +11,7 @@ export type ColumnMetadataOptions = {
 
 export class ColumnMetadata {
   readonly dataType: string;
+  readonly dataTypeSchema: string | undefined;
   readonly enumValues: string[] | null;
   readonly hasDefaultValue: boolean;
   readonly isArray: boolean;
@@ -19,6 +21,7 @@ export class ColumnMetadata {
 
   constructor(options: ColumnMetadataOptions) {
     this.dataType = options.dataType;
+    this.dataTypeSchema = options.dataTypeSchema;
     this.enumValues = options.enumValues ?? null;
     this.hasDefaultValue = options.hasDefaultValue ?? false;
     this.isArray = options.isArray ?? false;

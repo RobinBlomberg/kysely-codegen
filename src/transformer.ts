@@ -213,12 +213,8 @@ export class Transformer {
     return this.#transformName(name, context);
   }
 
-  #transformColumn(
-    column: ColumnMetadata,
-    context: TransformContext,
-    schema?: string,
-  ) {
-    let args = this.#transformColumnToArgs(column, context, schema);
+  #transformColumn(column: ColumnMetadata, context: TransformContext) {
+    let args = this.#transformColumnToArgs(column, context);
 
     if (column.isArray) {
       args = [new ArrayExpressionNode(unionize(args))];
@@ -240,23 +236,30 @@ export class Transformer {
     return node;
   }
 
-  #transformColumnToArgs(
-    column: ColumnMetadata,
-    context: TransformContext,
-    schema?: string,
-  ) {
+  #transformColumnToArgs(column: ColumnMetadata, context: TransformContext) {
     const dataType = column.dataType.toLowerCase();
-
     const scalarNode = context.scalars[dataType];
+
     if (scalarNode) {
       return [scalarNode];
     }
 
-    const enumKey = `${schema}.${dataType}`;
-    const enumValues = context.enums.get(enumKey);
+    // Used as a unique identifier for the data type:
+    const dataTypeId = `${
+      column.dataTypeSchema ?? context.defaultSchema
+    }.${dataType}`;
+
+    // Used for serializing the name of the symbol:
+    const symbolId =
+      column.dataTypeSchema && column.dataTypeSchema !== context.defaultSchema
+        ? `${column.dataTypeSchema}.${dataType}`
+        : dataType;
+
+    const enumValues = context.enums.get(dataTypeId);
+
     if (enumValues) {
       const enumNode = unionize(this.#transformEnum(enumValues));
-      const symbolName = context.symbols.set(dataType, {
+      const symbolName = context.symbols.set(symbolId, {
         node: enumNode,
         type: SymbolType.DEFINITION,
       });
@@ -264,7 +267,8 @@ export class Transformer {
       return [node];
     }
 
-    const symbolName = context.symbols.getName(dataType);
+    const symbolName = context.symbols.getName(symbolId);
+
     if (symbolName) {
       const node = new IdentifierNode(symbolName ?? 'unknown');
       return [node];
@@ -293,7 +297,7 @@ export class Transformer {
 
       for (const column of table.columns) {
         const key = this.#transformName(column.name, context);
-        const value = this.#transformColumn(column, context, table.schema);
+        const value = this.#transformColumn(column, context);
         const tableProperty = new PropertyNode(key, value);
         tableProperties.push(tableProperty);
       }

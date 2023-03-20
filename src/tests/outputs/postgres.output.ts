@@ -6,12 +6,14 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export type Status = "CONFIRMED" | "UNCONFIRMED";
 
+export type TestStatus = "BAR" | "FOO";
+
 export interface FooBar {
   false: boolean;
   true: boolean;
   id: Generated<number>;
   userStatus: Status | null;
-  userStatus2: Status | null;
+  userStatus2: TestStatus | null;
   array: string[] | null;
 }
 
