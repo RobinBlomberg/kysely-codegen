@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "author": "Robin Blomberg",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,29 +25,29 @@
     "test:watch": "ts-node-dev --quiet --respawn ./src/tests/index.test.ts"
   },
   "dependencies": {
-    "chalk": "^4.1.2",
+    "chalk": "4.1.2",
     "dotenv": "^16.0.3",
     "micromatch": "^4.0.5",
-    "minimist": "^1.2.7"
+    "minimist": "^1.2.8"
   },
   "devDependencies": {
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
-    "@robinblomberg/eslint-config-robinblomberg": "0.13.0",
+    "@robinblomberg/eslint-config-robinblomberg": "0.14.0",
     "@robinblomberg/prettier-config": "^0.1.2",
     "@types/better-sqlite3": "^7.6.3",
     "@types/micromatch": "^4.0.2",
     "@types/minimist": "^1.2.2",
-    "@types/node": "^18.11.18",
+    "@types/node": "^18.15.5",
     "@types/pg": "^8.6.6",
-    "@typescript-eslint/parser": "^5.47.1",
-    "better-sqlite3": "^8.0.1",
-    "eslint": "^8.31.0",
-    "kysely": "^0.23.3",
+    "@typescript-eslint/parser": "^5.56.0",
+    "better-sqlite3": "^8.2.0",
+    "eslint": "^8.36.0",
+    "kysely": "^0.23.5",
     "mysql2": "^2.3.3",
-    "pg": "^8.8.0",
-    "pnpm": "^7.21.0",
+    "pg": "^8.10.0",
+    "pnpm": "^7.30.0",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^4.9.4"
+    "typescript": "^5.0.2"
   },
   "peerDependencies": {
     "better-sqlite3": ">=7.6.2",
