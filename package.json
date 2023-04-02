@@ -52,7 +52,7 @@
   "peerDependencies": {
     "better-sqlite3": ">=7.6.2",
     "kysely": ">=0.19.12",
-    "mysql2": "^2.3.3",
+    "mysql2": "^2.3.3,^3.0.0",
     "pg": "^8.8.0"
   },
   "peerDependenciesMeta": {
