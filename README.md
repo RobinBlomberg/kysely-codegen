@@ -34,6 +34,11 @@ DATABASE_URL=mysql://username:password@yourdomain.com/database
 DATABASE_URL=C:/Program Files/sqlite3/db
 ```
 
+> If you're using PlanetScale, make sure the url contains an ssl query string parameter
+> as follows:
+>
+> `ssl={"rejectUnauthorized":true}`.
+
 Then run:
 
 ```
