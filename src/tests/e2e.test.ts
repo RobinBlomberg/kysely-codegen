@@ -6,7 +6,7 @@ import { Dialect } from '../dialect';
 import { MysqlDialect, PostgresDialect, SqliteDialect } from '../dialects';
 import { Generator } from '../generator';
 import { Logger } from '../logger';
-import { migrate } from './fixtures';
+import { addExtraColumn, migrate } from './fixtures';
 import { DB } from './outputs/postgres.output';
 import { describe, it } from './test.utils';
 
@@ -67,9 +67,9 @@ const testValues = async (db: Kysely<DB>, expectedValues: ExpectedValues) => {
 
 export const testE2E = async () => {
   await describe('e2e', async () => {
-    await it('should generate the correct output', async () => {
-      const logger = new Logger();
+    const logger = new Logger();
 
+    await it('should generate the correct output', async () => {
       for (const { connectionString, dialect, values } of TESTS) {
         logger.info(`Testing ${dialect.constructor.name}...`);
 
@@ -88,6 +88,73 @@ export const testE2E = async () => {
 
         const expectedOutput = await readDialectOutput(dialect);
         strictEqual(output, expectedOutput);
+      }
+    });
+
+    await it('verifies generated types', async () => {
+      for (const { connectionString, dialect, values } of TESTS) {
+        const dialectName = dialect.constructor.name.slice(
+          0,
+          -'Dialect'.length,
+        );
+
+        const outFile = join(
+          __dirname,
+          'outputs',
+          `${dialectName.toLowerCase()}.output.ts`,
+        );
+
+        logger.info(`Testing ${dialectName}...`);
+
+        const db = await migrate(dialect, connectionString);
+
+        await testValues(db, values);
+
+        await new Generator().generate({
+          camelCase: true,
+          db,
+          dialect,
+          logger,
+          outFile,
+        });
+
+        const output = await new Generator().generate({
+          camelCase: true,
+          db,
+          dialect,
+          logger,
+          outFile,
+          verify: true,
+        });
+
+        const expectedOutput = await readDialectOutput(dialect);
+        strictEqual(output, expectedOutput);
+
+        await addExtraColumn(db, dialect);
+
+        try {
+          await new Generator().generate({
+            camelCase: true,
+            db,
+            dialect,
+            logger,
+            outFile,
+            verify: true,
+          });
+
+          throw new Error("This shouldn't be reached");
+        } catch (e: unknown) {
+          if (e instanceof Error) {
+            strictEqual(
+              e.message,
+              "Generated types are not up-to-date! Use '--log-level error' option for diff",
+            );
+          } else {
+            throw new Error("This shouldn't be reached");
+          }
+        }
+
+        await db.destroy();
       }
     });
   });

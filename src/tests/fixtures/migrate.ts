@@ -73,3 +73,13 @@ export const migrate = async (dialect: Dialect, connectionString: string) => {
 
   return db;
 };
+
+export const addExtraColumn = async (db: Kysely<DB>, dialect: Dialect) => {
+  await db.transaction().execute(async (trx) => {
+    let builder = trx.schema
+      .alterTable('foo_bar')
+      .addColumn('user_name', 'varchar(50)', (col) => col.defaultTo('test'));
+
+    await builder.execute();
+  });
+};
