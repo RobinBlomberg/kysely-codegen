@@ -157,7 +157,7 @@ export class Cli {
       argv['type-only-imports'] ?? true,
     );
     const url = (argv.url as string) ?? DEFAULT_URL;
-    const verify = argv.verify ?? false;
+    const verify = this.#parseBoolean(argv.verify ?? false);
 
     try {
       for (const key in argv) {
