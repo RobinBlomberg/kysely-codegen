@@ -18,6 +18,7 @@ export const testCli = () => {
     schema: undefined,
     typeOnlyImports: true,
     url: DEFAULT_URL,
+    verify: false,
   };
 
   void describe('cli', () => {

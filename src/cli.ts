@@ -24,9 +24,10 @@ export type CliOptions = {
   schema: string | undefined;
   typeOnlyImports: boolean;
   url: string;
+  verify: boolean | undefined;
 };
 
-export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
+export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
 
 /**
  * Creates a kysely-codegen command-line interface.
@@ -78,6 +79,7 @@ export class Cli {
       outFile,
       schema,
       typeOnlyImports,
+      verify: options.verify,
     });
 
     await db.destroy();
@@ -155,6 +157,7 @@ export class Cli {
       argv['type-only-imports'] ?? true,
     );
     const url = (argv.url as string) ?? DEFAULT_URL;
+    const verify = argv.verify ?? false;
 
     try {
       for (const key in argv) {
@@ -212,6 +215,7 @@ export class Cli {
       schema,
       typeOnlyImports,
       url,
+      verify,
     };
   }
 
