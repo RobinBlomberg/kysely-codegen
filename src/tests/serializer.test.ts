@@ -180,6 +180,35 @@ export const testSerializer = () => {
       );
     });
 
+    void describe('serializeObjectExpression', () => {
+      void it('should order fields properly', () => {
+        strictEqual(
+          serializer.serializeObjectExpression(
+            new ObjectExpressionNode([
+              new PropertyNode('zip', new IdentifierNode('Num7')),
+              new PropertyNode('avocado field', new IdentifierNode('Num3')),
+              new PropertyNode('brachiosaurus', new IdentifierNode('Num4')),
+              new PropertyNode('jc_33', new IdentifierNode('Nnum5')),
+              new PropertyNode('HelloField', new IdentifierNode('Num1')),
+              new PropertyNode('Zoo_field', new IdentifierNode('Num2')),
+              new PropertyNode('typescript_LANG', new IdentifierNode('Num6')),
+              new PropertyNode('_TEST', new IdentifierNode('Num0')),
+            ]),
+          ),
+          `{
+  _TEST: Num0;
+  HelloField: Num1;
+  Zoo_field: Num2;
+  "avocado field": Num3;
+  brachiosaurus: Num4;
+  jc_33: Num5;
+  typescript_LANG: Num6;
+  zip: Num7;
+}`,
+        );
+      });
+    });
+
     void it('serializeProperty', () => {
       strictEqual(
         serializer.serializeProperty(
@@ -206,6 +235,25 @@ export const testSerializer = () => {
         ),
         'JsonArray | JsonObject | JsonPrimitive',
       );
+    });
+
+    void describe('serializeUnionExpression', () => {
+      void it('should order union properly', () => {
+        strictEqual(
+          serializer.serializeUnionExpression(
+            new UnionExpressionNode([
+              new IdentifierNode('z_TYPE'),
+              new IdentifierNode('Aa_Type'),
+              new IdentifierNode('AA3Type'),
+              new IdentifierNode('Z_TYPE'),
+              new IdentifierNode('HType'),
+              new IdentifierNode('AA_Type'),
+              new IdentifierNode('Aa3Type'),
+            ]),
+          ),
+          'AA3Type | AA_Type | Aa3Type | Aa_Type | HType | Z_TYPE | z_TYPE',
+        );
+      });
     });
 
     void describe('serialize', () => {
