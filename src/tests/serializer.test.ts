@@ -243,15 +243,17 @@ export const testSerializer = () => {
           serializer.serializeUnionExpression(
             new UnionExpressionNode([
               new IdentifierNode('z_TYPE'),
+              new IdentifierNode('undefined'),
               new IdentifierNode('Aa_Type'),
               new IdentifierNode('AA3Type'),
               new IdentifierNode('Z_TYPE'),
               new IdentifierNode('HType'),
+              new IdentifierNode('null'),
               new IdentifierNode('AA_Type'),
               new IdentifierNode('Aa3Type'),
             ]),
           ),
-          'AA3Type | AA_Type | Aa3Type | Aa_Type | HType | Z_TYPE | z_TYPE',
+          'AA3Type | AA_Type | Aa3Type | Aa_Type | HType | Z_TYPE | z_TYPE | null | undefined',
         );
       });
     });

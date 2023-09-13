@@ -315,9 +315,10 @@ export class Serializer {
 
     const orderedArgs = node.args.sort((a, b) => {
       if(a.type !== NodeType.IDENTIFIER || b.type !== NodeType.IDENTIFIER) return 0
-      const last =  ['undefined', 'null']
-      if (last.includes(a.name)) return 1
-      if (last.includes(b.name)) return -1
+      if (a.name === undefined) return 1
+      if (b.name === undefined) return -1
+      if (a.name === null) return 1
+      if (b.name === null) return -1
       if (a.name < b.name) return -1;
       if (a.name > b.name) return 1;
       return 0;
