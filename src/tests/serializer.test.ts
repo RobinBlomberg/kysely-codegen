@@ -172,11 +172,11 @@ export const testSerializer = () => {
       strictEqual(
         serializer.serializeObjectExpression(
           new ObjectExpressionNode([
-            new PropertyNode('foo', new IdentifierNode('Foo')),
             new PropertyNode('bar baz', new IdentifierNode('BarBaz')),
+            new PropertyNode('foo', new IdentifierNode('Foo')),
           ]),
         ),
-        '{\n  foo: Foo;\n  "bar baz": BarBaz;\n}',
+        '{\n  "bar baz": BarBaz;\n  foo: Foo;\n}',
       );
     });
 
@@ -188,17 +188,17 @@ export const testSerializer = () => {
               new PropertyNode('zip', new IdentifierNode('Num7')),
               new PropertyNode('avocado field', new IdentifierNode('Num3')),
               new PropertyNode('brachiosaurus', new IdentifierNode('Num4')),
-              new PropertyNode('jc_33', new IdentifierNode('Nnum5')),
-              new PropertyNode('HelloField', new IdentifierNode('Num1')),
-              new PropertyNode('Zoo_field', new IdentifierNode('Num2')),
+              new PropertyNode('Zoo_field', new IdentifierNode('Num1')),
+              new PropertyNode('jc_33', new IdentifierNode('Num5')),
+              new PropertyNode('HelloField', new IdentifierNode('Num0')),
               new PropertyNode('typescript_LANG', new IdentifierNode('Num6')),
-              new PropertyNode('_TEST', new IdentifierNode('Num0')),
+              new PropertyNode('_TEST', new IdentifierNode('Num2')),
             ]),
           ),
           `{
-  _TEST: Num0;
-  HelloField: Num1;
-  Zoo_field: Num2;
+  HelloField: Num0;
+  Zoo_field: Num1;
+  _TEST: Num2;
   "avocado field": Num3;
   brachiosaurus: Num4;
   jc_33: Num5;
@@ -299,7 +299,7 @@ export const testSerializer = () => {
             '  [K in string]?: JsonValue;\n' +
             '};\n' +
             '\n' +
-            'export type JsonPrimitive = boolean | null | number | string;\n' +
+            'export type JsonPrimitive = boolean | number | string | null;\n' +
             '\n' +
             'export type JsonValue = JsonArray | JsonObject | JsonPrimitive;\n' +
             '\n' +
