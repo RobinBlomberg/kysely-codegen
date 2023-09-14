@@ -3,7 +3,12 @@ import { readFile } from 'fs/promises';
 import { Kysely } from 'kysely';
 import { join } from 'path';
 import { Dialect } from '../dialect';
-import { MysqlDialect, PostgresDialect, SqliteDialect } from '../dialects';
+import {
+  LibSqlDialect,
+  MysqlDialect,
+  PostgresDialect,
+  SqliteDialect,
+} from '../dialects';
 import { Generator } from '../generator';
 import { Logger } from '../logger';
 import { migrate } from './fixtures';
@@ -36,6 +41,11 @@ const TESTS: Test[] = [
   {
     connectionString: ':memory:',
     dialect: new SqliteDialect(),
+    values: { false: 0, id: 1, true: 1 },
+  },
+  {
+    connectionString: 'libsql://localhost:8080?tls=0',
+    dialect: new LibSqlDialect(),
     values: { false: 0, id: 1, true: 1 },
   },
 ];

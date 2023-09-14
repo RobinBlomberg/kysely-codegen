@@ -1,7 +1,12 @@
 import { Dialect } from './dialect';
-import { MysqlDialect, PostgresDialect, SqliteDialect } from './dialects';
+import {
+  LibSqlDialect,
+  MysqlDialect,
+  PostgresDialect,
+  SqliteDialect,
+} from './dialects';
 
-export type DialectName = 'mysql' | 'postgres' | 'sqlite';
+export type DialectName = 'mysql' | 'postgres' | 'sqlite' | 'libsql';
 
 /**
  * Returns a dialect instance for a pre-defined dialect name.
@@ -13,6 +18,8 @@ export class DialectManager {
         return new MysqlDialect();
       case 'postgres':
         return new PostgresDialect();
+      case 'libsql':
+        return new LibSqlDialect();
       default:
         return new SqliteDialect();
     }

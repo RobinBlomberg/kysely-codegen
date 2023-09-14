@@ -26,7 +26,7 @@ export type CliOptions = {
   url: string;
 };
 
-export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
+export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
 
 /**
  * Creates a kysely-codegen command-line interface.

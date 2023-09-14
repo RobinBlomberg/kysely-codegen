@@ -17,6 +17,7 @@ npm install --save-dev kysely-codegen
 npm install kysely pg
 npm install kysely mysql2
 npm install kysely better-sqlite3
+npm install @libsql/kysely-libsql
 ```
 
 ## Generating type definitions
@@ -32,6 +33,9 @@ DATABASE_URL=mysql://username:password@yourdomain.com/database
 
 # SQLite
 DATABASE_URL=C:/Program Files/sqlite3/db
+
+# LibSQL
+DATABASE_URL=libsql://token@host:port/dabase
 ```
 
 > If you're using PlanetScale, make sure the url contains an SSL query string parameter

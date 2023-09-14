@@ -34,6 +34,10 @@ export class ConnectionStringParser {
       return 'mysql';
     }
 
+    if (connectionString.startsWith('libsql://')) {
+      return 'libsql';
+    }
+
     return 'sqlite';
   }
 

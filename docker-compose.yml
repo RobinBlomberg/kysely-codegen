@@ -28,3 +28,9 @@ services:
     restart: always
     ports:
       - 5433:5432
+  kysely_codegen_libsql:
+    container_name: kysely_codegen_libsql
+    image: ghcr.io/libsql/sqld:latest
+    restart: always
+    ports:
+      - 8080:8080

@@ -65,5 +65,28 @@ export const testConnectionStringParser = () => {
         );
       });
     });
+
+    void describe('libsql', () => {
+      void it('should infer the correct dialect name', () => {
+        deepStrictEqual(
+          parser.parse({
+            connectionString: 'libsql://token@hostname:port/db',
+          }),
+          {
+            connectionString: 'libsql://token@hostname:port/db',
+            inferredDialectName: 'libsql',
+          },
+        );
+        deepStrictEqual(
+          parser.parse({
+            connectionString: 'libsql://hostname:port/db',
+          }),
+          {
+            connectionString: 'libsql://hostname:port/db',
+            inferredDialectName: 'libsql',
+          },
+        );
+      });
+    });
   });
 };
