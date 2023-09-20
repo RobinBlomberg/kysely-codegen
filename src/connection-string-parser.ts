@@ -13,6 +13,7 @@ export type ParseConnectionStringOptions = {
   connectionString: string;
   dialectName?: DialectName;
   logger?: Logger;
+  envFile?: string;
 };
 
 export type ParsedConnectionString = {
@@ -66,7 +67,9 @@ export class ConnectionStringParser {
         );
       }
 
-      loadEnv();
+      loadEnv({
+        path: options.envFile,
+      });
 
       options.logger?.info('Loaded environment variables from .env file.');
 

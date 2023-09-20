@@ -24,6 +24,11 @@ export const FLAGS: Flag[] = [
   },
   {
     description:
+      'Load environment variables from a file relative to the current directory',
+    longName: 'env-file',
+  },
+  {
+    description:
       'Exclude tables matching the specified glob pattern. ' +
       '(examples: users, *.table, secrets.*, *._*)',
     longName: 'exclude-pattern',

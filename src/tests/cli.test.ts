@@ -10,6 +10,7 @@ export const testCli = () => {
   const DEFAULT_CLI_OPTIONS: CliOptions = {
     camelCase: false,
     dialectName: undefined,
+    envFile: undefined,
     excludePattern: undefined,
     includePattern: undefined,
     logLevel: DEFAULT_LOG_LEVEL,

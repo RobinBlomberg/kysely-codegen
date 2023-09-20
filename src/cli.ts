@@ -16,6 +16,7 @@ import { Logger } from './logger';
 export type CliOptions = {
   camelCase: boolean;
   dialectName: DialectName | undefined;
+  envFile: string | undefined;
   excludePattern: string | undefined;
   includePattern: string | undefined;
   logLevel: LogLevel;
@@ -48,6 +49,7 @@ export class Cli {
         connectionString: options.url ?? DEFAULT_URL,
         dialectName: options.dialectName,
         logger,
+        envFile: options.envFile,
       });
 
     if (options.dialectName) {
@@ -143,6 +145,7 @@ export class Cli {
     const dialectName = argv.dialect as DialectName | undefined;
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
+    const envFile = argv['env-file'] as string | undefined;
     const excludePattern = argv['exclude-pattern'] as string | undefined;
     const includePattern = argv['include-pattern'] as string | undefined;
     const logLevel = this.#getLogLevel(argv['log-level']);
@@ -204,6 +207,7 @@ export class Cli {
     return {
       camelCase,
       dialectName,
+      envFile,
       excludePattern,
       includePattern,
       logLevel,
