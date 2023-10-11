@@ -25,7 +25,7 @@ export class MysqlParser {
     const enums: string[] = [];
 
     while (this.index < this.data.length && this.data[this.index] !== ')') {
-      if (enums.length) {
+      if (enums.length > 0) {
         this.#consume(',');
       }
 

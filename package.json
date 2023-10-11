@@ -20,6 +20,8 @@
     "build": "tsc",
     "dev": "ts-node-dev --quiet --respawn ./src/bin/index.ts",
     "docker:up": "docker-compose up -d",
+    "fix": "eslint src --fix",
+    "lint": "eslint src",
     "prepublishOnly": "pnpm test && pnpm build",
     "start": "node ./dist/bin/index.js",
     "test": "ts-node-dev ./src/tests/index.test.ts",
@@ -34,7 +36,7 @@
   },
   "devDependencies": {
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
-    "@robinblomberg/eslint-config-robinblomberg": "0.19.1",
+    "@robinblomberg/eslint-config-robinblomberg": "0.20.0",
     "@robinblomberg/prettier-config": "^0.1.2",
     "@types/better-sqlite3": "^7.6.5",
     "@types/micromatch": "^4.0.3",
