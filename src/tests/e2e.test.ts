@@ -29,7 +29,7 @@ const TESTS: Test[] = [
     values: { false: 0, id: 1, true: 1 },
   },
   {
-    connectionString: 'postgres://user:password@localhost/database',
+    connectionString: 'postgres://user:password@localhost:5433/database',
     dialect: new PostgresDialect(),
     values: { false: false, id: 1, true: true },
   },
