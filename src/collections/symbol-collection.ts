@@ -57,7 +57,7 @@ export class SymbolCollection {
     }
 
     const symbolNames = new Set(Object.values(this.symbolNames));
-    symbolName = toPascalCase(id.replace(/[^a-zA-Z$_0-9]/g, '_');
+    symbolName = toPascalCase(id.replace(/[^a-zA-Z$_0-9]/g, '_'));
 
     if (symbolNames.has(symbolName)) {
       let suffix = 2;
