@@ -15,6 +15,11 @@ export interface FooBar {
   userStatus: Status | null;
   userStatus2: TestStatus | null;
   array: string[] | null;
+  nullablePosInt: number | null;
+  defaultedNullablePosInt: Generated<number | null>;
+  defaultedRequiredPosInt: Generated<number>;
+  childDomain: number | null;
+  testDomainIsBool: boolean | null;
 }
 
 export interface DB {

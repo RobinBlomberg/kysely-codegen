@@ -1,4 +1,9 @@
-import { Kysely, TableMetadata as KyselyTableMetadata } from 'kysely';
+import {
+  Kysely,
+  ColumnMetadata as KyselyColumnMetaData,
+  TableMetadata as KyselyTableMetadata,
+  sql,
+} from 'kysely';
 import { EnumCollection } from '../../collections';
 import { IntrospectOptions, Introspector } from '../../introspector';
 import {
@@ -8,6 +13,12 @@ import {
 } from '../../metadata';
 import { PostgresAdapter } from './postgres-adapter';
 import { PostgresDB } from './postgres-db';
+
+type PostgresDomainInspector = {
+  typeName: string;
+  typeSchema: string;
+  rootType: string;
+};
 
 export class PostgresIntrospector extends Introspector<PostgresDB> {
   readonly adapter: PostgresAdapter;
@@ -20,21 +31,22 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
   #createDatabaseMetadata(
     tables: KyselyTableMetadata[],
     enums: EnumCollection,
+    domains: PostgresDomainInspector[],
   ) {
     const tablesMetadata = tables.map(
       (table): TableMetadata => ({
         ...table,
         columns: table.columns.map((column): ColumnMetadata => {
-          const isArray = column.dataType.startsWith('_');
+          const dataType = this.#getRootType(column, domains);
+          const isArray = dataType.startsWith('_');
 
           return {
             ...column,
-            dataType: isArray ? column.dataType.slice(1) : column.dataType,
+            dataType: isArray ? dataType.slice(1) : dataType,
             dataTypeSchema: column.dataTypeSchema,
             enumValues: enums.get(
-              `${column.dataTypeSchema ?? this.adapter.defaultSchema}.${
-                column.dataType
-              }`,
+              `${column.dataTypeSchema ?? this.adapter.defaultSchema
+              }.${dataType}`,
             ),
             isArray,
           };
@@ -42,6 +54,19 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
       }),
     );
     return new DatabaseMetadata(tablesMetadata, enums);
+  }
+
+  #getRootType(
+    column: KyselyColumnMetaData,
+    domains: PostgresDomainInspector[],
+  ) {
+    const foundDomain = domains.find(
+      (d) =>
+        d.typeName === column.dataType &&
+        d.typeSchema === column.dataTypeSchema,
+    );
+
+    return foundDomain?.rootType ?? column.dataType;
   }
 
   async #introspectEnums(db: Kysely<PostgresDB>) {
@@ -70,9 +95,44 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     return enums;
   }
 
+  async #introspectDomains(db: Kysely<PostgresDB>) {
+    const result = await sql<PostgresDomainInspector>`
+with recursive domain_hierarchy as (
+  select
+    oid,
+    typbasetype
+  from pg_type
+  where typtype = 'd'
+  and 'information_schema'::regnamespace::oid <> typnamespace
+
+  union all
+
+  SELECT
+    dh.oid,
+    t.typbasetype
+  FROM
+    domain_hierarchy as dh
+    JOIN pg_type as t ON t.oid = dh.typbasetype
+)
+
+select t.typname as "typeName",
+      t.typnamespace::regnamespace::text as "typeSchema",
+      bt.typname as "rootType"
+from domain_hierarchy as dh
+join pg_type as t on dh.oid = t.oid
+join pg_type as bt on dh.typbasetype = bt.oid
+where bt.typbasetype = 0;
+    `.execute(db);
+
+    return result.rows;
+  }
+
   async introspect(options: IntrospectOptions<PostgresDB>) {
     const tables = await this.getTables(options);
-    const enums = await this.#introspectEnums(options.db);
-    return this.#createDatabaseMetadata(tables, enums);
+    const [enums, domains] = await Promise.all([
+      this.#introspectEnums(options.db),
+      this.#introspectDomains(options.db),
+    ]);
+    return this.#createDatabaseMetadata(tables, enums, domains);
   }
 }
