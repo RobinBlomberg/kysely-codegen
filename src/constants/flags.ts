@@ -18,13 +18,7 @@ export const FLAGS: Flag[] = [
     longName: 'dialect',
   },
   {
-    description: 'Print this message.',
-    longName: 'help',
-    shortName: 'h',
-  },
-  {
-    description:
-      'Load environment variables from a file relative to the current directory',
+    description: 'Specify the path to an environment file to use.',
     longName: 'env-file',
   },
   {
@@ -32,6 +26,11 @@ export const FLAGS: Flag[] = [
       'Exclude tables matching the specified glob pattern. ' +
       '(examples: users, *.table, secrets.*, *._*)',
     longName: 'exclude-pattern',
+  },
+  {
+    description: 'Print this message.',
+    longName: 'help',
+    shortName: 'h',
   },
   {
     description:

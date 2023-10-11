@@ -12,8 +12,8 @@ const MYSQL_URI_CONNECTION_STRING_REGEXP = /^mysqlx?:\/\//;
 export type ParseConnectionStringOptions = {
   connectionString: string;
   dialectName?: DialectName;
-  logger?: Logger;
   envFile?: string;
+  logger?: Logger;
 };
 
 export type ParsedConnectionString = {
@@ -67,9 +67,7 @@ export class ConnectionStringParser {
         );
       }
 
-      loadEnv({
-        path: options.envFile,
-      });
+      loadEnv({ path: options.envFile });
 
       options.logger?.info('Loaded environment variables from .env file.');
 
