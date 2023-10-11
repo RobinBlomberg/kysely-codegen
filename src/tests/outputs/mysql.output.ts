@@ -6,8 +6,8 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export interface FooBar {
   false: number;
-  true: number;
   id: Generated<number>;
+  true: number;
   userStatus: "CONFIRMED" | "UNCONFIRMED" | null;
 }
 

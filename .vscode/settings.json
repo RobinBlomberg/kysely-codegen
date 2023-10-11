@@ -1,8 +1,9 @@
 {
-  "editor.codeActionsOnSave": [
-    "source.organizeImports",
-    "source.fixAll.eslint"
-  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.addMissingImports": true,
+    "source.organizeImports": true
+  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.insertSpaces": true,

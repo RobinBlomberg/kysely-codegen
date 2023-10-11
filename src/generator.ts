@@ -3,6 +3,7 @@ import { Kysely } from 'kysely';
 import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
 import { Dialect } from './dialect';
+import { DiffChecker } from './diff-checker';
 import { Logger } from './logger';
 import { Serializer } from './serializer';
 import { Transformer } from './transformer';
@@ -20,6 +21,7 @@ export type GenerateOptions = {
   serializer?: Serializer;
   transformer?: Transformer;
   typeOnlyImports?: boolean;
+  verify?: boolean;
 };
 
 /**
@@ -59,27 +61,55 @@ export class Generator {
       new Serializer({ typeOnlyImports: options.typeOnlyImports });
     const data = serializer.serialize(nodes);
 
+    const relativeOutDir = options.outFile
+      ? `.${sep}${relative(process.cwd(), options.outFile)}`
+      : null;
+
     if (options.print) {
       console.log();
       console.log(data);
-    } else if (options.outFile) {
-      const outDir = parse(options.outFile).dir;
+    } else if (relativeOutDir) {
+      if (options.verify) {
+        let existingTypes: string;
 
-      await fs.mkdir(outDir, { recursive: true });
-      await fs.writeFile(options.outFile, data);
+        try {
+          existingTypes = await fs.readFile(relativeOutDir, 'utf8');
+        } catch (error: unknown) {
+          options.logger?.error(error);
+          throw new Error('Failed to load existing types');
+        }
 
-      const endTime = performance.now();
-      const relativeOutDir = `.${sep}${relative(
-        process.cwd(),
-        options.outFile,
-      )}`;
-      const duration = Math.round(endTime - startTime);
-      const tableCount = metadata.tables.length;
-      const s = tableCount === 1 ? '' : 's';
+        const diffChecker = new DiffChecker();
+        const diff = diffChecker.diff(data, existingTypes);
 
-      options.logger?.success(
-        `Introspected ${tableCount} table${s} and generated ${relativeOutDir} in ${duration}ms.\n`,
-      );
+        if (diff) {
+          options.logger?.error(diff);
+          throw new Error(
+            "Generated types are not up-to-date! Use '--log-level=error' option to view the diff.",
+          );
+        }
+
+        const endTime = performance.now();
+        const duration = Math.round(endTime - startTime);
+
+        options.logger?.success(
+          `Generated types are up-to-date! (${duration}ms)`,
+        );
+      } else {
+        const outDir = parse(relativeOutDir).dir;
+
+        await fs.mkdir(outDir, { recursive: true });
+        await fs.writeFile(relativeOutDir, data);
+
+        const endTime = performance.now();
+        const duration = Math.round(endTime - startTime);
+        const tableCount = metadata.tables.length;
+        const s = tableCount === 1 ? '' : 's';
+
+        options.logger?.success(
+          `Introspected ${tableCount} table${s} and generated ${relativeOutDir} in ${duration}ms.\n`,
+        );
+      }
     }
 
     return data;

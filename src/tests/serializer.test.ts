@@ -172,12 +172,41 @@ export const testSerializer = () => {
       strictEqual(
         serializer.serializeObjectExpression(
           new ObjectExpressionNode([
-            new PropertyNode('foo', new IdentifierNode('Foo')),
             new PropertyNode('bar baz', new IdentifierNode('BarBaz')),
+            new PropertyNode('foo', new IdentifierNode('Foo')),
           ]),
         ),
-        '{\n  foo: Foo;\n  "bar baz": BarBaz;\n}',
+        '{\n  "bar baz": BarBaz;\n  foo: Foo;\n}',
       );
+    });
+
+    void describe('serializeObjectExpression', () => {
+      void it('should order fields properly', () => {
+        strictEqual(
+          serializer.serializeObjectExpression(
+            new ObjectExpressionNode([
+              new PropertyNode('zip', new IdentifierNode('Num7')),
+              new PropertyNode('avocado field', new IdentifierNode('Num3')),
+              new PropertyNode('brachiosaurus', new IdentifierNode('Num4')),
+              new PropertyNode('Zoo_field', new IdentifierNode('Num1')),
+              new PropertyNode('jc_33', new IdentifierNode('Num5')),
+              new PropertyNode('HelloField', new IdentifierNode('Num0')),
+              new PropertyNode('typescript_LANG', new IdentifierNode('Num6')),
+              new PropertyNode('_TEST', new IdentifierNode('Num2')),
+            ]),
+          ),
+          `{
+  _TEST: Num2;
+  "avocado field": Num3;
+  brachiosaurus: Num4;
+  HelloField: Num0;
+  jc_33: Num5;
+  typescript_LANG: Num6;
+  zip: Num7;
+  Zoo_field: Num1;
+}`,
+        );
+      });
     });
 
     void it('serializeProperty', () => {
@@ -206,6 +235,27 @@ export const testSerializer = () => {
         ),
         'JsonArray | JsonObject | JsonPrimitive',
       );
+    });
+
+    void describe('serializeUnionExpression', () => {
+      void it('should order union constituents properly', () => {
+        strictEqual(
+          serializer.serializeUnionExpression(
+            new UnionExpressionNode([
+              new IdentifierNode('z_TYPE'),
+              new IdentifierNode('undefined'),
+              new IdentifierNode('Aa_Type'),
+              new IdentifierNode('AA3Type'),
+              new IdentifierNode('Z_TYPE'),
+              new IdentifierNode('HType'),
+              new IdentifierNode('null'),
+              new IdentifierNode('AA_Type'),
+              new IdentifierNode('Aa3Type'),
+            ]),
+          ),
+          'AA3Type | AA_Type | Aa3Type | Aa_Type | HType | Z_TYPE | z_TYPE | null | undefined',
+        );
+      });
     });
 
     void describe('serialize', () => {
@@ -249,7 +299,7 @@ export const testSerializer = () => {
             '  [K in string]?: JsonValue;\n' +
             '};\n' +
             '\n' +
-            'export type JsonPrimitive = boolean | null | number | string;\n' +
+            'export type JsonPrimitive = boolean | number | string | null;\n' +
             '\n' +
             'export type JsonValue = JsonArray | JsonObject | JsonPrimitive;\n' +
             '\n' +
