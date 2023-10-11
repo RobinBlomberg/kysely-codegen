@@ -6,7 +6,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "kysely-codegen": "./dist/bin/index.js"
+    "kysely-codegen": "./dist/cli/bin.js"
   },
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "lint:prettier": "prettier --check src",
     "prepublishOnly": "pnpm test && pnpm build",
     "start": "node ./dist/bin/index.js",
-    "test": "ts-node-dev ./src/tests/index.test.ts",
-    "test:watch": "ts-node-dev --quiet --respawn ./src/tests/index.test.ts",
+    "test": "ts-node-dev ./src/index.test.ts",
+    "test:watch": "ts-node-dev --quiet --respawn ./src/index.test.ts",
     "upgrade": "ncu -u"
   },
   "dependencies": {
@@ -89,7 +89,7 @@
       "@robinblomberg/robinblomberg",
       "@robinblomberg/prettier"
     ],
-    "ignorePatterns": "**/src/tests/outputs/*.ts"
+    "ignorePatterns": "**/src/core/outputs/*.ts"
   },
   "prettier": "@robinblomberg/prettier-config"
 }

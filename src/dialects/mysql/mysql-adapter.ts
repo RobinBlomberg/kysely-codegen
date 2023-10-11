@@ -1,18 +1,18 @@
-import { Adapter } from '../../adapter';
+import {
+  ArrayExpressionNode,
+  ColumnType,
+  IdentifierNode,
+  ObjectExpressionNode,
+  PropertyNode,
+  UnionExpressionNode,
+} from '../../ast';
+import { Adapter } from '../../core';
 import {
   JSON_ARRAY_DEFINITION,
   JSON_OBJECT_DEFINITION,
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
-} from '../../constants';
-import {
-  ArrayExpressionNode,
-  IdentifierNode,
-  ObjectExpressionNode,
-  PropertyNode,
-  UnionExpressionNode,
-} from '../../nodes';
-import { ColumnType } from '../../nodes/column-type-node';
+} from '../../transformer';
 
 export class MysqlAdapter extends Adapter {
   override readonly definitions = {

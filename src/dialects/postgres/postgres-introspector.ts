@@ -4,13 +4,13 @@ import {
   TableMetadata as KyselyTableMetadata,
   sql,
 } from 'kysely';
-import { EnumCollection } from '../../collections';
-import { IntrospectOptions, Introspector } from '../../introspector';
 import {
   ColumnMetadata,
   DatabaseMetadata,
+  EnumCollection,
   TableMetadata,
-} from '../../metadata';
+} from '../../core';
+import { IntrospectOptions, Introspector } from '../../introspector';
 import { PostgresAdapter } from './postgres-adapter';
 import { PostgresDB } from './postgres-db';
 

@@ -1,5 +1,5 @@
-import { Adapter } from '../../adapter';
-import { IdentifierNode } from '../../nodes';
+import { IdentifierNode } from '../../ast';
+import { Adapter } from '../../core';
 
 export class SqliteAdapter extends Adapter {
   override readonly defaultScalar = new IdentifierNode('string');

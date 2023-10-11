@@ -1,4 +1,4 @@
-import { CreateKyselyDialectOptions, Dialect } from '../../dialect';
+import { CreateKyselyDialectOptions, Dialect } from '../../core';
 import { LibsqlAdapter } from './libsql-adapter';
 import { SqliteIntrospector } from './libsql-introspector';
 

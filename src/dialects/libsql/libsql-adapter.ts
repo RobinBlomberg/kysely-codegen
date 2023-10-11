@@ -1,3 +1,3 @@
-import { SqliteAdapter } from '../sqlite/sqlite-adapter';
+import { SqliteAdapter } from '../sqlite';
 
 export class LibsqlAdapter extends SqliteAdapter {}

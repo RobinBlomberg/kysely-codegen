@@ -1,6 +1,5 @@
-import { EnumCollection } from '../../collections';
+import { DatabaseMetadata, EnumCollection } from '../../core';
 import { IntrospectOptions, Introspector } from '../../introspector';
-import { DatabaseMetadata } from '../../metadata';
 
 export class SqliteIntrospector extends Introspector<any> {
   async introspect(options: IntrospectOptions<any>) {

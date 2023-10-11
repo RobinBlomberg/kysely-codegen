@@ -1,18 +1,18 @@
-import { Adapter } from '../../adapter';
 import {
-  JSON_ARRAY_DEFINITION,
-  JSON_OBJECT_DEFINITION,
-  JSON_PRIMITIVE_DEFINITION,
-  JSON_VALUE_DEFINITION,
-} from '../../constants';
-import {
+  ColumnType,
   IdentifierNode,
   ModuleReferenceNode,
   ObjectExpressionNode,
   PropertyNode,
   UnionExpressionNode,
-} from '../../nodes';
-import { ColumnType } from '../../nodes/column-type-node';
+} from '../../ast';
+import { Adapter } from '../../core';
+import {
+  JSON_ARRAY_DEFINITION,
+  JSON_OBJECT_DEFINITION,
+  JSON_PRIMITIVE_DEFINITION,
+  JSON_VALUE_DEFINITION,
+} from '../../transformer';
 
 export class PostgresAdapter extends Adapter {
   // From https://node-postgres.com/features/types:
