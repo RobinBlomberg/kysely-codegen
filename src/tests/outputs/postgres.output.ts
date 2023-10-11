@@ -9,17 +9,17 @@ export type Status = "CONFIRMED" | "UNCONFIRMED";
 export type TestStatus = "BAR" | "FOO";
 
 export interface FooBar {
-  false: boolean;
-  true: boolean;
-  id: Generated<number>;
-  userStatus: Status | null;
-  userStatus2: TestStatus | null;
   array: string[] | null;
-  nullablePosInt: number | null;
+  childDomain: number | null;
   defaultedNullablePosInt: Generated<number | null>;
   defaultedRequiredPosInt: Generated<number>;
-  childDomain: number | null;
+  false: boolean;
+  id: Generated<number>;
+  nullablePosInt: number | null;
   testDomainIsBool: boolean | null;
+  true: boolean;
+  userStatus: Status | null;
+  userStatus2: TestStatus | null;
 }
 
 export interface DB {

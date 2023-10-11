@@ -280,14 +280,11 @@ export class Serializer {
     if (node.properties.length > 0) {
       data += '\n';
 
-      const orderedNodes = node.properties.sort((a, b) => {
-        if (a.key < b.key) return -1;
-        if (a.key > b.key) return 1;
-        return 0;
-      });
+      const sortedProperties = [...node.properties].sort((a, b) =>
+        a.key.localeCompare(b.key),
+      );
 
-
-      for (const property of orderedNodes) {
+      for (const property of sortedProperties) {
         data += '  ';
         data += this.serializeProperty(property);
       }
@@ -313,18 +310,20 @@ export class Serializer {
     let data = '';
     let i = 0;
 
-    const orderedArgs = node.args.sort((a, b) => {
-      if(a.type !== NodeType.IDENTIFIER || b.type !== NodeType.IDENTIFIER) return 0
-      if (a.name === undefined || a.name === 'undefined') return 1
-      if (b.name === undefined || b.name === 'undefined') return -1
-      if (a.name === null || a.name === 'null') return 1
-      if (b.name === null || b.name === 'null') return -1
+    const sortedArgs = [...node.args].sort((a, b) => {
+      if (a.type !== NodeType.IDENTIFIER || b.type !== NodeType.IDENTIFIER) {
+        return 0;
+      }
+      if (a.name === undefined || a.name === 'undefined') return 1;
+      if (b.name === undefined || b.name === 'undefined') return -1;
+      if (a.name === null || a.name === 'null') return 1;
+      if (b.name === null || b.name === 'null') return -1;
       if (a.name < b.name) return -1;
       if (a.name > b.name) return 1;
       return 0;
     });
 
-    for (const arg of orderedArgs) {
+    for (const arg of sortedArgs) {
       if (i >= 1) {
         data += ' | ';
       }

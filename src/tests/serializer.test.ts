@@ -196,14 +196,14 @@ export const testSerializer = () => {
             ]),
           ),
           `{
-  HelloField: Num0;
-  Zoo_field: Num1;
   _TEST: Num2;
   "avocado field": Num3;
   brachiosaurus: Num4;
+  HelloField: Num0;
   jc_33: Num5;
   typescript_LANG: Num6;
   zip: Num7;
+  Zoo_field: Num1;
 }`,
         );
       });
@@ -238,7 +238,7 @@ export const testSerializer = () => {
     });
 
     void describe('serializeUnionExpression', () => {
-      void it('should order union properly', () => {
+      void it('should order union constituents properly', () => {
         strictEqual(
           serializer.serializeUnionExpression(
             new UnionExpressionNode([

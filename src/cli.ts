@@ -27,7 +27,7 @@ export type CliOptions = {
   verify: boolean | undefined;
 };
 
-export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
+export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
 
 /**
  * Creates a kysely-codegen command-line interface.
