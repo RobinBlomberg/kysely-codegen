@@ -45,7 +45,8 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
             dataType: isArray ? dataType.slice(1) : dataType,
             dataTypeSchema: column.dataTypeSchema,
             enumValues: enums.get(
-              `${column.dataTypeSchema ?? this.adapter.defaultSchema
+              `${
+                column.dataTypeSchema ?? this.adapter.defaultSchema
               }.${dataType}`,
             ),
             isArray,
@@ -97,31 +98,27 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
 
   async #introspectDomains(db: Kysely<PostgresDB>) {
     const result = await sql<PostgresDomainInspector>`
-with recursive domain_hierarchy as (
-  select
-    oid,
-    typbasetype
-  from pg_type
-  where typtype = 'd'
-  and 'information_schema'::regnamespace::oid <> typnamespace
+      with recursive domain_hierarchy as (
+        select oid, typbasetype
+        from pg_type
+        where typtype = 'd'
+        and 'information_schema'::regnamespace::oid <> typnamespace
 
-  union all
+        union all
 
-  SELECT
-    dh.oid,
-    t.typbasetype
-  FROM
-    domain_hierarchy as dh
-    JOIN pg_type as t ON t.oid = dh.typbasetype
-)
+        select dh.oid, t.typbasetype
+        from domain_hierarchy as dh
+        join pg_type as t ON t.oid = dh.typbasetype
+      )
 
-select t.typname as "typeName",
-      t.typnamespace::regnamespace::text as "typeSchema",
-      bt.typname as "rootType"
-from domain_hierarchy as dh
-join pg_type as t on dh.oid = t.oid
-join pg_type as bt on dh.typbasetype = bt.oid
-where bt.typbasetype = 0;
+      select
+        t.typname as "typeName",
+        t.typnamespace::regnamespace::text as "typeSchema",
+        bt.typname as "rootType"
+      from domain_hierarchy as dh
+      join pg_type as t on dh.oid = t.oid
+      join pg_type as bt on dh.typbasetype = bt.oid
+      where bt.typbasetype = 0;
     `.execute(db);
 
     return result.rows;

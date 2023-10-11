@@ -141,16 +141,14 @@ export const testE2E = async () => {
             outFile,
             verify: true,
           });
-
-          throw new Error("This shouldn't be reached");
-        } catch (e: unknown) {
-          if (e instanceof Error) {
+        } catch (error: unknown) {
+          if (error instanceof Error) {
             strictEqual(
-              e.message,
-              "Generated types are not up-to-date! Use '--log-level error' option for diff",
+              error.message,
+              "Generated types are not up-to-date! Use '--log-level=error' option to view the diff.",
             );
           } else {
-            throw new Error("This shouldn't be reached");
+            throw error;
           }
         }
 

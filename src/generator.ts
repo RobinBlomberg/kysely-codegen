@@ -74,8 +74,8 @@ export class Generator {
 
         try {
           existingTypes = await fs.readFile(relativeOutDir, 'utf8');
-        } catch (e: unknown) {
-          options.logger?.error(e);
+        } catch (error: unknown) {
+          options.logger?.error(error);
           throw new Error('Failed to load existing types');
         }
 
@@ -85,14 +85,16 @@ export class Generator {
         if (diff) {
           options.logger?.error(diff);
           throw new Error(
-            "Generated types are not up-to-date! Use '--log-level error' option for diff",
+            "Generated types are not up-to-date! Use '--log-level=error' option to view the diff.",
           );
         }
 
         const endTime = performance.now();
         const duration = Math.round(endTime - startTime);
 
-        options.logger?.success(`Verified types in ${duration}ms.`);
+        options.logger?.success(
+          `Generated types are up-to-date! (${duration}ms)`,
+        );
       } else {
         const outDir = parse(relativeOutDir).dir;
 
