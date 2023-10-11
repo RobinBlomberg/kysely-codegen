@@ -34,7 +34,7 @@ export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
  * Creates a kysely-codegen command-line interface.
  */
 export class Cli {
-  async #generate(options: CliOptions) {
+  async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
     const outFile = options.outFile;
     const excludePattern = options.excludePattern;
@@ -225,6 +225,6 @@ export class Cli {
 
   async run(argv: string[]) {
     const options = this.parseOptions(argv);
-    await this.#generate(options);
+    await this.generate(options);
   }
 }
