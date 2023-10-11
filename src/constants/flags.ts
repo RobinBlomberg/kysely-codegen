@@ -62,4 +62,9 @@ export const FLAGS: Flag[] = [
     description: 'Set the default schema of the database connection.',
     longName: 'schema',
   },
+  {
+    description:
+      'Verify that the generated types are up-to-date. (default: false)',
+    longName: 'verify',
+  },
 ];

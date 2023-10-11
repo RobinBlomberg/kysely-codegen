@@ -31,8 +31,7 @@ export const testTransformer = () => {
       const dialect = new PostgresDialect();
       const transformer = new Transformer();
       const metadata = new DatabaseMetadata(tables, enums);
-      const nodes = transformer.transform({ camelCase, dialect, metadata });
-      return nodes;
+      return transformer.transform({ camelCase, dialect, metadata });
     };
 
     void it('should transform correctly', () => {
