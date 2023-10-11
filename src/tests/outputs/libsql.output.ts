@@ -6,14 +6,14 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export interface FooBar {
   false: number;
-  true: number;
   id: Generated<number>;
+  true: number;
   userStatus: string | null;
 }
 
 export interface LibsqlWasmFuncTable {
-  name: string;
   body: string | null;
+  name: string;
 }
 
 export interface DB {
