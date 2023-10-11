@@ -19,7 +19,7 @@ import {
   UnionExpressionNode,
 } from './nodes';
 
-const IDENTIFIER_REGEXP = /^[a-zA-Z_$][a-zA-Z_0-9$]*$/;
+const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
 export type SerializerOptions = {
   typeOnlyImports?: boolean;
@@ -277,10 +277,14 @@ export class Serializer {
 
     data += '{';
 
-    if (node.properties.length) {
+    if (node.properties.length > 0) {
       data += '\n';
 
-      for (const property of node.properties) {
+      const sortedProperties = [...node.properties].sort((a, b) =>
+        a.key.localeCompare(b.key),
+      );
+
+      for (const property of sortedProperties) {
         data += '  ';
         data += this.serializeProperty(property);
       }
@@ -306,7 +310,20 @@ export class Serializer {
     let data = '';
     let i = 0;
 
-    for (const arg of node.args) {
+    const sortedArgs = [...node.args].sort((a, b) => {
+      if (a.type !== NodeType.IDENTIFIER || b.type !== NodeType.IDENTIFIER) {
+        return 0;
+      }
+      if (a.name === undefined || a.name === 'undefined') return 1;
+      if (b.name === undefined || b.name === 'undefined') return -1;
+      if (a.name === null || a.name === 'null') return 1;
+      if (b.name === null || b.name === 'null') return -1;
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+
+    for (const arg of sortedArgs) {
       if (i >= 1) {
         data += ' | ';
       }

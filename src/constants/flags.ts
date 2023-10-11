@@ -18,15 +18,19 @@ export const FLAGS: Flag[] = [
     longName: 'dialect',
   },
   {
-    description: 'Print this message.',
-    longName: 'help',
-    shortName: 'h',
+    description: 'Specify the path to an environment file to use.',
+    longName: 'env-file',
   },
   {
     description:
       'Exclude tables matching the specified glob pattern. ' +
       '(examples: users, *.table, secrets.*, *._*)',
     longName: 'exclude-pattern',
+  },
+  {
+    description: 'Print this message.',
+    longName: 'help',
+    shortName: 'h',
   },
   {
     description:
@@ -61,5 +65,10 @@ export const FLAGS: Flag[] = [
   {
     description: 'Set the default schema of the database connection.',
     longName: 'schema',
+  },
+  {
+    description:
+      'Verify that the generated types are up-to-date. (default: false)',
+    longName: 'verify',
   },
 ];

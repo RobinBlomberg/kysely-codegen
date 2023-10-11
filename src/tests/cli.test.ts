@@ -10,6 +10,7 @@ export const testCli = () => {
   const DEFAULT_CLI_OPTIONS: CliOptions = {
     camelCase: false,
     dialectName: undefined,
+    envFile: undefined,
     excludePattern: undefined,
     includePattern: undefined,
     logLevel: DEFAULT_LOG_LEVEL,
@@ -18,6 +19,7 @@ export const testCli = () => {
     schema: undefined,
     typeOnlyImports: true,
     url: DEFAULT_URL,
+    verify: false,
   };
 
   void describe('cli', () => {
@@ -46,6 +48,9 @@ export const testCli = () => {
       assert(['--no-type-only-imports'], { typeOnlyImports: false });
       assert(['--url=postgres://u:p@s/d'], { url: 'postgres://u:p@s/d' });
       assert(['--schema=foo'], { schema: 'foo' });
+      assert(['--verify'], { verify: true });
+      assert(['--verify=true'], { verify: true });
+      assert(['--verify=false'], { verify: false });
     });
   });
 };

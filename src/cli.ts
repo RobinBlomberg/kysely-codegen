@@ -16,6 +16,7 @@ import { Logger } from './logger';
 export type CliOptions = {
   camelCase: boolean;
   dialectName: DialectName | undefined;
+  envFile: string | undefined;
   excludePattern: string | undefined;
   includePattern: string | undefined;
   logLevel: LogLevel;
@@ -24,6 +25,7 @@ export type CliOptions = {
   schema: string | undefined;
   typeOnlyImports: boolean;
   url: string;
+  verify: boolean | undefined;
 };
 
 export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
@@ -32,7 +34,7 @@ export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
  * Creates a kysely-codegen command-line interface.
  */
 export class Cli {
-  async #generate(options: CliOptions) {
+  async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
     const outFile = options.outFile;
     const excludePattern = options.excludePattern;
@@ -48,6 +50,7 @@ export class Cli {
         connectionString: options.url ?? DEFAULT_URL,
         dialectName: options.dialectName,
         logger,
+        envFile: options.envFile,
       });
 
     if (options.dialectName) {
@@ -78,6 +81,7 @@ export class Cli {
       outFile,
       schema,
       typeOnlyImports,
+      verify: options.verify,
     });
 
     await db.destroy();
@@ -143,6 +147,7 @@ export class Cli {
     const dialectName = argv.dialect as DialectName | undefined;
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
+    const envFile = argv['env-file'] as string | undefined;
     const excludePattern = argv['exclude-pattern'] as string | undefined;
     const includePattern = argv['include-pattern'] as string | undefined;
     const logLevel = this.#getLogLevel(argv['log-level']);
@@ -155,6 +160,7 @@ export class Cli {
       argv['type-only-imports'] ?? true,
     );
     const url = (argv.url as string) ?? DEFAULT_URL;
+    const verify = this.#parseBoolean(argv.verify ?? false);
 
     try {
       for (const key in argv) {
@@ -204,6 +210,7 @@ export class Cli {
     return {
       camelCase,
       dialectName,
+      envFile,
       excludePattern,
       includePattern,
       logLevel,
@@ -212,11 +219,12 @@ export class Cli {
       schema,
       typeOnlyImports,
       url,
+      verify,
     };
   }
 
   async run(argv: string[]) {
     const options = this.parseOptions(argv);
-    await this.#generate(options);
+    await this.generate(options);
   }
 }

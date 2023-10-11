@@ -14,8 +14,15 @@ const down = async (db: Kysely<any>, dialect: Dialect) => {
         .dropType('status')
         .ifExists()
         .execute();
+      await trx.schema
+        .withSchema('test')
+        .dropType('is_bool')
+        .ifExists()
+        .execute();
       await trx.schema.dropSchema('test').ifExists().execute();
       await trx.schema.dropType('status').ifExists().execute();
+      await trx.schema.dropType('pos_int_child').ifExists().execute();
+      await trx.schema.dropType('pos_int').ifExists().execute();
     }
   });
 };
@@ -33,6 +40,13 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
         .createType('status')
         .asEnum(['CONFIRMED', 'UNCONFIRMED'])
         .execute();
+
+      await sql`CREATE domain pos_int AS Integer CONSTRAINT positive_number CHECK (value >= 0);`.execute(
+        trx,
+      );
+      // Edge case where a domain is a child of another domain
+      await sql`CREATE domain pos_int_child as pos_int;`.execute(trx);
+      await sql`CREATE domain test.is_bool as boolean;`.execute(trx);
     }
 
     let builder = trx.schema
@@ -49,7 +63,16 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
         .addColumn('id', 'serial')
         .addColumn('user_status', sql`status`)
         .addColumn('user_status_2', sql`test.status`)
-        .addColumn('array', sql`text[]`);
+        .addColumn('array', sql`text[]`)
+        .addColumn('nullable_pos_int', sql`pos_int`)
+        .addColumn('defaulted_nullable_pos_int', sql`pos_int`, (col) =>
+          col.defaultTo(0),
+        )
+        .addColumn('defaulted_required_pos_int', sql`pos_int`, (col) =>
+          col.notNull().defaultTo(0),
+        )
+        .addColumn('child_domain', sql`pos_int_child`)
+        .addColumn('test_domain_is_bool', sql`test.is_bool`);
     } else {
       builder = builder
         .addColumn('id', 'integer', (col) =>
@@ -72,4 +95,13 @@ export const migrate = async (dialect: Dialect, connectionString: string) => {
   await up(db, dialect);
 
   return db;
+};
+
+export const addExtraColumn = async (db: Kysely<DB>, dialect: Dialect) => {
+  await db.transaction().execute(async (trx) => {
+    const builder = trx.schema
+      .alterTable('foo_bar')
+      .addColumn('user_name', 'varchar(50)', (col) => col.defaultTo('test'));
+    await builder.execute();
+  });
 };
