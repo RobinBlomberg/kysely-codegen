@@ -19,7 +19,7 @@ import {
   UnionExpressionNode,
 } from './nodes';
 
-const IDENTIFIER_REGEXP = /^[a-zA-Z_$][a-zA-Z_0-9$]*$/;
+const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
 export type SerializerOptions = {
   typeOnlyImports?: boolean;
@@ -277,7 +277,7 @@ export class Serializer {
 
     data += '{';
 
-    if (node.properties.length) {
+    if (node.properties.length > 0) {
       data += '\n';
 
       for (const property of node.properties) {
