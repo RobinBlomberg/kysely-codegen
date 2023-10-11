@@ -18,7 +18,7 @@
   "homepage": "https://github.com/RobinBlomberg/kysely-codegen#readme",
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node-dev --quiet --respawn ./src/bin/index.ts",
+    "dev": "ts-node-dev --quiet --respawn ./src/cli/bin.ts",
     "docker:up": "docker-compose up -d",
     "fix": "run-s fix:*",
     "fix:eslint": "eslint --fix src",
@@ -27,7 +27,7 @@
     "lint:eslint": "eslint src",
     "lint:prettier": "prettier --check src",
     "prepublishOnly": "pnpm test && pnpm build",
-    "start": "node ./dist/bin/index.js",
+    "start": "node ./dist/cli/bin.js",
     "test": "ts-node-dev ./src/index.test.ts",
     "test:watch": "ts-node-dev --quiet --respawn ./src/index.test.ts",
     "upgrade": "ncu -u"
