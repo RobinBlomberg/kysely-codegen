@@ -17,18 +17,18 @@ import {
 import { FLAGS } from './flags';
 
 export type CliOptions = {
-  camelCase: boolean;
-  dialectName: DialectName | undefined;
-  envFile: string | undefined;
-  excludePattern: string | undefined;
-  includePattern: string | undefined;
-  logLevel: LogLevel;
-  outFile: string | undefined;
-  print: boolean;
-  schema: string | undefined;
-  typeOnlyImports: boolean;
+  camelCase?: boolean;
+  dialectName?: DialectName | undefined;
+  envFile?: string | undefined;
+  excludePattern?: string | undefined;
+  includePattern?: string | undefined;
+  logLevel?: LogLevel;
+  outFile?: string | undefined;
+  print?: boolean;
+  schema?: string | undefined;
+  typeOnlyImports?: boolean;
   url: string;
-  verify: boolean | undefined;
+  verify?: boolean | undefined;
 };
 
 export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
