@@ -4,34 +4,32 @@ specifiers:
   '@robinblomberg/eslint-config-prettier': ^0.1.4
   '@robinblomberg/eslint-config-robinblomberg': 0.20.0
   '@robinblomberg/prettier-config': ^0.1.2
-  '@types/better-sqlite3': ^7.6.3
-  '@types/git-diff': ^2.0.3
-  '@types/micromatch': ^4.0.2
-  '@types/minimist': ^1.2.2
-  '@types/node': ^18.15.5
-  '@types/pg': ^8.6.6
-  '@typescript-eslint/parser': ^5.56.0
-  better-sqlite3: ^8.2.0
+  '@types/better-sqlite3': ^7.6.8
+  '@types/git-diff': ^2.0.7
+  '@types/micromatch': ^4.0.6
+  '@types/minimist': ^1.2.5
+  '@types/node': ^18.19.1
+  '@types/pg': ^8.10.9
+  '@typescript-eslint/parser': ^5.62.0
+  better-sqlite3: ^8.7.0
   chalk: 4.1.2
-  dotenv: ^16.0.3
-  eslint: ^8.36.0
+  dotenv: ^16.3.1
+  eslint: ^8.55.0
   git-diff: ^2.0.6
   kysely: ^0.23.5
-  kysely-bun-worker: ^0.5.3
   micromatch: ^4.0.5
   minimist: ^1.2.8
   mysql2: ^2.3.3
   npm-run-all: ^4.1.5
-  pg: ^8.10.0
-  pnpm: ^7.30.0
+  pg: ^8.11.3
+  pnpm: ^7.33.6
   ts-node-dev: ^2.0.0
-  typescript: ^5.2.2
+  typescript: ^5.3.2
 
 dependencies:
   chalk: 4.1.2
   dotenv: 16.3.1
   git-diff: 2.0.6
-  kysely-bun-worker: 0.5.3_kysely@0.23.5
   micromatch: 4.0.5
   minimist: 1.2.8
 
@@ -459,10 +457,6 @@ packages:
     dependencies:
       lodash: 4.17.21
     dev: true
-
-  /@subframe7536/type-utils/0.1.4:
-    resolution: {integrity: sha512-mbO9WxhDzqQ2hxJalWEvcSxUi6M1HCDEcvzcZJqIdzb4rrSxuCGlpqh94r5jT683I1ux06XtUHk5nEQEGnqGvQ==}
-    dev: false
 
   /@tsconfig/node10/1.0.9:
     resolution: {integrity: sha512-jNsYVVxU8v5g43Erja32laIDHXeoNvFEpX33OK4d6hljo3jDhCBDhx5dhCCTMWUojscpAagGiRkBKxpdl9fxqA==}
@@ -2268,15 +2262,6 @@ packages:
       json-buffer: 3.0.1
     dev: true
 
-  /kysely-bun-worker/0.5.3_kysely@0.23.5:
-    resolution: {integrity: sha512-buOGMWRB41EXKte03D2L+Q/Wy7uxEnPqwHhSXAnUQQNKUaE41rhGtkR9++mC3mcMzWYdzJsUNSRcl4khc74tzQ==}
-    peerDependencies:
-      kysely: ^0.26
-    dependencies:
-      kysely: 0.23.5
-      zen-mitt: 0.3.0
-    dev: false
-
   /kysely/0.23.5:
     resolution: {integrity: sha512-TH+b56pVXQq0tsyooYLeNfV11j6ih7D50dyN8tkM0e7ndiUH28Nziojiog3qRFlmEj9XePYdZUrNJ2079Qjdow==}
     engines: {node: '>=14.0.0'}
@@ -3681,9 +3666,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  /zen-mitt/0.3.0:
-    resolution: {integrity: sha512-r+lWHLKUvsa3q3Cr89s8g0G2Yx9wgN2YbRXFRbA8/nVsbozCxtR6R8KAPqDsyRWXJldYUq49WbBEHXeuda/f9g==}
-    dependencies:
-      '@subframe7536/type-utils': 0.1.4
-    dev: false
