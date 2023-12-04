@@ -1,8 +1,8 @@
-# Kysely Codegen
+# Kysely Codegen <!-- omit from toc -->
 
 `kysely-codegen` generates Kysely type definitions from your database. That's it.
 
-## Table of contents
+## Table of contents <!-- omit from toc -->
 
 - [Installation](#installation)
 - [Generating type definitions](#generating-type-definitions)
@@ -38,10 +38,9 @@ DATABASE_URL=C:/Program Files/sqlite3/db
 DATABASE_URL=libsql://token@host:port/database
 ```
 
-> If you're using PlanetScale, make sure the url contains an SSL query string parameter
-> as follows:
+> If your URL contains a password with special characters, those characters may need to be [percent-encoded](https://en.wikipedia.org/wiki/Percent-encoding#Reserved_characters).
 >
-> `ssl={"rejectUnauthorized":true}`.
+> If you are using _PlanetScale_, make sure your URL contains this SSL query string parameter: `ssl={"rejectUnauthorized":true}`
 
 Then run:
 
@@ -51,8 +50,12 @@ kysely-codegen
 
 This command will generate a `.d.ts` file from your database, for example:
 
-```typescript
-import { Generated, ColumnType } from 'kysely';
+```ts
+import { ColumnType } from 'kysely';
+
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
@@ -83,7 +86,7 @@ For more options, run `kysely-codegen --help`.
 
 Import `DB` into `new Kysely<DB>`, and you're done!
 
-```typescript
+```ts
 import { Kysely, PostgresDialect } from 'kysely';
 import { DB } from 'kysely-codegen';
 import { Pool } from 'pg';
