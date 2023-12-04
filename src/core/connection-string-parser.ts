@@ -26,19 +26,19 @@ export type ParsedConnectionString = {
  */
 export class ConnectionStringParser {
   #inferDialectName(connectionString: string): DialectName {
-    if (
-      connectionString.startsWith('postgres') ||
-      connectionString.startsWith('pg')
-    ) {
-      return 'postgres';
+    if (connectionString.startsWith('libsql')) {
+      return 'libsql';
     }
 
     if (connectionString.startsWith('mysql')) {
       return 'mysql';
     }
 
-    if (connectionString.startsWith('libsql')) {
-      return 'libsql';
+    if (
+      connectionString.startsWith('postgres') ||
+      connectionString.startsWith('pg')
+    ) {
+      return 'postgres';
     }
 
     return 'sqlite';
