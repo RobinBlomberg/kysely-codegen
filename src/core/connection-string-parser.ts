@@ -3,12 +3,11 @@ import { DialectName } from './dialect-manager';
 import { Logger } from './logger';
 
 const CALL_STATEMENT_REGEXP = /^\s*([a-z]+)\s*\(\s*(.*)\s*\)\s*$/;
+const DIALECT_PARTS_REGEXP = /([^:]*)(.*)/;
 
 /**
  * @see https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html
  */
-const MYSQL_URI_CONNECTION_STRING_REGEXP = /^mysqlx?:\/\//;
-
 export type ParseConnectionStringOptions = {
   connectionString: string;
   dialectName?: DialectName;
@@ -27,15 +26,18 @@ export type ParsedConnectionString = {
  */
 export class ConnectionStringParser {
   #inferDialectName(connectionString: string): DialectName {
-    if (connectionString.startsWith('postgres://')) {
+    if (
+      connectionString.startsWith('postgres') ||
+      connectionString.startsWith('pg')
+    ) {
       return 'postgres';
     }
 
-    if (MYSQL_URI_CONNECTION_STRING_REGEXP.test(connectionString)) {
+    if (connectionString.startsWith('mysql')) {
       return 'mysql';
     }
 
-    if (connectionString.startsWith('libsql://')) {
+    if (connectionString.startsWith('libsql')) {
       return 'libsql';
     }
 
@@ -85,11 +87,17 @@ export class ConnectionStringParser {
       connectionString = envConnectionString;
     }
 
+    const parts = connectionString.match(DIALECT_PARTS_REGEXP)!;
+    const protocol = parts[1]!;
+    const tail = parts[2]!;
+    const normalizedConnectionString =
+      protocol === 'pg' ? `postgres${tail}` : connectionString;
+
     const inferredDialectName =
       options.dialectName ?? this.#inferDialectName(connectionString);
 
     return {
-      connectionString,
+      connectionString: normalizedConnectionString,
       inferredDialectName,
     };
   }

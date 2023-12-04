@@ -17,6 +17,26 @@ export const testConnectionStringParser = () => {
             inferredDialectName: 'postgres',
           },
         );
+        deepStrictEqual(
+          parser.parse({
+            connectionString:
+              'postgresql://username:password@hostname/database',
+          }),
+          {
+            connectionString:
+              'postgresql://username:password@hostname/database',
+            inferredDialectName: 'postgres',
+          },
+        );
+        deepStrictEqual(
+          parser.parse({
+            connectionString: 'pg://username:password@hostname/database',
+          }),
+          {
+            connectionString: 'postgres://username:password@hostname/database',
+            inferredDialectName: 'postgres',
+          },
+        );
       });
     });
 
