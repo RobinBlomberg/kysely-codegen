@@ -236,7 +236,13 @@ export class Transformer {
     let args = this.#transformColumnToArgs(column, context);
 
     if (column.isArray) {
-      args = [new ArrayExpressionNode(unionize(args))];
+      const unionizedArgs = unionize(args);
+      const isSimpleNode =
+        unionizedArgs.type === NodeType.IDENTIFIER &&
+        ['boolean', 'number', 'string'].includes(unionizedArgs.name);
+      args = isSimpleNode
+        ? [new ArrayExpressionNode(unionizedArgs)]
+        : [new GenericExpressionNode('ArrayType', [unionizedArgs])];
     }
 
     if (column.isNullable) {

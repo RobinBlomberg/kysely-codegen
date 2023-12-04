@@ -49,13 +49,18 @@ export const testTransformer = () => {
                 name: 'interval',
               }),
               new ColumnMetadata({
+                dataType: 'interval',
+                isArray: true,
+                name: 'intervals',
+              }),
+              new ColumnMetadata({
                 dataType: 'mood',
                 name: 'mood',
               }),
               new ColumnMetadata({
                 dataType: 'text',
                 isArray: true,
-                name: 'array',
+                name: 'texts',
               }),
             ],
             name: 'table',
@@ -70,6 +75,9 @@ export const testTransformer = () => {
         new ImportStatementNode('postgres-interval', [
           new ImportClauseNode('IPostgresInterval'),
         ]),
+        new ExportStatementNode(
+          new AliasDeclarationNode('ArrayType', GLOBAL_DEFINITIONS.ArrayType),
+        ),
         new ExportStatementNode(
           new AliasDeclarationNode('Generated', GLOBAL_DEFINITIONS.Generated),
         ),
@@ -99,9 +107,15 @@ export const testTransformer = () => {
                   new IdentifierNode('Interval'),
                 ]),
               ),
+              new PropertyNode(
+                'intervals',
+                new GenericExpressionNode('ArrayType', [
+                  new IdentifierNode('Interval'),
+                ]),
+              ),
               new PropertyNode('mood', new IdentifierNode('Mood')),
               new PropertyNode(
-                'array',
+                'texts',
                 new ArrayExpressionNode(new IdentifierNode('string')),
               ),
             ]),

@@ -140,7 +140,7 @@ export const testE2E = async () => {
         const expectedOutput = await readDialectOutput(dialect);
         strictEqual(output, expectedOutput);
 
-        await addExtraColumn(db, dialect);
+        await addExtraColumn(db);
 
         try {
           await new Generator().generate({
