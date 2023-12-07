@@ -1,4 +1,4 @@
-# Kysely Codegen <!-- omit from toc -->
+# ![kysely-codegen](./assets/kysely-codegen-logo.svg) <!-- omit from toc -->
 
 `kysely-codegen` generates Kysely type definitions from your database. That's it.
 
@@ -100,15 +100,5 @@ const db = new Kysely<DB>({
 });
 
 const rows = await db.selectFrom('user').selectAll().execute();
-// [
-//   {
-//     company_id: number | null;
-//     created_at: Date;
-//     email: string;
-//     id: number;
-//     is_active: boolean;
-//     name: string;
-//     updated_at: Date;
-//   }
-// ]
+//    ^ { company_id: number | null; created_at: Date; email: string; id: number; ... }[]
 ```
