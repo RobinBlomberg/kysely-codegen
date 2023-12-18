@@ -43,11 +43,7 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('number'),
       ]),
     ),
-    Json: new ColumnType(
-      new IdentifierNode('JsonValue'),
-      new IdentifierNode('string'),
-      new IdentifierNode('string'),
-    ),
+    Json: JSON_VALUE_DEFINITION,
     JsonArray: JSON_ARRAY_DEFINITION,
     JsonObject: JSON_OBJECT_DEFINITION,
     JsonPrimitive: JSON_PRIMITIVE_DEFINITION,
