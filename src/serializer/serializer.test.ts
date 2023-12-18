@@ -23,7 +23,7 @@ import {
   EnumCollection,
   TableMetadata,
 } from '../core';
-import { MysqlDialect } from '../dialects';
+import { MysqlDialect, PostgresDialect } from '../dialects';
 import { describe, it } from '../test.utils';
 import { Transformer } from '../transformer';
 import { Serializer } from './serializer';
@@ -296,6 +296,62 @@ export const testSerializer = () => {
           'import type { ColumnType } from "kysely";\n' +
             '\n' +
             'export type Json = ColumnType<JsonValue, string, string>;\n' +
+            '\n' +
+            'export type JsonArray = JsonValue[];\n' +
+            '\n' +
+            'export type JsonObject = {\n' +
+            '  [K in string]?: JsonValue;\n' +
+            '};\n' +
+            '\n' +
+            'export type JsonPrimitive = boolean | number | string | null;\n' +
+            '\n' +
+            'export type JsonValue = JsonArray | JsonObject | JsonPrimitive;\n' +
+            '\n' +
+            'export interface Foo {\n' +
+            '  json: Json;\n' +
+            '}\n' +
+            '\n' +
+            'export interface DB {\n' +
+            '  foo: Foo;\n' +
+            '}\n',
+        );
+      });
+    });
+
+    void describe('serialize', () => {
+      void it('should serialize Postgres JSON fields properly', () => {
+        const dialect = new PostgresDialect();
+        const enums = new EnumCollection();
+        const transformer = new Transformer();
+
+        const ast = transformer.transform({
+          camelCase: true,
+          dialect,
+          metadata: new DatabaseMetadata(
+            [
+              new TableMetadata({
+                columns: [
+                  new ColumnMetadata({
+                    dataType: 'json',
+                    hasDefaultValue: false,
+                    isAutoIncrementing: false,
+                    isNullable: false,
+                    name: 'json',
+                  }),
+                ],
+                name: 'foo',
+                schema: 'public',
+              }),
+            ],
+            enums,
+          ),
+        });
+        
+        strictEqual(
+          serializer.serialize(ast),
+          'import type { ColumnType } from "kysely";\n' +
+            '\n' +
+            'export type Json = JsonValue;\n' +
             '\n' +
             'export type JsonArray = JsonValue[];\n' +
             '\n' +
