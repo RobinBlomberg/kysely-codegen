@@ -9,6 +9,7 @@ import {
 import { Adapter } from '../../core';
 import {
   JSON_ARRAY_DEFINITION,
+  JSON_DEFINITION,
   JSON_OBJECT_DEFINITION,
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
@@ -43,7 +44,7 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('number'),
       ]),
     ),
-    Json: JSON_VALUE_DEFINITION,
+    Json: JSON_DEFINITION,
     JsonArray: JSON_ARRAY_DEFINITION,
     JsonObject: JSON_OBJECT_DEFINITION,
     JsonPrimitive: JSON_PRIMITIVE_DEFINITION,
