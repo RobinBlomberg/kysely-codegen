@@ -7,6 +7,12 @@ services:
     ports:
       - 8081:8080
     restart: always
+  kysely_codegen_libsql:
+    container_name: kysely_codegen_libsql
+    image: ghcr.io/libsql/sqld:latest
+    ports:
+      - 8080:8080
+    restart: always
   kysely_codegen_mysql:
     container_name: kysely_codegen_mysql
     environment:
@@ -15,9 +21,9 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=user
     image: mysql:latest
-    restart: always
     ports:
       - 3306:3306
+    restart: always
   kysely_codegen_postgres:
     container_name: kysely_codegen_postgres
     environment:
@@ -25,12 +31,6 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_USER=user
     image: postgres:latest
-    restart: always
     ports:
       - 5433:5432
-  kysely_codegen_libsql:
-    container_name: kysely_codegen_libsql
-    image: ghcr.io/libsql/sqld:latest
     restart: always
-    ports:
-      - 8080:8080

@@ -1,6 +1,6 @@
 import {
   BunSqliteDialect,
-  LibSqlDialect,
+  LibsqlDialect,
   MysqlDialect,
   PostgresDialect,
   SqliteDialect,
@@ -23,7 +23,7 @@ export class DialectManager {
       case 'bun-sqlite':
         return new BunSqliteDialect();
       case 'libsql':
-        return new LibSqlDialect();
+        return new LibsqlDialect();
       case 'mysql':
         return new MysqlDialect();
       case 'postgres':

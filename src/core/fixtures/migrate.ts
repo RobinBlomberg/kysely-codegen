@@ -72,7 +72,8 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
           col.notNull().defaultTo(0),
         )
         .addColumn('child_domain', sql`pos_int_child`)
-        .addColumn('test_domain_is_bool', sql`test.is_bool`);
+        .addColumn('test_domain_is_bool', sql`test.is_bool`)
+        .addColumn('timestamps', sql`timestamp with time zone[]`);
     } else {
       builder = builder
         .addColumn('id', 'integer', (col) =>
@@ -81,6 +82,15 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
         .addColumn('user_status', 'text');
     }
 
+    await builder.execute();
+  });
+};
+
+export const addExtraColumn = async (db: Kysely<DB>) => {
+  await db.transaction().execute(async (trx) => {
+    const builder = trx.schema
+      .alterTable('foo_bar')
+      .addColumn('user_name', 'varchar(50)', (col) => col.defaultTo('test'));
     await builder.execute();
   });
 };
@@ -95,13 +105,4 @@ export const migrate = async (dialect: Dialect, connectionString: string) => {
   await up(db, dialect);
 
   return db;
-};
-
-export const addExtraColumn = async (db: Kysely<DB>, dialect: Dialect) => {
-  await db.transaction().execute(async (trx) => {
-    const builder = trx.schema
-      .alterTable('foo_bar')
-      .addColumn('user_name', 'varchar(50)', (col) => col.defaultTo('test'));
-    await builder.execute();
-  });
 };

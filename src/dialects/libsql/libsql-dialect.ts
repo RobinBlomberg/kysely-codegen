@@ -1,15 +1,17 @@
 import { CreateKyselyDialectOptions, Dialect } from '../../core';
 import { LibsqlAdapter } from './libsql-adapter';
-import { SqliteIntrospector } from './libsql-introspector';
+import { LibsqlIntrospector } from './libsql-introspector';
 
-export class LibSqlDialect extends Dialect {
+export class LibsqlDialect extends Dialect {
   readonly adapter = new LibsqlAdapter();
-  readonly introspector = new SqliteIntrospector();
+  readonly introspector = new LibsqlIntrospector();
 
   async createKyselyDialect(options: CreateKyselyDialectOptions) {
-    const { LibsqlDialect } = await import('@libsql/kysely-libsql');
+    const { LibsqlDialect: KyselyLibsqlDialect } = await import(
+      '@libsql/kysely-libsql'
+    );
 
-    // LibSQL URLs are of the form libsql://token@host:port/db.
+    // LibSQL URLs are of the form `libsql://token@host:port/db`:
     const url = new URL(options.connectionString);
 
     if (url.username) {
@@ -19,9 +21,9 @@ export class LibSqlDialect extends Dialect {
       // Remove the token from the url to get a "normal" connection string:
       url.username = '';
 
-      return new LibsqlDialect({ authToken: token, url: url.toString() });
+      return new KyselyLibsqlDialect({ authToken: token, url: url.toString() });
     }
 
-    return new LibsqlDialect({ url: options.connectionString });
+    return new KyselyLibsqlDialect({ url: options.connectionString });
   }
 }

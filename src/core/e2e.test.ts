@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises';
 import { Kysely } from 'kysely';
 import { join } from 'path';
 import {
-  LibSqlDialect,
+  LibsqlDialect,
   MysqlDialect,
   PostgresDialect,
   SqliteDialect,
@@ -45,7 +45,7 @@ const TESTS: Test[] = [
   },
   {
     connectionString: 'libsql://localhost:8080?tls=0',
-    dialect: new LibSqlDialect(),
+    dialect: new LibsqlDialect(),
     values: { false: 0, id: 1, true: 1 },
   },
 ];
@@ -140,7 +140,7 @@ export const testE2E = async () => {
         const expectedOutput = await readDialectOutput(dialect);
         strictEqual(output, expectedOutput);
 
-        await addExtraColumn(db, dialect);
+        await addExtraColumn(db);
 
         try {
           await new Generator().generate({

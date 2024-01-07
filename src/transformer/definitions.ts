@@ -11,6 +11,23 @@ import {
 } from '../ast';
 
 export const GLOBAL_DEFINITIONS = {
+  ArrayType: new TemplateNode(
+    ['T'],
+    new ExtendsClauseNode(
+      'T',
+      new GenericExpressionNode('ColumnType', [
+        new InferClauseNode('S'),
+        new InferClauseNode('I'),
+        new InferClauseNode('U'),
+      ]),
+      new GenericExpressionNode('ColumnType', [
+        new ArrayExpressionNode(new IdentifierNode('S')),
+        new ArrayExpressionNode(new IdentifierNode('I')),
+        new ArrayExpressionNode(new IdentifierNode('U')),
+      ]),
+      new ArrayExpressionNode(new IdentifierNode('T')),
+    ),
+  ),
   Generated: new TemplateNode(
     ['T'],
     new ExtendsClauseNode(
@@ -61,3 +78,5 @@ export const JSON_VALUE_DEFINITION: DefinitionNode = new UnionExpressionNode([
   new IdentifierNode('JsonObject'),
   new IdentifierNode('JsonPrimitive'),
 ]);
+
+export const JSON_DEFINITION: DefinitionNode = new IdentifierNode('JsonValue');
