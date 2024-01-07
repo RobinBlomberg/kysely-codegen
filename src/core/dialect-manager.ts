@@ -1,4 +1,5 @@
 import {
+  BunSqliteDialect,
   LibsqlDialect,
   MysqlDialect,
   PostgresDialect,
@@ -6,7 +7,12 @@ import {
 } from '../dialects';
 import { Dialect } from './dialect';
 
-export type DialectName = 'libsql' | 'mysql' | 'postgres' | 'sqlite';
+export type DialectName =
+  | 'bun-sqlite'
+  | 'libsql'
+  | 'mysql'
+  | 'postgres'
+  | 'sqlite';
 
 /**
  * Returns a dialect instance for a pre-defined dialect name.
@@ -14,6 +20,8 @@ export type DialectName = 'libsql' | 'mysql' | 'postgres' | 'sqlite';
 export class DialectManager {
   getDialect(name: DialectName): Dialect {
     switch (name) {
+      case 'bun-sqlite':
+        return new BunSqliteDialect();
       case 'libsql':
         return new LibsqlDialect();
       case 'mysql':
