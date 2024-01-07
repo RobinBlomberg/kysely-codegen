@@ -79,4 +79,4 @@ export const JSON_VALUE_DEFINITION: DefinitionNode = new UnionExpressionNode([
   new IdentifierNode('JsonPrimitive'),
 ]);
 
-export const JSON_DEFINITION: DefinitionNode =new IdentifierNode('JsonValue');
+export const JSON_DEFINITION: DefinitionNode = new IdentifierNode('JsonValue');
