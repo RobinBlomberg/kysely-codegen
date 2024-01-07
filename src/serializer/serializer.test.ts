@@ -346,12 +346,10 @@ export const testSerializer = () => {
             enums,
           ),
         });
-        
+
         strictEqual(
           serializer.serialize(ast),
-          'import type { ColumnType } from "kysely";\n' +
-            '\n' +
-            'export type Json = JsonValue;\n' +
+          'export type Json = JsonValue;\n' +
             '\n' +
             'export type JsonArray = JsonValue[];\n' +
             '\n' +
