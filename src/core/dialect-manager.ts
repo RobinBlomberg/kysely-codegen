@@ -1,6 +1,7 @@
 import {
   BunSqliteDialect,
   LibsqlDialect,
+  MssqlDialect,
   MysqlDialect,
   PostgresDialect,
   SqliteDialect,
@@ -12,7 +13,8 @@ export type DialectName =
   | 'libsql'
   | 'mysql'
   | 'postgres'
-  | 'sqlite';
+  | 'sqlite'
+  | 'mssql';
 
 /**
  * Returns a dialect instance for a pre-defined dialect name.
@@ -28,6 +30,8 @@ export class DialectManager {
         return new MysqlDialect();
       case 'postgres':
         return new PostgresDialect();
+      case 'mssql':
+        return new MssqlDialect();
       default:
         return new SqliteDialect();
     }

@@ -18,6 +18,7 @@ npm install kysely pg
 npm install kysely mysql2
 npm install kysely better-sqlite3
 npm install @libsql/kysely-libsql
+npm install kysely tedious tarn @tediousjs/connection-string
 ```
 
 ## Generating type definitions
@@ -36,6 +37,9 @@ DATABASE_URL=C:/Program Files/sqlite3/db
 
 # LibSQL
 DATABASE_URL=libsql://token@host:port/database
+
+# MSSQL
+DATABASE_URL=Server=mssql;Database=database;User Id=user;Password=password
 ```
 
 > If your URL contains a password with special characters, those characters may need to be [percent-encoded](https://en.wikipedia.org/wiki/Percent-encoding#Reserved_characters).

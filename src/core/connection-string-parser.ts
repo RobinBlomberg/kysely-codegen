@@ -41,6 +41,10 @@ export class ConnectionStringParser {
       return 'postgres';
     }
 
+    if (connectionString.toLowerCase().includes('user id=')) {
+      return 'mssql';
+    }
+
     return 'sqlite';
   }
 
