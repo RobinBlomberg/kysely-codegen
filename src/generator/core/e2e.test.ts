@@ -23,6 +23,11 @@ type Test = {
 
 const TESTS: Test[] = [
   {
+    connectionString: ':memory:',
+    dialectName: 'bun-sqlite',
+    values: { false: 0, id: 1, true: 1 },
+  },
+  {
     connectionString: 'libsql://localhost:8080?tls=0',
     dialectName: 'libsql',
     values: { false: 0, id: 1, true: 1 },

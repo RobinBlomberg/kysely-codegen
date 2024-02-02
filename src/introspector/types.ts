@@ -41,7 +41,12 @@ export type DialectIntrospectionOptions = {
   includePattern?: string;
 };
 
-export type DialectName = 'libsql' | 'mysql' | 'postgres' | 'sqlite';
+export type DialectName =
+  | 'bun-sqlite'
+  | 'libsql'
+  | 'mysql'
+  | 'postgres'
+  | 'sqlite';
 
 export type IntrospectDatabaseOptions = {
   adapters?: Record<string, Adapter>;
