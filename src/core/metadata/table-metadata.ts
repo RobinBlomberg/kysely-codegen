@@ -1,4 +1,5 @@
-import { ColumnMetadata, ColumnMetadataOptions } from './column-metadata';
+import type { ColumnMetadataOptions } from './column-metadata';
+import { ColumnMetadata } from './column-metadata';
 
 export type TableMetadataOptions = {
   columns: ColumnMetadataOptions[];

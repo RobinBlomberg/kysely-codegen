@@ -1,4 +1,5 @@
-import { CreateKyselyDialectOptions, Dialect } from '../../core';
+import type { CreateKyselyDialectOptions } from '../../core';
+import { Dialect } from '../../core';
 import { BunSqliteAdapter } from '../bun-sqlite';
 import { BunSqliteIntrospector } from './bun-sqlite-introspector';
 

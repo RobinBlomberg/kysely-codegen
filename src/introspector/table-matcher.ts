@@ -1,4 +1,5 @@
-import { matcher, Options } from 'micromatch';
+import type { Options } from 'micromatch';
+import { matcher } from 'micromatch';
 
 const OPTIONS: Options = {
   nocase: true,

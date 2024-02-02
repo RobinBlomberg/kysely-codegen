@@ -1,7 +1,8 @@
-import { Kysely, TableMetadata as KyselyTableMetadata } from 'kysely';
+import type { Kysely, TableMetadata as KyselyTableMetadata } from 'kysely';
 import { DatabaseMetadata, EnumCollection } from '../../core';
-import { IntrospectOptions, Introspector } from '../../introspector';
-import { MysqlDB } from './mysql-db';
+import type { IntrospectOptions } from '../../introspector';
+import { Introspector } from '../../introspector';
+import type { MysqlDB } from './mysql-db';
 import { MysqlParser } from './mysql-parser';
 
 const ENUM_REGEXP = /^enum\(.*\)$/;

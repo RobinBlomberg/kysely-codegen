@@ -1,4 +1,4 @@
-import {
+import type {
   AliasDeclarationNode,
   ArrayExpressionNode,
   ExportStatementNode,
@@ -12,12 +12,12 @@ import {
   InterfaceDeclarationNode,
   LiteralNode,
   MappedTypeNode,
-  NodeType,
   ObjectExpressionNode,
   PropertyNode,
   StatementNode,
   UnionExpressionNode,
 } from '../ast';
+import { NodeType } from '../ast';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 

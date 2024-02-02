@@ -1,12 +1,12 @@
-import { ArrayExpressionNode } from './array-expression-node';
-import { ExtendsClauseNode } from './extends-clause-node';
-import { GenericExpressionNode } from './generic-expression-node';
-import { IdentifierNode } from './identifier-node';
-import { InferClauseNode } from './infer-clause-node';
-import { LiteralNode } from './literal-node';
-import { MappedTypeNode } from './mapped-type-node';
-import { ObjectExpressionNode } from './object-expression-node';
-import { UnionExpressionNode } from './union-expression-node';
+import type { ArrayExpressionNode } from './array-expression-node';
+import type { ExtendsClauseNode } from './extends-clause-node';
+import type { GenericExpressionNode } from './generic-expression-node';
+import type { IdentifierNode } from './identifier-node';
+import type { InferClauseNode } from './infer-clause-node';
+import type { LiteralNode } from './literal-node';
+import type { MappedTypeNode } from './mapped-type-node';
+import type { ObjectExpressionNode } from './object-expression-node';
+import type { UnionExpressionNode } from './union-expression-node';
 
 export type ExpressionNode =
   | ArrayExpressionNode

@@ -1,5 +1,6 @@
-import { EnumCollection } from '../enum-collection';
-import { TableMetadata, TableMetadataOptions } from './table-metadata';
+import type { EnumCollection } from '../enum-collection';
+import type { TableMetadataOptions } from './table-metadata';
+import { TableMetadata } from './table-metadata';
 
 export class DatabaseMetadata {
   readonly enums: EnumCollection;

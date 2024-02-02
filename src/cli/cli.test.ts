@@ -1,7 +1,8 @@
 import { deepStrictEqual } from 'assert';
 import { LogLevel } from '../core';
 import { describe, it } from '../test.utils';
-import { Cli, CliOptions } from './cli';
+import type { CliOptions } from './cli';
+import { Cli } from './cli';
 import { DEFAULT_LOG_LEVEL, DEFAULT_OUT_FILE, DEFAULT_URL } from './constants';
 
 export const testCli = () => {

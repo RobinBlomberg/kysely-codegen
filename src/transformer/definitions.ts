@@ -1,6 +1,6 @@
+import type { DefinitionNode } from '../ast';
 import {
   ArrayExpressionNode,
-  DefinitionNode,
   ExtendsClauseNode,
   GenericExpressionNode,
   IdentifierNode,

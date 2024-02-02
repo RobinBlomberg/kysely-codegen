@@ -1,7 +1,8 @@
 import { deepStrictEqual } from 'assert';
 import { IdentifierNode } from '../ast';
 import { describe } from '../test.utils';
-import { SymbolCollection, SymbolNode, SymbolType } from './symbol-collection';
+import type { SymbolNode } from './symbol-collection';
+import { SymbolCollection, SymbolType } from './symbol-collection';
 
 export const testSymbolCollection = () => {
   void describe('symbol-collection', () => {

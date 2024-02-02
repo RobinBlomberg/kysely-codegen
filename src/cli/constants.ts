@@ -21,4 +21,10 @@ export const LOG_LEVEL_NAMES = [
   'debug',
 ] as const;
 
-export const VALID_DIALECTS = ['mysql', 'postgres', 'sqlite', 'libsql', 'bun-sqlite'];
+export const VALID_DIALECTS = [
+  'mysql',
+  'postgres',
+  'sqlite',
+  'libsql',
+  'bun-sqlite',
+];

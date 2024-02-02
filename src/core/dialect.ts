@@ -1,6 +1,6 @@
-import { Dialect as KyselyDialect } from 'kysely';
-import { Introspector } from '../introspector';
-import { Adapter } from './adapter';
+import type { Dialect as KyselyDialect } from 'kysely';
+import type { Introspector } from '../introspector';
+import type { Adapter } from './adapter';
 
 export type CreateKyselyDialectOptions = {
   connectionString: string;

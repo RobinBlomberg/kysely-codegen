@@ -1,4 +1,4 @@
-import { ExpressionNode } from './expression-node';
+import type { ExpressionNode } from './expression-node';
 import { GenericExpressionNode } from './generic-expression-node';
 
 export class ColumnType extends GenericExpressionNode {

@@ -1,8 +1,8 @@
+import type { ExpressionNode, TemplateNode } from '../ast';
 import {
   AliasDeclarationNode,
   ArrayExpressionNode,
   ExportStatementNode,
-  ExpressionNode,
   GenericExpressionNode,
   IdentifierNode,
   ImportClauseNode,
@@ -12,10 +12,9 @@ import {
   NodeType,
   ObjectExpressionNode,
   PropertyNode,
-  TemplateNode,
   UnionExpressionNode,
 } from '../ast';
-import {
+import type {
   ColumnMetadata,
   DatabaseMetadata,
   Definitions,

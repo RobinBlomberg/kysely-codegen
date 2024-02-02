@@ -1,4 +1,4 @@
-import { ExpressionNode, ModuleReferenceNode, TemplateNode } from '../ast';
+import type { ExpressionNode, ModuleReferenceNode, TemplateNode } from '../ast';
 import { toPascalCase } from './case-converter';
 
 export type SymbolMap = {

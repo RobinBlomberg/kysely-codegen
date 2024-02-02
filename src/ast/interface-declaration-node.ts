@@ -1,5 +1,5 @@
 import { NodeType } from './node-type';
-import { ObjectExpressionNode } from './object-expression-node';
+import type { ObjectExpressionNode } from './object-expression-node';
 
 export class InterfaceDeclarationNode {
   readonly body: ObjectExpressionNode;
