@@ -26,5 +26,6 @@ export const VALID_DIALECTS = [
   'postgres',
   'sqlite',
   'libsql',
+  'bun-sqlite',
   'mssql',
 ];
