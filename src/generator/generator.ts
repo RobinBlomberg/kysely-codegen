@@ -1,8 +1,9 @@
 import { promises as fs } from 'fs';
-import { Kysely } from 'kysely';
+import type { Kysely } from 'kysely';
 import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
-import { Dialect, DiffChecker, Logger } from '../core';
+import type { Dialect, Logger } from '../core';
+import { DiffChecker } from '../core';
 import { Serializer } from '../serializer';
 import { Transformer } from '../transformer';
 

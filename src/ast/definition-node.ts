@@ -1,4 +1,4 @@
-import { ExpressionNode } from './expression-node';
-import { TemplateNode } from './template-node';
+import type { ExpressionNode } from './expression-node';
+import type { TemplateNode } from './template-node';
 
 export type DefinitionNode = ExpressionNode | TemplateNode;

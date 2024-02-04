@@ -6,7 +6,7 @@ import {
   PostgresDialect,
   SqliteDialect,
 } from '../dialects';
-import { Dialect } from './dialect';
+import type { Dialect } from './dialect';
 
 export type DialectName =
   | 'bun-sqlite'

@@ -1,5 +1,6 @@
 import { MysqlDialect as KyselyMysqlDialect } from 'kysely';
-import { CreateKyselyDialectOptions, Dialect } from '../../core';
+import type { CreateKyselyDialectOptions } from '../../core';
+import { Dialect } from '../../core';
 import { MysqlAdapter } from './mysql-adapter';
 import { MysqlIntrospector } from './mysql-introspector';
 

@@ -1,9 +1,9 @@
-import {
+import type {
   DefinitionNode,
   ExpressionNode,
-  IdentifierNode,
   ModuleReferenceNode,
 } from '../ast';
+import { IdentifierNode } from '../ast';
 
 export type Definitions = { [K in string]?: DefinitionNode };
 

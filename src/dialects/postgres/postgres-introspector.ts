@@ -1,18 +1,15 @@
-import {
+import type {
   Kysely,
   ColumnMetadata as KyselyColumnMetaData,
   TableMetadata as KyselyTableMetadata,
-  sql,
 } from 'kysely';
-import {
-  ColumnMetadata,
-  DatabaseMetadata,
-  EnumCollection,
-  TableMetadata,
-} from '../../core';
-import { IntrospectOptions, Introspector } from '../../introspector';
-import { PostgresAdapter } from './postgres-adapter';
-import { PostgresDB } from './postgres-db';
+import { sql } from 'kysely';
+import type { ColumnMetadata, TableMetadata } from '../../core';
+import { DatabaseMetadata, EnumCollection } from '../../core';
+import type { IntrospectOptions } from '../../introspector';
+import { Introspector } from '../../introspector';
+import type { PostgresAdapter } from './postgres-adapter';
+import type { PostgresDB } from './postgres-db';
 
 type PostgresDomainInspector = {
   typeName: string;

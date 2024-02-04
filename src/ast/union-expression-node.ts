@@ -1,4 +1,4 @@
-import { ExpressionNode } from './expression-node';
+import type { ExpressionNode } from './expression-node';
 import { NodeType } from './node-type';
 
 export class UnionExpressionNode {

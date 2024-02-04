@@ -1,5 +1,6 @@
 import { PostgresDialect as KyselyPostgresDialect } from 'kysely';
-import { CreateKyselyDialectOptions, Dialect } from '../../core';
+import type { CreateKyselyDialectOptions } from '../../core';
+import { Dialect } from '../../core';
 import { PostgresAdapter } from './postgres-adapter';
 import { PostgresIntrospector } from './postgres-introspector';
 

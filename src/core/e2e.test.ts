@@ -1,6 +1,6 @@
 import { deepStrictEqual, strictEqual } from 'assert';
 import { readFile } from 'fs/promises';
-import { Kysely } from 'kysely';
+import type { Kysely } from 'kysely';
 import { join } from 'path';
 import {
   LibsqlDialect,
@@ -10,10 +10,10 @@ import {
 } from '../dialects';
 import { Generator } from '../generator';
 import { describe, it } from '../test.utils';
-import { Dialect } from './dialect';
+import type { Dialect } from './dialect';
 import { addExtraColumn, migrate } from './fixtures';
 import { Logger } from './logger';
-import { DB } from './outputs/postgres.output';
+import type { DB } from './outputs/postgres.output';
 
 type ExpectedValues = {
   false: any;

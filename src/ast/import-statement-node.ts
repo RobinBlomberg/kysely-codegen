@@ -1,4 +1,4 @@
-import { ImportClauseNode } from './import-clause-node';
+import type { ImportClauseNode } from './import-clause-node';
 import { NodeType } from './node-type';
 
 export class ImportStatementNode {

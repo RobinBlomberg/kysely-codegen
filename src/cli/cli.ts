@@ -1,17 +1,17 @@
 import minimist from 'minimist';
+import type { DialectName } from '../core';
 import {
   ConnectionStringParser,
   DialectManager,
-  DialectName,
   LogLevel,
   Logger,
 } from '../core';
 import { Generator } from '../generator';
+import type { LOG_LEVEL_NAMES } from './constants';
 import {
   DEFAULT_LOG_LEVEL,
   DEFAULT_OUT_FILE,
   DEFAULT_URL,
-  LOG_LEVEL_NAMES,
   VALID_DIALECTS,
 } from './constants';
 import { FLAGS } from './flags';
@@ -31,7 +31,7 @@ export type CliOptions = {
   verify?: boolean | undefined;
 };
 
-export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
+export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
 
 /**
  * Creates a kysely-codegen command-line interface.

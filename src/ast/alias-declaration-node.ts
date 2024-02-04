@@ -1,6 +1,6 @@
-import { ExpressionNode } from './expression-node';
+import type { ExpressionNode } from './expression-node';
 import { NodeType } from './node-type';
-import { TemplateNode } from './template-node';
+import type { TemplateNode } from './template-node';
 
 export class AliasDeclarationNode {
   readonly body: ExpressionNode | TemplateNode;

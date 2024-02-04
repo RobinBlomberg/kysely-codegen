@@ -27,5 +27,5 @@ export const VALID_DIALECTS = [
   'sqlite',
   'libsql',
   'bun-sqlite',
-  'mssql',
+   'mssql',
 ];
