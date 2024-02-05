@@ -40,6 +40,7 @@
   "dependencies": {
     "chalk": "4.1.2",
     "dotenv": "^16.4.1",
+    "dotenv-expand": "^10.0.0",
     "git-diff": "^2.0.6",
     "micromatch": "^4.0.5",
     "minimist": "^1.2.8"

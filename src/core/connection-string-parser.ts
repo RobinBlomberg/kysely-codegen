@@ -1,4 +1,5 @@
 import { config as loadEnv } from 'dotenv';
+import { expand as expandEnv } from 'dotenv-expand';
 import type { DialectName } from './dialect-manager';
 import type { Logger } from './logger';
 
@@ -73,7 +74,8 @@ export class ConnectionStringParser {
         );
       }
 
-      loadEnv({ path: options.envFile });
+      const env = loadEnv({ path: options.envFile });
+      expandEnv(env);
 
       options.logger?.info('Loaded environment variables from .env file.');
 
