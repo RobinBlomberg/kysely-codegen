@@ -16,6 +16,7 @@ export type GenerateOptions = {
   logger?: Logger;
   outFile?: string;
   print?: boolean;
+  runtimeEnums?: boolean;
   schema?: string;
   serializer?: Serializer;
   transformer?: Transformer;
@@ -53,11 +54,12 @@ export class Generator {
       defaultSchema: options.schema,
       dialect: options.dialect,
       metadata,
+      runtimeEnums: !!options.runtimeEnums,
     });
 
     const serializer =
       options.serializer ??
-      new Serializer({ typeOnlyImports: options.typeOnlyImports });
+      new Serializer({ typeOnlyImports: options.typeOnlyImports, camelCase: !!options.camelCase });
     const data = serializer.serialize(nodes);
 
     const relativeOutDir = options.outFile

@@ -12,10 +12,12 @@ export type SymbolNameMap = {
 export type SymbolNode =
   | { node: ExpressionNode | TemplateNode; type: SymbolType.DEFINITION }
   | { node: ModuleReferenceNode; type: SymbolType.MODULE_REFERENCE }
+  | { node: ExpressionNode; type: SymbolType.RUNTIME_ENUM_DEFINITION }
   | { type: SymbolType.TABLE };
 
 export const enum SymbolType {
   DEFINITION = 'Definition',
+  RUNTIME_ENUM_DEFINITION = 'RuntimeEnumDefinition',
   MODULE_REFERENCE = 'ModuleReference',
   TABLE = 'Table',
 }

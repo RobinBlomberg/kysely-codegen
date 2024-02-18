@@ -17,6 +17,7 @@ export const testCli = () => {
     logLevel: DEFAULT_LOG_LEVEL,
     outFile: DEFAULT_OUT_FILE,
     print: false,
+    runtimeEnums: false,
     schema: undefined,
     typeOnlyImports: true,
     url: DEFAULT_URL,

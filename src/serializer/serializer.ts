@@ -14,15 +14,18 @@ import type {
   MappedTypeNode,
   ObjectExpressionNode,
   PropertyNode,
+  RuntimeEnumDeclarationNode,
   StatementNode,
   UnionExpressionNode,
 } from '../ast';
 import { NodeType } from '../ast';
+import { toCamelCase } from '../transformer';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
 export type SerializerOptions = {
   typeOnlyImports?: boolean;
+  camelCase?: boolean;
 };
 
 /**
@@ -30,9 +33,11 @@ export type SerializerOptions = {
  */
 export class Serializer {
   readonly typeOnlyImports: boolean;
+  readonly camelCase: boolean;
 
   constructor(options: SerializerOptions = {}) {
     this.typeOnlyImports = options.typeOnlyImports ?? true;
+    this.camelCase = options.camelCase ?? false;
   }
 
   serialize(nodes: StatementNode[]) {
@@ -60,6 +65,39 @@ export class Serializer {
       i++;
     }
 
+    data += '\n';
+
+    return data;
+  }
+
+  serializeRuntimeEnum(node: RuntimeEnumDeclarationNode) {
+    let data = 'enum ';
+    data += node.name;
+    data += ' {\n';
+
+    if (node.body.type === NodeType.UNION_EXPRESSION) {
+      const sortedArgs = node.body.args.sort((a, b) =>
+        (a as LiteralNode<string>).value.localeCompare(
+          (b as LiteralNode<string>).value,
+        ),
+      );
+      for (const arg of sortedArgs) {
+        if (arg.type === NodeType.LITERAL && typeof arg.value === 'string') {
+          const serializedArg = this.serializeLiteral(arg);
+          const enumValueName = this.camelCase
+            ? toCamelCase(arg.value)
+            : arg.value;
+          data += '  ';
+          data += enumValueName;
+          data += ' = ';
+          data += serializedArg;
+          data += ',';
+          data += '\n';
+        }
+      }
+    }
+
+    data += '}';
     data += '\n';
 
     return data;
@@ -126,6 +164,9 @@ export class Serializer {
         break;
       case NodeType.INTERFACE_DECLARATION:
         data += this.serializeInterfaceDeclaration(node.argument);
+        break;
+      case NodeType.RUNTIME_ENUM_DECLARATION:
+        data += this.serializeRuntimeEnum(node.argument);
         break;
     }
 

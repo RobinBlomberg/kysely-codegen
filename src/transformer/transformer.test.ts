@@ -11,6 +11,7 @@ import {
   LiteralNode,
   ObjectExpressionNode,
   PropertyNode,
+  RuntimeEnumDeclarationNode,
   UnionExpressionNode,
 } from '../ast';
 import {
@@ -31,11 +32,20 @@ export const testTransformer = () => {
       'public.mood_': ['', ',', "'", "'','"],
     });
 
-    const transform = (tables: TableMetadata[], camelCase: boolean) => {
+    const transform = (
+      tables: TableMetadata[],
+      camelCase: boolean,
+      runtimeEnums: boolean,
+    ) => {
       const dialect = new PostgresDialect();
       const transformer = new Transformer();
       const metadata = new DatabaseMetadata(tables, enums);
-      return transformer.transform({ camelCase, dialect, metadata });
+      return transformer.transform({
+        camelCase,
+        dialect,
+        metadata,
+        runtimeEnums,
+      });
     };
 
     void it('should transform correctly', () => {
@@ -67,6 +77,7 @@ export const testTransformer = () => {
             schema: 'public',
           }),
         ],
+        false,
         false,
       );
 
@@ -148,6 +159,7 @@ export const testTransformer = () => {
           }),
         ],
         true,
+        false,
       );
 
       deepStrictEqual(nodes, [
@@ -200,6 +212,7 @@ export const testTransformer = () => {
           }),
         ],
         false,
+        false,
       );
 
       deepStrictEqual(nodes, [
@@ -227,6 +240,81 @@ export const testTransformer = () => {
               new LiteralNode("'','"),
             ]),
           ),
+        ),
+        new ExportStatementNode(
+          new InterfaceDeclarationNode(
+            'Table',
+            new ObjectExpressionNode([
+              new PropertyNode('column1', new IdentifierNode('Mood')),
+              new PropertyNode(
+                'column2',
+                new GenericExpressionNode('Generated', [
+                  new IdentifierNode('Mood2'),
+                ]),
+              ),
+            ]),
+          ),
+        ),
+        new ExportStatementNode(
+          new InterfaceDeclarationNode(
+            'DB',
+            new ObjectExpressionNode([
+              new PropertyNode('table', new IdentifierNode('Table')),
+            ]),
+          ),
+        ),
+      ]);
+    });
+
+    void it('should transform runtime enums correctly', () => {
+      const nodes = transform(
+        [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'mood',
+                hasDefaultValue: false,
+                name: 'column1',
+              }),
+              new ColumnMetadata({
+                dataType: 'mood_',
+                hasDefaultValue: true,
+                name: 'column2',
+              }),
+            ],
+            name: 'table',
+            schema: 'public',
+          }),
+        ],
+        false,
+        true,
+      );
+
+      deepStrictEqual(nodes, [
+        new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
+        new ExportStatementNode(
+          new RuntimeEnumDeclarationNode(
+            'Mood',
+            new UnionExpressionNode([
+              new LiteralNode('happy'),
+              new LiteralNode('ok'),
+              new LiteralNode('sad'),
+            ]),
+          ),
+        ),
+        new ExportStatementNode(
+          new RuntimeEnumDeclarationNode(
+            'Mood2',
+            new UnionExpressionNode([
+              new LiteralNode(''),
+              new LiteralNode(','),
+              new LiteralNode("'"),
+              new LiteralNode("'','"),
+            ]),
+          ),
+        ),
+        new ExportStatementNode(
+          new AliasDeclarationNode('Generated', GLOBAL_DEFINITIONS.Generated),
         ),
         new ExportStatementNode(
           new InterfaceDeclarationNode(

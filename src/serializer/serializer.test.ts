@@ -14,6 +14,7 @@ import {
   MappedTypeNode,
   ObjectExpressionNode,
   PropertyNode,
+  RuntimeEnumDeclarationNode,
   TemplateNode,
   UnionExpressionNode,
 } from '../ast';
@@ -289,6 +290,7 @@ export const testSerializer = () => {
             ],
             enums,
           ),
+          runtimeEnums: false,
         });
 
         strictEqual(
@@ -345,6 +347,7 @@ export const testSerializer = () => {
             ],
             enums,
           ),
+          runtimeEnums: false,
         });
 
         strictEqual(
@@ -370,6 +373,28 @@ export const testSerializer = () => {
             '}\n',
         );
       });
+    });
+
+    void describe('serialize', () => {
+      const enumSerializer = new Serializer({ camelCase: true });
+      void it('should serialize runtime enums properly', () =>
+        strictEqual(
+          enumSerializer.serializeRuntimeEnum(
+            new RuntimeEnumDeclarationNode(
+              'Mood',
+              new UnionExpressionNode([
+                new LiteralNode('sad'),
+                new LiteralNode('happy'),
+                new LiteralNode('happy_or_sad'),
+              ]),
+            ),
+          ),
+          'enum Mood {\n' +
+            '  happy = "happy",\n' +
+            '  happyOrSad = "happy_or_sad",\n' +
+            '  sad = "sad",\n' +
+            '}\n',
+        ));
     });
   });
 };

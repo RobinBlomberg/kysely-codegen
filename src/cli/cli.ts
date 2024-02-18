@@ -25,6 +25,7 @@ export type CliOptions = {
   logLevel?: LogLevel;
   outFile?: string | undefined;
   print?: boolean;
+  runtimeEnums?: boolean;
   schema?: string | undefined;
   typeOnlyImports?: boolean;
   url: string;
@@ -42,6 +43,7 @@ export class Cli {
     const outFile = options.outFile;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
+    const runtimeEnums = options.runtimeEnums;
     const schema = options.schema;
     const typeOnlyImports = options.typeOnlyImports;
 
@@ -82,6 +84,7 @@ export class Cli {
       includePattern,
       logger,
       outFile,
+      runtimeEnums,
       schema,
       typeOnlyImports,
       verify: options.verify,
@@ -158,6 +161,7 @@ export class Cli {
       (argv['out-file'] as string | undefined) ??
       (argv.print ? undefined : DEFAULT_OUT_FILE);
     const print = this.#parseBoolean(argv.print);
+    const runtimeEnums = this.#parseBoolean(argv.runtimeEnums);
     const schema = argv.schema as string | undefined;
     const typeOnlyImports = this.#parseBoolean(
       argv['type-only-imports'] ?? true,
@@ -219,6 +223,7 @@ export class Cli {
       logLevel,
       outFile,
       print,
+      runtimeEnums,
       schema,
       typeOnlyImports,
       url,
