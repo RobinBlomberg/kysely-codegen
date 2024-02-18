@@ -75,30 +75,32 @@ export class Serializer {
     data += node.name;
     data += ' {\n';
 
-    if (node.body.type === NodeType.UNION_EXPRESSION) {
-      const sortedArgs = node.body.args.sort((a, b) =>
-        (a as LiteralNode<string>).value.localeCompare(
-          (b as LiteralNode<string>).value,
-        ),
-      );
-      for (const arg of sortedArgs) {
-        if (arg.type === NodeType.LITERAL && typeof arg.value === 'string') {
-          const serializedArg = this.serializeLiteral(arg);
-          const enumValueName = this.camelCase
-            ? toCamelCase(arg.value)
-            : arg.value;
-          data += '  ';
-          data += enumValueName;
-          data += ' = ';
-          data += serializedArg;
-          data += ',';
-          data += '\n';
-        }
+    const args =
+      node.body.type === NodeType.UNION_EXPRESSION
+        ? node.body.args
+        : [node.body];
+    const sortedArgs = args.sort((a, b) =>
+      (a as LiteralNode<string>).value.localeCompare(
+        (b as LiteralNode<string>).value,
+      ),
+    );
+
+    for (const arg of sortedArgs) {
+      if (arg.type === NodeType.LITERAL && typeof arg.value === 'string') {
+        const serializedArg = this.serializeLiteral(arg);
+        const enumValueName = this.camelCase
+          ? toCamelCase(arg.value)
+          : arg.value;
+        data += '  ';
+        data += enumValueName;
+        data += ' = ';
+        data += serializedArg;
+        data += ',';
+        data += '\n';
       }
     }
 
     data += '}';
-    data += '\n';
 
     return data;
   }

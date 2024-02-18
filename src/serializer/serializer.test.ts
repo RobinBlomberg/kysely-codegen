@@ -393,7 +393,7 @@ export const testSerializer = () => {
             '  happy = "happy",\n' +
             '  happyOrSad = "happy_or_sad",\n' +
             '  sad = "sad",\n' +
-            '}\n',
+            '}',
         ));
     });
   });

@@ -161,7 +161,7 @@ export class Cli {
       (argv['out-file'] as string | undefined) ??
       (argv.print ? undefined : DEFAULT_OUT_FILE);
     const print = this.#parseBoolean(argv.print);
-    const runtimeEnums = this.#parseBoolean(argv.runtimeEnums);
+    const runtimeEnums = this.#parseBoolean(argv['runtime-enums']);
     const schema = argv.schema as string | undefined;
     const typeOnlyImports = this.#parseBoolean(
       argv['type-only-imports'] ?? true,
