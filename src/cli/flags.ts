@@ -52,6 +52,10 @@ export const FLAGS: Flag[] = [
     longName: 'print',
   },
   {
+    description: 'Generate runtime enums instead of string unions.',
+    longName: 'runtime-enums',
+  },
+  {
     description:
       'Generate TypeScript 3.8+ `import type` syntax (default: true).',
     longName: 'type-only-imports',
