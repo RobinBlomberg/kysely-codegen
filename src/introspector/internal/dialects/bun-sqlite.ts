@@ -1,10 +1,10 @@
+import { BunWorkerDialect } from 'kysely-bun-worker';
 import { createAdapter } from '../../adapter.js';
 import { factory } from '../../factory.js';
 import { introspectTables } from '../../introspect-tables.js';
 
 export const bunSqliteAdapter = createAdapter({
-  createKyselyDialect: async (options) => {
-    const { BunWorkerDialect } = await import('kysely-bun-worker');
+  createKyselyDialect: (options) => {
     return new BunWorkerDialect({ url: options.connectionString });
   },
   introspect: async (db, options = {}) => {

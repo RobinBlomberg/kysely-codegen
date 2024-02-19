@@ -1,5 +1,5 @@
-import type { Kysely } from 'kysely';
-import mysql from 'mysql2';
+import { MysqlDialect, type Kysely } from 'kysely';
+import { createPool } from 'mysql2';
 import { createAdapter } from '../../adapter.js';
 import { EnumMap } from '../../enum-map.js';
 import { factory } from '../../factory.js';
@@ -39,10 +39,9 @@ const introspectEnums = async (db: Kysely<DB>) => {
 };
 
 export const mysqlAdapter = createAdapter({
-  createKyselyDialect: async (options) => {
-    const { MysqlDialect } = await import('kysely');
+  createKyselyDialect: (options) => {
     return new MysqlDialect({
-      pool: mysql.createPool({ uri: options.connectionString }),
+      pool: createPool({ uri: options.connectionString }),
     });
   },
   introspect: async (db, options = {}) => {

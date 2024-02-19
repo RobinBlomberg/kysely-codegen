@@ -1,11 +1,10 @@
+import { LibsqlDialect } from '@libsql/kysely-libsql';
 import { createAdapter } from '../../adapter.js';
 import { factory } from '../../factory.js';
 import { introspectTables } from '../../introspect-tables.js';
 
 export const libsqlAdapter = createAdapter({
-  createKyselyDialect: async (options) => {
-    const { LibsqlDialect } = await import('@libsql/kysely-libsql');
-
+  createKyselyDialect: (options) => {
     // LibSQL URLs are of the form `libsql://token@host:port/db`:
     const url = new URL(options.connectionString);
 

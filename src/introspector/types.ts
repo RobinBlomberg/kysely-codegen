@@ -59,7 +59,7 @@ export type IntrospectDatabaseOptions = {
 export type KyselyDialectCreator = (options: {
   connectionString: string;
   ssl?: boolean;
-}) => Dialect | Promise<Dialect>;
+}) => Dialect;
 
 export type TableSchema = {
   schema: string | null;

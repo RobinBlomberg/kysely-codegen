@@ -1,1 +1,1 @@
-export { sqliteAdapter as bunSqliteAdapter } from './sqlite.adapter';
+export { sqliteAdapter as bunSqliteAdapter } from './sqlite.adapter.js';

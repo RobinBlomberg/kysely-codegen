@@ -1,6 +1,6 @@
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
-import type { DialectName } from '../../../introspector';
-import { getAdapter } from '../../../introspector';
+import { getAdapter } from '../../../introspector/adapters.js';
+import type { DialectName } from '../../../introspector/types.js';
 
 const down = async (db: Kysely<any>, dialectName: string) => {
   await db.transaction().execute(async (trx) => {
@@ -99,7 +99,7 @@ export const migrate = async (
   connectionString: string,
 ) => {
   const db = new Kysely<any>({
-    dialect: await getAdapter(dialectName).createKyselyDialect({
+    dialect: getAdapter(dialectName).createKyselyDialect({
       connectionString,
     }),
     plugins: [new CamelCasePlugin()],

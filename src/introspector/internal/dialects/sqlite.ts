@@ -1,11 +1,11 @@
+import Database from 'better-sqlite3';
 import { SqliteDialect } from 'kysely';
 import { createAdapter } from '../../adapter.js';
 import { factory } from '../../factory.js';
 import { introspectTables } from '../../introspect-tables.js';
 
 export const sqliteAdapter = createAdapter({
-  createKyselyDialect: async (options) => {
-    const { default: Database } = await import('better-sqlite3');
+  createKyselyDialect: (options) => {
     return new SqliteDialect({
       database: new Database(options.connectionString),
     });
