@@ -1,6 +1,6 @@
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
-import type { DialectName } from '../../introspector/index.js';
-import { getAdapter } from '../../introspector/index.js';
+import type { DialectName } from '../../../introspector';
+import { getAdapter } from '../../../introspector';
 
 const down = async (db: Kysely<any>, dialectName: string) => {
   await db.transaction().execute(async (trx) => {
