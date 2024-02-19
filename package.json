@@ -18,6 +18,7 @@
   "homepage": "https://github.com/RobinBlomberg/kysely-codegen#readme",
   "scripts": {
     "build": "rimraf dist && tsc",
+    "check": "tsc --noEmit",
     "ci": "run-s ci:*",
     "ci:build": "pnpm build",
     "ci:eslint": "pnpm lint:eslint --max-warnings=0 --report-unused-disable-directives",
