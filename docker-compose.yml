@@ -16,10 +16,10 @@ services:
   kysely_codegen_mysql:
     container_name: kysely_codegen_mysql
     environment:
-      - MYSQL_DATABASE=database
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_USER=user
+      - MYSQL_DATABASE=qwe
+      - MYSQL_PASSWORD=qwe
+      - MYSQL_ROOT_PASSWORD=qwe
+      - MYSQL_USER=qwe
     image: mysql:latest
     ports:
       - 3306:3306
@@ -27,9 +27,9 @@ services:
   kysely_codegen_postgres:
     container_name: kysely_codegen_postgres
     environment:
-      - POSTGRES_DB=database
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_USER=user
+      - POSTGRES_DB=qwe
+      - POSTGRES_PASSWORD=qwe
+      - POSTGRES_USER=qwe
     image: postgres:latest
     ports:
       - 5433:5432
