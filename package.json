@@ -33,8 +33,8 @@
     "lint:prettier": "prettier --check src",
     "prepublishOnly": "pnpm run ci",
     "start": "node ./dist/cli/bin.js",
-    "test": "ts-node-dev ./src/index.test.ts",
-    "test:watch": "ts-node-dev --quiet --respawn ./src/index.test.ts",
+    "test": "vitest --passWithNoTests --run src",
+    "test:watch": "vitest --passWithNoTests src",
     "upgrade": "ncu -u"
   },
   "dependencies": {
