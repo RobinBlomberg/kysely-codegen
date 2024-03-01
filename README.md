@@ -80,6 +80,26 @@ export interface DB {
 }
 ```
 
+## Include/exclude patterns
+
+You can choose which tables should be included during code generation by providing a glob pattern to the `--include` and `--exclude` flags. We use [micromatch](https://github.com/micromatch/micromatch) under the hood which provides advanced glob support. For instance, if you only want to include your public tables:
+
+```bash
+kysely-codegen --include="public.*"
+```
+
+You can also include only certain tables within a schema:
+
+```bash
+kysely-codegen --include="public.+(user|post)"
+```
+
+Or exclude an entire class of tables:
+```bash
+kysely-codegen --exclude="documents.*"
+```
+
+## Help
 For more options, run `kysely-codegen --help`.
 
 ## Using the type definitions
