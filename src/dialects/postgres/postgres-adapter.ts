@@ -50,9 +50,9 @@ export class PostgresAdapter extends Adapter {
     JsonPrimitive: JSON_PRIMITIVE_DEFINITION,
     JsonValue: JSON_VALUE_DEFINITION,
     Numeric: new ColumnType(
-      new IdentifierNode('string'),
+      new IdentifierNode('number'),
       new UnionExpressionNode([
-        new IdentifierNode('string'),
+        new IdentifierNode('number'),
         new IdentifierNode('number'),
       ]),
     ),
