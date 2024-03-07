@@ -10,13 +10,26 @@
 
 ## Installation
 
-```
+```sh
 npm install --save-dev kysely-codegen
+```
 
-# You will also need to install Kysely with your driver of choice:
+You will also need to install Kysely with your driver of choice:
+
+```sh
+# PostgreSQL
 npm install kysely pg
+
+# MySQL
 npm install kysely mysql2
+
+# SQLite
 npm install kysely better-sqlite3
+
+# MSSQL
+npm install kysely tedious tarn @tediousjs/connection-string
+
+# LibSQL
 npm install @libsql/kysely-libsql
 ```
 
@@ -24,7 +37,7 @@ npm install @libsql/kysely-libsql
 
 The most convenient way to get started is to create an `.env` file with your database connection string:
 
-```
+```sh
 # PostgreSQL
 DATABASE_URL=postgres://username:password@yourdomain.com/database
 
@@ -33,6 +46,9 @@ DATABASE_URL=mysql://username:password@yourdomain.com/database
 
 # SQLite
 DATABASE_URL=C:/Program Files/sqlite3/db
+
+# MSSQL
+DATABASE_URL=Server=mssql;Database=database;User Id=user;Password=password
 
 # LibSQL
 DATABASE_URL=libsql://token@host:port/database
@@ -44,12 +60,13 @@ DATABASE_URL=libsql://token@host:port/database
 
 Then run:
 
-```
+```sh
 kysely-codegen
 ```
 
 This command will generate a `.d.ts` file from your database, for example:
 
+<!-- prettier-ignore -->
 ```ts
 import { ColumnType } from 'kysely';
 
@@ -80,6 +97,26 @@ export interface DB {
 }
 ```
 
+## Include/exclude patterns
+
+You can choose which tables should be included during code generation by providing a glob pattern to the `--include` and `--exclude` flags. We use [micromatch](https://github.com/micromatch/micromatch) under the hood which provides advanced glob support. For instance, if you only want to include your public tables:
+
+```bash
+kysely-codegen --include="public.*"
+```
+
+You can also include only certain tables within a schema:
+
+```bash
+kysely-codegen --include="public.+(user|post)"
+```
+
+Or exclude an entire class of tables:
+```bash
+kysely-codegen --exclude="documents.*"
+```
+
+## Help
 For more options, run `kysely-codegen --help`.
 
 ## Using the type definitions

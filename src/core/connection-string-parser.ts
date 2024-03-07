@@ -42,6 +42,10 @@ export class ConnectionStringParser {
       return 'postgres';
     }
 
+    if (connectionString.toLowerCase().includes('user id=')) {
+      return 'mssql';
+    }
+
     return 'sqlite';
   }
 
@@ -74,8 +78,7 @@ export class ConnectionStringParser {
         );
       }
 
-      const env = loadEnv({ path: options.envFile });
-      expandEnv(env);
+      expandEnv(loadEnv({ path: options.envFile }));
 
       options.logger?.info('Loaded environment variables from .env file.');
 
