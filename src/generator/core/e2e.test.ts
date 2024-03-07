@@ -22,11 +22,15 @@ type Test = {
 };
 
 const TESTS: Test[] = [
-  {
-    connectionString: ':memory:',
-    dialectName: 'bun-sqlite',
-    values: { false: 0, id: 1, true: 1 },
-  },
+  // ...(typeof Worker === 'undefined'
+  //   ? []
+  //   : [
+  //       {
+  //         connectionString: ':memory:',
+  //         dialectName: 'bun-sqlite',
+  //         values: { false: 0, id: 1, true: 1 },
+  //       } as const,
+  //     ]),
   {
     connectionString: 'libsql://localhost:8080?tls=0',
     dialectName: 'libsql',

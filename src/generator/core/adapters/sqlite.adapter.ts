@@ -1,7 +1,7 @@
 import { IdentifierNode } from '../../ast/identifier-node.js';
-import { createAdapter } from '../adapter.js';
+import { createGeneratorAdapter } from '../adapter.js';
 
-export const sqliteAdapter = createAdapter({
+export const sqliteAdapter = createGeneratorAdapter({
   defaultScalar: new IdentifierNode('string'),
   scalars: {
     any: new IdentifierNode('unknown'),

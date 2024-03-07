@@ -105,7 +105,15 @@
       "@robinblomberg/robinblomberg",
       "@robinblomberg/prettier"
     ],
-    "ignorePatterns": "**/src/core/outputs/*.ts"
+    "ignorePatterns": "**/src/**/outputs/*.output.ts",
+    "rules": {
+      "unicorn/no-typeof-undefined": [
+        "warn",
+        {
+          "checkGlobalVariables": true
+        }
+      ]
+    }
   },
   "prettier": "@robinblomberg/prettier-config"
 }

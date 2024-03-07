@@ -3,10 +3,12 @@ import type { ExpressionNode } from '../ast/expression-node.js';
 import { IdentifierNode } from '../ast/identifier-node.js';
 import type { ModuleReferenceNode } from '../ast/module-reference-node.js';
 
+export type DefinitionMap = { [K in string]?: DefinitionNode };
+
 /**
  * Specifies settings for how code should be generated for the given database library.
  */
-export type Adapter = {
+export type GeneratorAdapter = {
   defaultScalar: ExpressionNode;
   defaultSchema: string | null;
   definitions: DefinitionMap;
@@ -14,7 +16,7 @@ export type Adapter = {
   scalars: ScalarMap;
 };
 
-export type AdapterInput = {
+export type GeneratorAdapterInput = {
   defaultScalar?: ExpressionNode;
   defaultSchema?: string | null;
   definitions?: DefinitionMap;
@@ -22,13 +24,13 @@ export type AdapterInput = {
   scalars?: ScalarMap;
 };
 
-export type DefinitionMap = { [K in string]?: DefinitionNode };
-
 export type ImportMap = { [K in string]?: ModuleReferenceNode };
 
 export type ScalarMap = { [K in string]?: ExpressionNode };
 
-export const createAdapter = (input: AdapterInput): Adapter => {
+export const createGeneratorAdapter = (
+  input: GeneratorAdapterInput,
+): GeneratorAdapter => {
   return {
     defaultScalar: input.defaultScalar ?? new IdentifierNode('unknown'),
     defaultSchema: input.defaultSchema ?? null,

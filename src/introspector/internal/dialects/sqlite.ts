@@ -1,10 +1,10 @@
 import Database from 'better-sqlite3';
 import { SqliteDialect } from 'kysely';
-import { createAdapter } from '../../adapter.js';
+import { createIntrospectorAdapter } from '../../adapter.js';
 import { factory } from '../../factory.js';
 import { introspectTables } from '../../introspect-tables.js';
 
-export const sqliteAdapter = createAdapter({
+export const sqliteAdapter = createIntrospectorAdapter({
   createKyselyDialect: (options) => {
     return new SqliteDialect({
       database: new Database(options.connectionString),

@@ -3,7 +3,7 @@ import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
 import type { DialectName } from '../../introspector/index.js';
 import { introspectDatabase } from '../../introspector/index.js';
-import { getAdapter } from '../core/adapters.js';
+import { getGeneratorAdapter } from '../core/adapters.js';
 import { diffOutputs } from '../core/diff-outputs.js';
 import type { Logger } from '../core/logger.js';
 import { Serializer } from '../serializer/serializer.js';
@@ -48,7 +48,7 @@ export const generate = async (options: GenerateOptions) => {
 
   options.logger?.debug();
 
-  const adapter = getAdapter(options.dialectName);
+  const adapter = getGeneratorAdapter(options.dialectName);
   const nodes = transform({
     adapter,
     camelCase: !!options.camelCase,

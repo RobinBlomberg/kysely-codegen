@@ -20,8 +20,8 @@ import { PropertyNode } from '../ast/property-node.js';
 import type { TemplateNode } from '../ast/template-node.js';
 import { UnionExpressionNode } from '../ast/union-expression-node.js';
 import type {
-  Adapter,
   DefinitionMap,
+  GeneratorAdapter,
   ImportMap,
   ScalarMap,
 } from '../core/adapter.js';
@@ -43,7 +43,7 @@ export type TransformContext = {
 };
 
 export type TransformOptions = {
-  adapter: Adapter;
+  adapter: GeneratorAdapter;
   camelCase: boolean;
   defaultSchema?: string;
   schema: DatabaseSchema;

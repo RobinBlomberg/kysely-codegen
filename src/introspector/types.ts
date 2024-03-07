@@ -1,5 +1,5 @@
 import type { Dialect, Kysely } from 'kysely';
-import type { Adapter } from './adapter.js';
+import type { IntrospectorAdapter } from './adapter.js';
 import type { EnumMap } from './enum-map.js';
 
 export type ColumnSchema = {
@@ -49,7 +49,7 @@ export type DialectName =
   | 'sqlite';
 
 export type IntrospectDatabaseOptions = {
-  adapters?: Record<string, Adapter>;
+  adapters?: Record<string, IntrospectorAdapter>;
   db: Kysely<any> | string;
   dialect: DialectName;
   excludePattern?: string;

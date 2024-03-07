@@ -5,19 +5,19 @@ import type {
   KyselyDialectCreator,
 } from './types.js';
 
-export type Adapter = {
-  connect: DialectConnector;
-  createKyselyDialect: KyselyDialectCreator;
-  introspect: DialectIntrospector;
-};
-
 export type CreateAdapterInput = {
   createKyselyDialect: KyselyDialectCreator;
   introspect: DialectIntrospector;
 };
 
-export const createAdapter = (input: CreateAdapterInput) => {
-  const adapter: Adapter = {
+export type IntrospectorAdapter = {
+  connect: DialectConnector;
+  createKyselyDialect: KyselyDialectCreator;
+  introspect: DialectIntrospector;
+};
+
+export const createIntrospectorAdapter = (input: CreateAdapterInput) => {
+  const adapter: IntrospectorAdapter = {
     connect: async (connectionString) => {
       return await createConnection({
         connectionString,

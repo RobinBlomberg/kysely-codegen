@@ -1,7 +1,7 @@
 import type { Kysely } from 'kysely';
 import { PostgresDialect, sql } from 'kysely';
 import { Pool } from 'pg';
-import { createAdapter } from '../../adapter.js';
+import { createIntrospectorAdapter } from '../../adapter.js';
 import { EnumMap } from '../../enum-map.js';
 import { factory } from '../../factory.js';
 import { introspectTables } from '../../introspect-tables.js';
@@ -130,7 +130,7 @@ const introspectEnums = async (db: Kysely<any>) => {
   return enums;
 };
 
-export const postgresAdapter = createAdapter({
+export const postgresAdapter = createIntrospectorAdapter({
   createKyselyDialect: (options) => {
     return new PostgresDialect({
       pool: new Pool({

@@ -12,7 +12,7 @@ import {
   JSON_VALUE_DEFINITION,
 } from '../../transformer/definitions.js';
 import type { DefinitionMap } from '../adapter.js';
-import { createAdapter } from '../adapter.js';
+import { createGeneratorAdapter } from '../adapter.js';
 
 export const postgresDefinitions = {
   Circle: new ObjectExpressionNode([
@@ -60,7 +60,7 @@ export const postgresDefinitions = {
   ),
 } satisfies DefinitionMap;
 
-export const postgresAdapter = createAdapter({
+export const postgresAdapter = createGeneratorAdapter({
   // From https://node-postgres.com/features/types:
   // "node-postgres will convert a database type to a JavaScript string if it doesn't have a
   // registered type parser for the database type. Furthermore, you can send any type to the

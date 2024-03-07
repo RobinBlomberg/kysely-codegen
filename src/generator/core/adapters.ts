@@ -1,12 +1,12 @@
 import type { DialectName } from '../../introspector/index.js';
-import type { Adapter } from './adapter.js';
+import type { GeneratorAdapter } from './adapter.js';
 import { bunSqliteAdapter } from './adapters/bun-sqlite.adapter.js';
 import { libsqlAdapter } from './adapters/libsql.adapter.js';
 import { mysqlAdapter } from './adapters/mysql.adapter.js';
 import { postgresAdapter } from './adapters/postgres.adapter.js';
 import { sqliteAdapter } from './adapters/sqlite.adapter.js';
 
-const adapters: Record<DialectName, Adapter> = {
+const adapters: Record<DialectName, GeneratorAdapter> = {
   'bun-sqlite': bunSqliteAdapter,
   libsql: libsqlAdapter,
   mysql: mysqlAdapter,
@@ -14,6 +14,6 @@ const adapters: Record<DialectName, Adapter> = {
   sqlite: sqliteAdapter,
 };
 
-export const getAdapter = (name: DialectName): Adapter => {
+export const getGeneratorAdapter = (name: DialectName): GeneratorAdapter => {
   return adapters[name];
 };

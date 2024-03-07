@@ -10,9 +10,9 @@ import {
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
 } from '../../transformer/definitions.js';
-import { createAdapter } from '../adapter.js';
+import { createGeneratorAdapter } from '../adapter.js';
 
-export const mysqlAdapter = createAdapter({
+export const mysqlAdapter = createGeneratorAdapter({
   definitions: {
     Decimal: new ColumnType(
       new IdentifierNode('string'),
