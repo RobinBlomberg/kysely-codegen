@@ -55,7 +55,7 @@
     "@types/minimist": "^1.2.5",
     "@types/node": "^20.11.16",
     "@types/pg": "^8.11.0",
-    "@types/tedious": "4.0.14",
+    "@types/tedious": "^4.0.14",
     "@typescript-eslint/parser": "^6.20.0",
     "better-sqlite3": "^9.3.0",
     "eslint": "^8.56.0",
