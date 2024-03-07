@@ -1,5 +1,6 @@
 import { DatabaseMetadata, EnumCollection } from '../../core';
-import { IntrospectOptions, Introspector } from '../../introspector';
+import type { IntrospectOptions } from '../../introspector';
+import { Introspector } from '../../introspector';
 
 export class MssqlIntrospector extends Introspector<any> {
   async introspect(options: IntrospectOptions<any>) {

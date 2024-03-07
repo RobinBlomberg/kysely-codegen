@@ -22,10 +22,10 @@ export const LOG_LEVEL_NAMES = [
 ] as const;
 
 export const VALID_DIALECTS = [
-  'mysql',
   'postgres',
+  'mysql',
   'sqlite',
+  'mssql',
   'libsql',
   'bun-sqlite',
-   'mssql',
 ];
