@@ -10,22 +10,34 @@
 
 ## Installation
 
-```
+```sh
 npm install --save-dev kysely-codegen
+```
 
-# You will also need to install Kysely with your driver of choice:
+You will also need to install Kysely with your driver of choice:
+
+```sh
+# PostgreSQL
 npm install kysely pg
+
+# MySQL
 npm install kysely mysql2
+
+# SQLite
 npm install kysely better-sqlite3
-npm install @libsql/kysely-libsql
+
+# MSSQL
 npm install kysely tedious tarn @tediousjs/connection-string
+
+# LibSQL
+npm install @libsql/kysely-libsql
 ```
 
 ## Generating type definitions
 
 The most convenient way to get started is to create an `.env` file with your database connection string:
 
-```
+```sh
 # PostgreSQL
 DATABASE_URL=postgres://username:password@yourdomain.com/database
 
@@ -35,11 +47,11 @@ DATABASE_URL=mysql://username:password@yourdomain.com/database
 # SQLite
 DATABASE_URL=C:/Program Files/sqlite3/db
 
-# LibSQL
-DATABASE_URL=libsql://token@host:port/database
-
 # MSSQL
 DATABASE_URL=Server=mssql;Database=database;User Id=user;Password=password
+
+# LibSQL
+DATABASE_URL=libsql://token@host:port/database
 ```
 
 > If your URL contains a password with special characters, those characters may need to be [percent-encoded](https://en.wikipedia.org/wiki/Percent-encoding#Reserved_characters).
@@ -48,12 +60,13 @@ DATABASE_URL=Server=mssql;Database=database;User Id=user;Password=password
 
 Then run:
 
-```
+```sh
 kysely-codegen
 ```
 
 This command will generate a `.d.ts` file from your database, for example:
 
+<!-- prettier-ignore -->
 ```ts
 import { ColumnType } from 'kysely';
 
