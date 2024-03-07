@@ -12,11 +12,11 @@ dependencies:
     specifier: 4.1.2
     version: 4.1.2
   dotenv:
-    specifier: ^16.4.4
+    specifier: ^16.4.5
     version: 16.4.5
   dotenv-expand:
-    specifier: ^10.0.0
-    version: 10.0.0
+    specifier: ^11.0.6
+    version: 11.0.6
   git-diff:
     specifier: ^2.0.6
     version: 2.0.6
@@ -41,8 +41,8 @@ devDependencies:
     specifier: ^0.1.4
     version: 0.1.4
   '@robinblomberg/eslint-config-robinblomberg':
-    specifier: 0.25.1
-    version: 0.25.1(eslint@8.57.0)(typescript@5.4.2)
+    specifier: 0.26.0
+    version: 0.26.0(eslint@8.57.0)(typescript@5.4.2)
   '@robinblomberg/prettier-config':
     specifier: ^0.1.2
     version: 0.1.2
@@ -59,22 +59,22 @@ devDependencies:
     specifier: ^1.2.5
     version: 1.2.5
   '@types/node':
-    specifier: ^20.11.19
+    specifier: ^20.11.25
     version: 20.11.25
   '@types/pg':
-    specifier: ^8.11.0
+    specifier: ^8.11.2
     version: 8.11.2
   '@types/tedious':
     specifier: ^4.0.14
     version: 4.0.14
   '@typescript-eslint/parser':
-    specifier: ^7.0.1
+    specifier: ^7.1.1
     version: 7.1.1(eslint@8.57.0)(typescript@5.4.2)
   better-sqlite3:
-    specifier: ^9.4.1
+    specifier: ^9.4.3
     version: 9.4.3
   eslint:
-    specifier: ^8.56.0
+    specifier: ^8.57.0
     version: 8.57.0
   kysely:
     specifier: ^0.27.2
@@ -83,7 +83,7 @@ devDependencies:
     specifier: ^0.5.7
     version: 0.5.7(kysely@0.27.2)
   mysql2:
-    specifier: ^3.9.1
+    specifier: ^3.9.2
     version: 3.9.2
   npm-run-all:
     specifier: ^4.1.5
@@ -92,7 +92,7 @@ devDependencies:
     specifier: ^8.11.3
     version: 8.11.3
   pnpm:
-    specifier: ^8.15.3
+    specifier: ^8.15.4
     version: 8.15.4
   prettier:
     specifier: ^3.2.5
@@ -107,10 +107,10 @@ devDependencies:
     specifier: ^4.7.1
     version: 4.7.1
   typescript:
-    specifier: ^5.3.3
+    specifier: ^5.4.2
     version: 5.4.2
   vitest:
-    specifier: ^1.3.0
+    specifier: ^1.3.1
     version: 1.3.1(@types/node@20.11.25)
 
 packages:
@@ -928,8 +928,8 @@ packages:
     resolution: {integrity: sha512-gAGbmxj3fJFS2VQWfhyNCQ/GS96BrEDak+Axh1usVLkibVh7fTPIulR3RkttQP84BT8EP0OF+Uast4pqpDTKzg==}
     dev: true
 
-  /@robinblomberg/eslint-config-robinblomberg@0.25.1(eslint@8.57.0)(typescript@5.4.2):
-    resolution: {integrity: sha512-V1UacXKGCz3BqK3PcKb+yaLJcG06/028ILKSq7UB7uDYAmvcsXP/ob1joOPervdGxeW3zhcum0ZSPhLPK8YBDw==}
+  /@robinblomberg/eslint-config-robinblomberg@0.26.0(eslint@8.57.0)(typescript@5.4.2):
+    resolution: {integrity: sha512-RRU1au5VDEUCaa2R9SE1/H6udSDOjB2kpZeYNbc2mBJSEgGGneKDHhx8fwMboApW8Mtz+rWscRmBf8KduDqj6w==}
     peerDependencies:
       eslint: ^8.43.0
       typescript: '>=4.2.0'
@@ -949,7 +949,7 @@ packages:
       eslint-plugin-sonarjs: 0.24.0(eslint@8.57.0)
       eslint-plugin-sort-exports: 0.9.1(eslint@8.57.0)
       eslint-plugin-sort-keys: 2.3.5
-      eslint-plugin-storybook: 0.6.15(eslint@8.57.0)(typescript@5.4.2)
+      eslint-plugin-storybook: 0.8.0(eslint@8.57.0)(typescript@5.4.2)
       eslint-plugin-unicorn: 51.0.1(eslint@8.57.0)
       typescript: 5.4.2
     transitivePeerDependencies:
@@ -2061,9 +2061,11 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /dotenv-expand@10.0.0:
-    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
+  /dotenv-expand@11.0.6:
+    resolution: {integrity: sha512-8NHi73otpWsZGBSZwwknTXS5pqMOrk9+Ssrna8xCaxkzEpU9OTf9R5ArQGVw03//Zmk9MOwLPng9WwndvpAJ5g==}
     engines: {node: '>=12'}
+    dependencies:
+      dotenv: 16.4.5
     dev: false
 
   /dotenv@16.4.5:
@@ -2465,9 +2467,9 @@ packages:
       natural-compare: 1.4.0
     dev: true
 
-  /eslint-plugin-storybook@0.6.15(eslint@8.57.0)(typescript@5.4.2):
-    resolution: {integrity: sha512-lAGqVAJGob47Griu29KXYowI4G7KwMoJDOkEip8ujikuDLxU+oWJ1l0WL6F2oDO4QiyUFXvtDkEkISMOPzo+7w==}
-    engines: {node: 12.x || 14.x || >= 16}
+  /eslint-plugin-storybook@0.8.0(eslint@8.57.0)(typescript@5.4.2):
+    resolution: {integrity: sha512-CZeVO5EzmPY7qghO2t64oaFM+8FTaD4uzOEjHKp516exyTKo+skKAL9GI3QALS2BXhyALJjNtwbmr1XinGE8bA==}
+    engines: {node: '>= 18'}
     peerDependencies:
       eslint: '>=6'
     dependencies:
