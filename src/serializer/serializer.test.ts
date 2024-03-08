@@ -80,7 +80,7 @@ export const testSerializer = () => {
       strictEqual(
         serializer.serializeExtendsClause(
           new ExtendsClauseNode(
-            'A',
+            new IdentifierNode('A'),
             new IdentifierNode('B'),
             new IdentifierNode('A'),
             new IdentifierNode('C'),
