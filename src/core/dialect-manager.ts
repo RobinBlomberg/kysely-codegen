@@ -16,10 +16,20 @@ export type DialectName =
   | 'postgres'
   | 'sqlite';
 
+export type DialectManagerOptions = {
+  skipDomains: boolean;
+};
+
 /**
  * Returns a dialect instance for a pre-defined dialect name.
  */
 export class DialectManager {
+  readonly #options: DialectManagerOptions;
+
+  constructor(opts: DialectManagerOptions) {
+    this.#options = opts;
+  }
+
   getDialect(name: DialectName): Dialect {
     switch (name) {
       case 'bun-sqlite':
@@ -31,7 +41,7 @@ export class DialectManager {
       case 'mysql':
         return new MysqlDialect();
       case 'postgres':
-        return new PostgresDialect();
+        return new PostgresDialect(this.#options);
       default:
         return new SqliteDialect();
     }

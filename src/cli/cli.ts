@@ -26,6 +26,7 @@ export type CliOptions = {
   outFile?: string | undefined;
   print?: boolean;
   schema?: string | undefined;
+  skipDomains?: boolean;
   typeOnlyImports?: boolean;
   url: string;
   verify?: boolean | undefined;
@@ -62,7 +63,9 @@ export class Cli {
       logger.info(`No dialect specified. Assuming '${inferredDialectName}'.`);
     }
 
-    const dialectManager = new DialectManager();
+    const dialectManager = new DialectManager({
+      skipDomains: options.skipDomains ?? false,
+    });
     const dialect = dialectManager.getDialect(
       options.dialectName ?? inferredDialectName,
     );

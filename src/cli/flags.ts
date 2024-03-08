@@ -68,6 +68,11 @@ export const FLAGS: Flag[] = [
   },
   {
     description:
+      'Skip generating type information for postgres domains. (default: false)',
+    longName: 'skip-domains',
+  },
+  {
+    description:
       'Verify that the generated types are up-to-date. (default: false)',
     longName: 'verify',
   },
