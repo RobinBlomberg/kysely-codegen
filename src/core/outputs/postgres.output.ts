@@ -1,6 +1,10 @@
 import type { ColumnType } from "kysely";
 
-export type ArrayType<T> = T extends ColumnType<infer S, infer I, infer U>
+export type ArrayType<T> = ArrayTypeImpl<T> extends (infer U)[]
+  ? U[]
+  : ArrayTypeImpl<T>;
+
+export type ArrayTypeImpl<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S[], I[], U[]>
   : T[];
 

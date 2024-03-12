@@ -2,21 +2,21 @@ import type { ExpressionNode } from './expression-node';
 import { NodeType } from './node-type';
 
 export class ExtendsClauseNode {
-  readonly alternate: ExpressionNode;
-  readonly consequent: ExpressionNode;
-  readonly name: string;
-  readonly test: ExpressionNode;
+  readonly falseType: ExpressionNode;
+  readonly trueType: ExpressionNode;
+  readonly checkType: ExpressionNode;
+  readonly extendsType: ExpressionNode;
   readonly type = NodeType.EXTENDS_CLAUSE;
 
   constructor(
-    name: string,
-    test: ExpressionNode,
-    consequent: ExpressionNode,
-    alternate: ExpressionNode,
+    checkType: ExpressionNode,
+    extendsType: ExpressionNode,
+    trueType: ExpressionNode,
+    falseType: ExpressionNode,
   ) {
-    this.name = name;
-    this.test = test;
-    this.consequent = consequent;
-    this.alternate = alternate;
+    this.checkType = checkType;
+    this.extendsType = extendsType;
+    this.trueType = trueType;
+    this.falseType = falseType;
   }
 }
