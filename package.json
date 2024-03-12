@@ -81,7 +81,7 @@
     "mysql2": "^2.3.3 || ^3.0.0",
     "pg": "^8.8.0",
     "tarn": "^3.0.0",
-    "tedious": "^16.6.0"
+    "tedious": "^16.6.0 || ^17.0.0"
   },
   "peerDependenciesMeta": {
     "@libsql/kysely-libsql": {
