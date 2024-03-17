@@ -320,7 +320,7 @@ export const testSerializer = () => {
 
     void describe('serialize', () => {
       void it('should serialize Postgres JSON fields properly', () => {
-        const dialect = new PostgresDialect({ skipDomains: false });
+        const dialect = new PostgresDialect();
         const enums = new EnumCollection();
         const transformer = new Transformer();
 

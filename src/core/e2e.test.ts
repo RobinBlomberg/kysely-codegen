@@ -35,7 +35,7 @@ const TESTS: Test[] = [
   },
   {
     connectionString: 'postgres://user:password@localhost:5433/database',
-    dialect: new PostgresDialect({ skipDomains: false }),
+    dialect: new PostgresDialect(),
     values: { false: false, id: 1, true: true },
   },
   {

@@ -32,7 +32,7 @@ export const testTransformer = () => {
     });
 
     const transform = (tables: TableMetadata[], camelCase: boolean) => {
-      const dialect = new PostgresDialect({ skipDomains: false });
+      const dialect = new PostgresDialect();
       const transformer = new Transformer();
       const metadata = new DatabaseMetadata(tables, enums);
       return transformer.transform({ camelCase, dialect, metadata });

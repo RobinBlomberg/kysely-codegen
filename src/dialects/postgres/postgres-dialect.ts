@@ -5,7 +5,7 @@ import { PostgresAdapter } from './postgres-adapter';
 import { PostgresIntrospector } from './postgres-introspector';
 
 export type PostgresDialectOptions = {
-  skipDomains: boolean;
+  skipDomains?: boolean;
 };
 
 export class PostgresDialect extends Dialect {
@@ -13,9 +13,9 @@ export class PostgresDialect extends Dialect {
   readonly adapter = new PostgresAdapter();
   readonly introspector;
 
-  constructor(opts: PostgresDialectOptions) {
+  constructor(options: PostgresDialectOptions = {}) {
     super();
-    this.#options = opts;
+    this.#options = options;
     this.introspector = new PostgresIntrospector(this.adapter, this.#options);
   }
 

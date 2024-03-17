@@ -44,6 +44,11 @@ export const FLAGS: Flag[] = [
     longName: 'log-level',
   },
   {
+    description:
+      'Skip generating types for PostgreSQL domains. (default: false)',
+    longName: 'no-domains',
+  },
+  {
     description: `Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
     longName: 'out-file',
   },
@@ -65,11 +70,6 @@ export const FLAGS: Flag[] = [
   {
     description: 'Set the default schema of the database connection.',
     longName: 'schema',
-  },
-  {
-    description:
-      'Skip generating type information for postgres domains. (default: false)',
-    longName: 'skip-domains',
   },
   {
     description:

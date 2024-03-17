@@ -19,6 +19,7 @@ import { FLAGS } from './flags';
 export type CliOptions = {
   camelCase?: boolean;
   dialectName?: DialectName | undefined;
+  domains?: boolean;
   envFile?: string | undefined;
   excludePattern?: string | undefined;
   includePattern?: string | undefined;
@@ -26,7 +27,6 @@ export type CliOptions = {
   outFile?: string | undefined;
   print?: boolean;
   schema?: string | undefined;
-  skipDomains?: boolean;
   typeOnlyImports?: boolean;
   url: string;
   verify?: boolean | undefined;
@@ -40,9 +40,9 @@ export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
 export class Cli {
   async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
-    const outFile = options.outFile;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
+    const outFile = options.outFile;
     const schema = options.schema;
     const typeOnlyImports = options.typeOnlyImports;
 
@@ -53,8 +53,8 @@ export class Cli {
       connectionStringParser.parse({
         connectionString: options.url ?? DEFAULT_URL,
         dialectName: options.dialectName,
-        logger,
         envFile: options.envFile,
+        logger,
       });
 
     if (options.dialectName) {
@@ -64,7 +64,7 @@ export class Cli {
     }
 
     const dialectManager = new DialectManager({
-      skipDomains: options.skipDomains ?? false,
+      skipDomains: !!options.domains,
     });
     const dialect = dialectManager.getDialect(
       options.dialectName ?? inferredDialectName,
@@ -151,10 +151,11 @@ export class Cli {
     const _: string[] = argv._;
     const camelCase = this.#parseBoolean(argv['camel-case']);
     const dialectName = argv.dialect;
-    const help =
-      !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
+    const domains = this.#parseBoolean(argv.domains);
     const envFile = argv['env-file'] as string | undefined;
     const excludePattern = argv['exclude-pattern'] as string | undefined;
+    const help =
+      !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
     const includePattern = argv['include-pattern'] as string | undefined;
     const logLevel = this.#getLogLevel(argv['log-level']);
     const outFile =
@@ -172,7 +173,15 @@ export class Cli {
       for (const key in argv) {
         if (
           key !== '_' &&
-          !FLAGS.some((flag) => [flag.longName, flag.shortName].includes(key))
+          !FLAGS.some((flag) => {
+            return [
+              flag.shortName,
+              flag.longName,
+              ...(flag.longName.startsWith('no-')
+                ? [flag.longName.slice(3)]
+                : []),
+            ].includes(key);
+          })
         ) {
           throw new RangeError(`Invalid flag: "${key}"`);
         }
@@ -216,6 +225,7 @@ export class Cli {
     return {
       camelCase,
       dialectName,
+      domains,
       envFile,
       excludePattern,
       includePattern,
