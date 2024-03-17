@@ -286,7 +286,6 @@ export class Serializer {
       );
 
       for (const property of sortedProperties) {
-        data += '  ';
         data += this.serializeProperty(property);
       }
     }
@@ -299,6 +298,15 @@ export class Serializer {
   serializeProperty(node: PropertyNode) {
     let data = '';
 
+    console.log('node1:', node);
+
+    if (node.comment) {
+      data += `  /**\n`;
+      data += `  * ${node.comment}\n`;
+      data += `  */\n`;
+    }
+
+    data += '  ';
     data += this.serializeKey(node.key);
     data += ': ';
     data += this.serializeExpression(node.value);

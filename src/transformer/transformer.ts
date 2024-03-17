@@ -322,7 +322,8 @@ export class Transformer {
       for (const column of table.columns) {
         const key = this.#transformName(column.name, context);
         const value = this.#transformColumn(column, context);
-        const tableProperty = new PropertyNode(key, value);
+        const comment = column.comment;
+        const tableProperty = new PropertyNode(key, value, comment);
         tableProperties.push(tableProperty);
       }
 
