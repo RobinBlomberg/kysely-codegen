@@ -83,6 +83,15 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
     }
 
     await builder.execute();
+
+    if (dialect instanceof PostgresDialect) {
+      await trx.executeQuery(
+        sql`
+          comment on column foo_bar.false is
+          'This is a comment on a column.\r\n\r\nIt''s nice, isn''t it?';
+        `.compile(trx),
+      );
+    }
   });
 };
 

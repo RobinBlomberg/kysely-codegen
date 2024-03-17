@@ -23,6 +23,11 @@ export interface FooBar {
   childDomain: number | null;
   defaultedNullablePosInt: Generated<number | null>;
   defaultedRequiredPosInt: Generated<number>;
+  /**
+   * This is a comment on a column.
+   *
+   * It's nice, isn't it?
+   */
   false: boolean;
   id: Generated<number>;
   nullablePosInt: number | null;

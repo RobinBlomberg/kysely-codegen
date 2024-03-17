@@ -286,6 +286,7 @@ export class Serializer {
       );
 
       for (const property of sortedProperties) {
+        data += '  ';
         data += this.serializeProperty(property);
       }
     }
@@ -299,12 +300,15 @@ export class Serializer {
     let data = '';
 
     if (node.comment) {
-      data += `  /**\n`;
-      data += `  * ${node.comment}\n`;
-      data += `  */\n`;
+      data += '/**\n';
+
+      for (const line of node.comment.split(/\r?\n/)) {
+        data += `   *${line ? ` ${line}` : ''}\n`;
+      }
+
+      data += '   */\n  ';
     }
 
-    data += '  ';
     data += this.serializeKey(node.key);
     data += ': ';
     data += this.serializeExpression(node.value);

@@ -48,6 +48,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
 
           return {
             ...column,
+            comment: column.comment ?? null,
             dataType: isArray ? dataType.slice(1) : dataType,
             dataTypeSchema: column.dataTypeSchema,
             enumValues: enums.get(
