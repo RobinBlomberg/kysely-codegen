@@ -55,11 +55,11 @@ export type TransformContext = {
 };
 
 export type TransformOptions = {
-  camelCase: boolean;
+  camelCase?: boolean;
   defaultSchema?: string;
   dialect: Dialect;
   metadata: DatabaseMetadata;
-  runtimeEnums: boolean;
+  runtimeEnums?: boolean;
 };
 
 /**
@@ -146,7 +146,7 @@ export class Transformer {
 
   #createContext(options: TransformOptions): TransformContext {
     return {
-      camelCase: options.camelCase,
+      camelCase: !!options.camelCase,
       defaultScalar:
         options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
       defaultSchema:
@@ -161,7 +161,7 @@ export class Transformer {
         ...options.dialect.adapter.imports,
       },
       metadata: options.metadata,
-      runtimeEnums: options.runtimeEnums,
+      runtimeEnums: !!options.runtimeEnums,
       scalars: {
         ...options.dialect.adapter.scalars,
       },
@@ -201,9 +201,9 @@ export class Transformer {
       }
     }
 
-    return runtimeEnumDefinitionNodes.sort((a, b) =>
-      a.argument.name.localeCompare(b.argument.name),
-    );
+    return runtimeEnumDefinitionNodes.sort((a, b) => {
+      return a.argument.name.localeCompare(b.argument.name);
+    });
   }
 
   #createDefinitionNodes(context: TransformContext) {

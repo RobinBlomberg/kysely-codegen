@@ -59,7 +59,10 @@ export class Generator {
 
     const serializer =
       options.serializer ??
-      new Serializer({ typeOnlyImports: options.typeOnlyImports, camelCase: !!options.camelCase });
+      new Serializer({
+        camelCase: !!options.camelCase,
+        typeOnlyImports: options.typeOnlyImports,
+      });
     const data = serializer.serialize(nodes);
 
     const relativeOutDir = options.outFile

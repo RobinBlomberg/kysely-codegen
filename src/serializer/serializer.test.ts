@@ -279,9 +279,6 @@ export const testSerializer = () => {
                   new ColumnMetadata({
                     comment: 'Hello!\nThis is a comment.',
                     dataType: 'json',
-                    hasDefaultValue: false,
-                    isAutoIncrementing: false,
-                    isNullable: false,
                     name: 'json',
                   }),
                 ],
@@ -291,7 +288,6 @@ export const testSerializer = () => {
             ],
             enums,
           ),
-          runtimeEnums: false,
         });
 
         strictEqual(
@@ -338,13 +334,7 @@ export const testSerializer = () => {
             [
               new TableMetadata({
                 columns: [
-                  new ColumnMetadata({
-                    dataType: 'json',
-                    hasDefaultValue: false,
-                    isAutoIncrementing: false,
-                    isNullable: false,
-                    name: 'json',
-                  }),
+                  new ColumnMetadata({ dataType: 'json', name: 'json' }),
                 ],
                 name: 'foo',
                 schema: 'public',
@@ -352,7 +342,6 @@ export const testSerializer = () => {
             ],
             enums,
           ),
-          runtimeEnums: false,
         });
 
         strictEqual(
