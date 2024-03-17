@@ -103,9 +103,9 @@ export class Transformer {
         this.#collectSymbols(node.values, context);
         break;
       case NodeType.EXTENDS_CLAUSE:
-        this.#collectSymbols(node.test, context);
-        this.#collectSymbols(node.consequent, context);
-        this.#collectSymbols(node.alternate, context);
+        this.#collectSymbols(node.extendsType, context);
+        this.#collectSymbols(node.trueType, context);
+        this.#collectSymbols(node.falseType, context);
         break;
       case NodeType.GENERIC_EXPRESSION: {
         this.#collectSymbol(node.name, context);
@@ -344,7 +344,8 @@ export class Transformer {
       for (const column of table.columns) {
         const key = this.#transformName(column.name, context);
         const value = this.#transformColumn(column, context);
-        const tableProperty = new PropertyNode(key, value);
+        const comment = column.comment;
+        const tableProperty = new PropertyNode(key, value, comment);
         tableProperties.push(tableProperty);
       }
 

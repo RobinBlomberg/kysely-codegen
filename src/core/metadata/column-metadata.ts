@@ -1,4 +1,5 @@
 export type ColumnMetadataOptions = {
+  comment?: string | null;
   dataType: string;
   dataTypeSchema?: string;
   enumValues?: string[] | null;
@@ -10,6 +11,7 @@ export type ColumnMetadataOptions = {
 };
 
 export class ColumnMetadata {
+  readonly comment: string | null;
   readonly dataType: string;
   readonly dataTypeSchema: string | undefined;
   readonly enumValues: string[] | null;
@@ -20,6 +22,7 @@ export class ColumnMetadata {
   readonly name: string;
 
   constructor(options: ColumnMetadataOptions) {
+    this.comment = options.comment ?? null;
     this.dataType = options.dataType;
     this.dataTypeSchema = options.dataTypeSchema;
     this.enumValues = options.enumValues ?? null;

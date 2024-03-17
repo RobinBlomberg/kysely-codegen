@@ -90,6 +90,12 @@ export const testTransformer = () => {
           new AliasDeclarationNode('ArrayType', GLOBAL_DEFINITIONS.ArrayType),
         ),
         new ExportStatementNode(
+          new AliasDeclarationNode(
+            'ArrayTypeImpl',
+            GLOBAL_DEFINITIONS.ArrayTypeImpl,
+          ),
+        ),
+        new ExportStatementNode(
           new AliasDeclarationNode('Generated', GLOBAL_DEFINITIONS.Generated),
         ),
         new ExportStatementNode(

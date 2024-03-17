@@ -136,8 +136,9 @@ export class Serializer {
 
   serializeArrayExpression(node: ArrayExpressionNode) {
     const shouldParenthesize =
-      node.values.type === NodeType.UNION_EXPRESSION &&
-      node.values.args.length >= 2;
+      node.values.type === NodeType.INFER_CLAUSE ||
+      (node.values.type === NodeType.UNION_EXPRESSION &&
+        node.values.args.length >= 2);
     let data = '';
 
     if (shouldParenthesize) {
@@ -201,13 +202,13 @@ export class Serializer {
   serializeExtendsClause(node: ExtendsClauseNode) {
     let data = '';
 
-    data += node.name;
+    data += this.serializeExpression(node.checkType);
     data += ' extends ';
-    data += this.serializeExpression(node.test);
+    data += this.serializeExpression(node.extendsType);
     data += '\n  ? ';
-    data += this.serializeExpression(node.consequent);
+    data += this.serializeExpression(node.trueType);
     data += '\n  : ';
-    data += this.serializeExpression(node.alternate);
+    data += this.serializeExpression(node.falseType);
 
     return data;
   }
@@ -340,6 +341,16 @@ export class Serializer {
 
   serializeProperty(node: PropertyNode) {
     let data = '';
+
+    if (node.comment) {
+      data += '/**\n';
+
+      for (const line of node.comment.split(/\r?\n/)) {
+        data += `   *${line ? ` ${line}` : ''}\n`;
+      }
+
+      data += '   */\n  ';
+    }
 
     data += this.serializeKey(node.key);
     data += ': ';

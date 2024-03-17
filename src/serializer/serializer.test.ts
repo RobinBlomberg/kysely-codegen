@@ -81,7 +81,7 @@ export const testSerializer = () => {
       strictEqual(
         serializer.serializeExtendsClause(
           new ExtendsClauseNode(
-            'A',
+            new IdentifierNode('A'),
             new IdentifierNode('B'),
             new IdentifierNode('A'),
             new IdentifierNode('C'),
@@ -277,6 +277,7 @@ export const testSerializer = () => {
               new TableMetadata({
                 columns: [
                   new ColumnMetadata({
+                    comment: 'Hello!\nThis is a comment.',
                     dataType: 'json',
                     hasDefaultValue: false,
                     isAutoIncrementing: false,
@@ -310,6 +311,10 @@ export const testSerializer = () => {
             'export type JsonValue = JsonArray | JsonObject | JsonPrimitive;\n' +
             '\n' +
             'export interface Foo {\n' +
+            '  /**\n' +
+            '   * Hello!\n' +
+            '   * This is a comment.\n' +
+            '   */\n' +
             '  json: Json;\n' +
             '}\n' +
             '\n' +
