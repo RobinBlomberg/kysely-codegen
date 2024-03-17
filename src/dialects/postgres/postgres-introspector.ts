@@ -17,12 +17,21 @@ type PostgresDomainInspector = {
   rootType: string;
 };
 
+export type PostgresIntrospectorOptions = {
+  skipDomains?: boolean;
+};
+
 export class PostgresIntrospector extends Introspector<PostgresDB> {
   readonly adapter: PostgresAdapter;
+  readonly #options: PostgresIntrospectorOptions;
 
-  constructor(adapter: PostgresAdapter) {
+  constructor(
+    adapter: PostgresAdapter,
+    options: PostgresIntrospectorOptions = {},
+  ) {
     super();
     this.adapter = adapter;
+    this.#options = options;
   }
 
   #createDatabaseMetadata(
@@ -94,6 +103,10 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
   }
 
   async #introspectDomains(db: Kysely<PostgresDB>) {
+    if (this.#options.skipDomains) {
+      return [];
+    }
+
     const result = await sql<PostgresDomainInspector>`
       with recursive domain_hierarchy as (
         select oid, typbasetype
