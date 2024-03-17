@@ -99,7 +99,7 @@
       "optional": false
     },
     "kysely-bun-worker": {
-      "optional": false
+      "optional": true
     },
     "mysql2": {
       "optional": true
