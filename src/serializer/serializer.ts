@@ -298,8 +298,6 @@ export class Serializer {
   serializeProperty(node: PropertyNode) {
     let data = '';
 
-    console.log('node1:', node);
-
     if (node.comment) {
       data += `  /**\n`;
       data += `  * ${node.comment}\n`;
