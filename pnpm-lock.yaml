@@ -36,7 +36,7 @@ dependencies:
 devDependencies:
   '@libsql/kysely-libsql':
     specifier: ^0.3.0
-    version: 0.3.0(kysely@0.27.2)
+    version: 0.3.0(kysely@0.27.3)
   '@robinblomberg/eslint-config-prettier':
     specifier: ^0.1.4
     version: 0.1.4
@@ -77,11 +77,11 @@ devDependencies:
     specifier: ^8.57.0
     version: 8.57.0
   kysely:
-    specifier: ^0.27.2
-    version: 0.27.2
+    specifier: ^0.27.3
+    version: 0.27.3
   kysely-bun-worker:
     specifier: ^0.5.7
-    version: 0.5.7(kysely@0.27.2)
+    version: 0.5.7(kysely@0.27.3)
   mysql2:
     specifier: ^3.9.2
     version: 3.9.2
@@ -877,13 +877,13 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@libsql/kysely-libsql@0.3.0(kysely@0.27.2):
+  /@libsql/kysely-libsql@0.3.0(kysely@0.27.3):
     resolution: {integrity: sha512-UEZB2giBFSR0NPwx2a8TxdnBEq20u7LfHupiwFc0t0VXAP1URdrSVv84rjMl/EAEs1tC6/Ex6O+OppwoKoJRbg==}
     peerDependencies:
       kysely: '*'
     dependencies:
       '@libsql/hrana-client': 0.4.4
-      kysely: 0.27.2
+      kysely: 0.27.3
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -3405,16 +3405,16 @@ packages:
       json-buffer: 3.0.1
     dev: true
 
-  /kysely-bun-worker@0.5.7(kysely@0.27.2):
+  /kysely-bun-worker@0.5.7(kysely@0.27.3):
     resolution: {integrity: sha512-P4W5moWU6A1xJ2GvGbdrPDiasSKTjuBfItU1vj+wZlA+A6AXv8Nxk0nScuBu8F12UnalrIDDu+oLCF5wC3Z4EA==}
     peerDependencies:
       kysely: '>=0.26'
     dependencies:
-      kysely: 0.27.2
+      kysely: 0.27.3
     dev: true
 
-  /kysely@0.27.2:
-    resolution: {integrity: sha512-DmRvEfiR/NLpgsTbSxma2ldekhsdcd65+MNiKXyd/qj7w7X5e3cLkXxcj+MypsRDjPhHQ/CD5u3Eq1sBYzX0bw==}
+  /kysely@0.27.3:
+    resolution: {integrity: sha512-lG03Ru+XyOJFsjH3OMY6R/9U38IjDPfnOfDgO3ynhbDr+Dz8fak+X6L62vqu3iybQnj+lG84OttBuU9KY3L9kA==}
     engines: {node: '>=14.0.0'}
     dev: true
 

@@ -7,6 +7,7 @@ export type ColumnMetadataOptions = {
   isAutoIncrementing?: boolean;
   isNullable?: boolean;
   name: string;
+  comment?: string;
 };
 
 export class ColumnMetadata {
@@ -18,6 +19,7 @@ export class ColumnMetadata {
   readonly isAutoIncrementing: boolean;
   readonly isNullable: boolean;
   readonly name: string;
+  readonly comment?: string;
 
   constructor(options: ColumnMetadataOptions) {
     this.dataType = options.dataType;
@@ -28,5 +30,6 @@ export class ColumnMetadata {
     this.isAutoIncrementing = options.isAutoIncrementing ?? false;
     this.isNullable = options.isNullable ?? false;
     this.name = options.name;
+    this.comment = options.comment;
   }
 }
