@@ -18,7 +18,7 @@ type PostgresDomainInspector = {
 };
 
 export type PostgresIntrospectorOptions = {
-  skipDomains?: boolean;
+  domains: boolean;
 };
 
 export class PostgresIntrospector extends Introspector<PostgresDB> {
@@ -27,7 +27,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
 
   constructor(
     adapter: PostgresAdapter,
-    options: PostgresIntrospectorOptions = {},
+    options: PostgresIntrospectorOptions = { domains: true },
   ) {
     super();
     this.adapter = adapter;
@@ -104,7 +104,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
   }
 
   async #introspectDomains(db: Kysely<PostgresDB>) {
-    if (this.#options.skipDomains) {
+    if (!this.#options.domains) {
       return [];
     }
 
