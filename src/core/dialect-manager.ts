@@ -17,7 +17,7 @@ export type DialectName =
   | 'sqlite';
 
 export type DialectManagerOptions = {
-  skipDomains?: boolean;
+  domains: boolean;
 };
 
 /**
@@ -26,7 +26,7 @@ export type DialectManagerOptions = {
 export class DialectManager {
   readonly #options: DialectManagerOptions;
 
-  constructor(options: DialectManagerOptions = {}) {
+  constructor(options: DialectManagerOptions = { domains: true }) {
     this.#options = options;
   }
 

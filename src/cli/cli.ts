@@ -66,7 +66,7 @@ export class Cli {
     }
 
     const dialectManager = new DialectManager({
-      skipDomains: !!options.domains,
+      domains: !!options.domains,
     });
     const dialect = dialectManager.getDialect(
       options.dialectName ?? inferredDialectName,
