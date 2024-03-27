@@ -25,6 +25,7 @@ import type {
   ImportMap,
   ScalarMap,
 } from '../core/adapter.js';
+import { RuntimeEnumDeclarationNode } from '../index.js';
 import { toCamelCase } from './case-converter.js';
 import { GLOBAL_DEFINITIONS } from './definitions.js';
 import { GLOBAL_IMPORTS } from './imports.js';
@@ -37,6 +38,7 @@ export type TransformContext = {
   definitions: DefinitionMap;
   enums: EnumMap;
   imports: ImportMap;
+  runtimeEnums: boolean;
   schema: DatabaseSchema;
   scalars: ScalarMap;
   symbols: SymbolCollection;
@@ -44,8 +46,9 @@ export type TransformContext = {
 
 export type TransformOptions = {
   adapter: GeneratorAdapter;
-  camelCase: boolean;
+  camelCase?: boolean;
   defaultSchema?: string;
+  runtimeEnums?: boolean;
   schema: DatabaseSchema;
 };
 
@@ -86,9 +89,9 @@ const collectSymbols = (
       collectSymbols(node.values, context);
       break;
     case NodeType.EXTENDS_CLAUSE:
-      collectSymbols(node.test, context);
-      collectSymbols(node.consequent, context);
-      collectSymbols(node.alternate, context);
+      collectSymbols(node.extendsType, context);
+      collectSymbols(node.trueType, context);
+      collectSymbols(node.falseType, context);
       break;
     case NodeType.GENERIC_EXPRESSION: {
       collectSymbol(node.name, context);
@@ -129,7 +132,7 @@ const collectSymbols = (
 
 const createContext = (options: TransformOptions): TransformContext => {
   return {
-    camelCase: options.camelCase,
+    camelCase: !!options.camelCase,
     defaultScalar:
       options.adapter.defaultScalar ?? new IdentifierNode('unknown'),
     defaultSchema: options.defaultSchema ?? options.adapter.defaultSchema,
@@ -142,6 +145,7 @@ const createContext = (options: TransformOptions): TransformContext => {
       ...GLOBAL_IMPORTS,
       ...options.adapter.imports,
     },
+    runtimeEnums: !!options.runtimeEnums,
     schema: options.schema,
     scalars: {
       ...options.adapter.scalars,
@@ -204,6 +208,22 @@ const createImportNodes = (context: TransformContext) => {
   }
 
   return importNodes.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
+};
+
+const createRuntimeEnumDefinitionNodes = (context: TransformContext) => {
+  const runtimeEnumDefinitionNodes: ExportStatementNode[] = [];
+
+  for (const { name, symbol } of context.symbols.entries()) {
+    if (symbol.type === SymbolType.RUNTIME_ENUM_DEFINITION) {
+      const argument = new RuntimeEnumDeclarationNode(name, symbol.node);
+      const runtimeEnumDefinitionNode = new ExportStatementNode(argument);
+      runtimeEnumDefinitionNodes.push(runtimeEnumDefinitionNode);
+    }
+  }
+
+  return runtimeEnumDefinitionNodes.sort((a, b) => {
+    return a.argument.name.localeCompare(b.argument.name);
+  });
 };
 
 const getTableIdentifier = (table: TableSchema, context: TransformContext) => {
@@ -273,7 +293,9 @@ const transformColumnToArgs = (
     const enumNode = unionize(transformEnum(enumValues));
     const symbolName = context.symbols.set(symbolId, {
       node: enumNode,
-      type: SymbolType.DEFINITION,
+      type: context.runtimeEnums
+        ? SymbolType.RUNTIME_ENUM_DEFINITION
+        : SymbolType.DEFINITION,
     });
     const node = new IdentifierNode(symbolName);
     return [node];
@@ -286,7 +308,7 @@ const transformColumnToArgs = (
     return [node];
   }
 
-  if (column.enumValues.length > 0) {
+  if (column.enumValues && column.enumValues.length > 0) {
     return transformEnum(column.enumValues);
   }
 
@@ -310,7 +332,8 @@ const transformTables = (context: TransformContext) => {
     for (const column of table.columns) {
       const key = transformName(column.name, context);
       const value = transformColumn(column, context);
-      const tableProperty = new PropertyNode(key, value);
+      const comment = column.comment;
+      const tableProperty = new PropertyNode(key, value, comment);
       tableProperties.push(tableProperty);
     }
 
@@ -348,8 +371,15 @@ export const transform = (options: TransformOptions) => {
   const context = createContext(options);
   const tableNodes = transformTables(context);
   const importNodes = createImportNodes(context);
+  const runtimeEnumDefinitionNodes = createRuntimeEnumDefinitionNodes(context);
   const definitionNodes = createDefinitionNodes(context);
   const databaseNode = createDatabaseExportNode(context);
 
-  return [...importNodes, ...definitionNodes, ...tableNodes, databaseNode];
+  return [
+    ...importNodes,
+    ...runtimeEnumDefinitionNodes,
+    ...definitionNodes,
+    ...tableNodes,
+    databaseNode,
+  ];
 };

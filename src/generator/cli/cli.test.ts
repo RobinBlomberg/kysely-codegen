@@ -1,8 +1,7 @@
 import { deepStrictEqual } from 'assert';
 import { describe, it } from 'vitest';
-import { LogLevel } from '../core/log-level.js';
-import type { CliOptions } from './cli.js';
-import { parseCliOptions } from './cli.js';
+import { LogLevel } from '../index.js';
+import { CliOptions, parseCliOptions } from './cli.js';
 import {
   DEFAULT_LOG_LEVEL,
   DEFAULT_OUT_FILE,
@@ -13,12 +12,14 @@ describe('cli', () => {
   const DEFAULT_CLI_OPTIONS: CliOptions = {
     camelCase: false,
     dialectName: undefined,
+    domains: false,
     envFile: undefined,
     excludePattern: undefined,
     includePattern: undefined,
     logLevel: DEFAULT_LOG_LEVEL,
     outFile: DEFAULT_OUT_FILE,
     print: false,
+    runtimeEnums: false,
     schema: undefined,
     typeOnlyImports: true,
     url: DEFAULT_URL,
@@ -37,6 +38,8 @@ describe('cli', () => {
 
     assert(['--camel-case'], { camelCase: true });
     assert(['--dialect=mysql'], { dialectName: 'mysql' });
+    assert(['--domains'], { domains: true });
+    assert(['--no-domains'], { domains: false });
     assert(['--exclude-pattern=public._*'], { excludePattern: 'public._*' });
     assert(['--help'], {});
     assert(['-h'], {});

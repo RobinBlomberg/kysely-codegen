@@ -2,17 +2,17 @@ import { createConnection } from './create-connection.js';
 import type {
   DialectConnector,
   DialectIntrospector,
-  KyselyDialectCreator,
+  KyselyDialectFactory,
 } from './types.js';
 
 export type CreateAdapterInput = {
-  createKyselyDialect: KyselyDialectCreator;
+  createKyselyDialect: KyselyDialectFactory;
   introspect: DialectIntrospector;
 };
 
 export type IntrospectorAdapter = {
   connect: DialectConnector;
-  createKyselyDialect: KyselyDialectCreator;
+  createKyselyDialect: KyselyDialectFactory;
   introspect: DialectIntrospector;
 };
 

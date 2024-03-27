@@ -3,14 +3,15 @@ import type { IntrospectorAdapter } from './adapter.js';
 import type { EnumMap } from './enum-map.js';
 
 export type ColumnSchema = {
-  name: string;
-  dataTypeSchema: string | null;
+  comment: string | null;
   dataType: string;
-  enumValues: string[];
+  dataTypeSchema: string | null;
+  enumValues: string[] | null;
   hasDefaultValue: boolean;
   isArray: boolean;
   isAutoIncrementing: boolean;
   isNullable: boolean;
+  name: string;
 };
 
 export type ConnectionCreator = (
@@ -19,7 +20,7 @@ export type ConnectionCreator = (
 
 export type CreateConnectionOptions = {
   connectionString: string;
-  createKyselyDialect: KyselyDialectCreator;
+  createKyselyDialect: KyselyDialectFactory;
 };
 
 export type DatabaseSchema = {
@@ -37,6 +38,7 @@ export type DialectIntrospector = (
 ) => Promise<DatabaseSchema>;
 
 export type DialectIntrospectionOptions = {
+  domains?: boolean;
   excludePattern?: string;
   includePattern?: string;
 };
@@ -44,6 +46,7 @@ export type DialectIntrospectionOptions = {
 export type DialectName =
   | 'bun-sqlite'
   | 'libsql'
+  | 'mssql'
   | 'mysql'
   | 'postgres'
   | 'sqlite';
@@ -56,10 +59,10 @@ export type IntrospectDatabaseOptions = {
   includePattern?: string;
 };
 
-export type KyselyDialectCreator = (options: {
+export type KyselyDialectFactory = (options: {
   connectionString: string;
   ssl?: boolean;
-}) => Dialect;
+}) => Dialect | Promise<Dialect>;
 
 export type TableSchema = {
   schema: string | null;

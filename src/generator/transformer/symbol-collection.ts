@@ -13,12 +13,14 @@ export type SymbolNameMap = {
 
 export type SymbolNode =
   | { node: ExpressionNode | TemplateNode; type: SymbolType.DEFINITION }
+  | { node: ExpressionNode; type: SymbolType.RUNTIME_ENUM_DEFINITION }
   | { node: ModuleReferenceNode; type: SymbolType.MODULE_REFERENCE }
   | { type: SymbolType.TABLE };
 
 export const enum SymbolType {
   DEFINITION = 'Definition',
   MODULE_REFERENCE = 'ModuleReference',
+  RUNTIME_ENUM_DEFINITION = 'RuntimeEnumDefinition',
   TABLE = 'Table',
 }
 

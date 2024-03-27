@@ -2,14 +2,15 @@ import { EnumMap } from './enum-map.js';
 import type { ColumnSchema, DatabaseSchema, TableSchema } from './types.js';
 
 export type CreateColumnSchemaInput = {
-  name: string;
-  dataTypeSchema?: string | null;
+  comment?: string | null;
   dataType: string;
+  dataTypeSchema?: string | null;
   enumValues?: string[];
   hasDefaultValue?: boolean;
   isArray?: boolean;
   isAutoIncrementing?: boolean;
   isNullable?: boolean;
+  name: string;
 };
 
 export type CreateDatabaseSchemaInput = {
@@ -27,14 +28,15 @@ export type CreateTableSchemaInput = {
 export const factory = {
   createColumnSchema: (input: CreateColumnSchemaInput): ColumnSchema => {
     return {
-      name: input.name,
-      dataTypeSchema: input.dataTypeSchema ?? null,
+      comment: input.comment ?? null,
       dataType: input.dataType,
+      dataTypeSchema: input.dataTypeSchema ?? null,
       enumValues: input.enumValues ?? [],
       hasDefaultValue: !!input.hasDefaultValue,
       isArray: !!input.isArray,
       isAutoIncrementing: !!input.isAutoIncrementing,
       isNullable: !!input.isNullable,
+      name: input.name,
     };
   },
   createDatabaseSchema: (input: CreateDatabaseSchemaInput): DatabaseSchema => {

@@ -18,6 +18,7 @@ export * from './ast/module-reference-node.js';
 export * from './ast/node-type.js';
 export * from './ast/object-expression-node.js';
 export * from './ast/property-node.js';
+export * from './ast/runtime-enum-declaration-node.js';
 export * from './ast/statement-node.js';
 export * from './ast/template-node.js';
 export * from './ast/union-expression-node.js';

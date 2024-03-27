@@ -44,12 +44,21 @@ export const FLAGS: Flag[] = [
     longName: 'log-level',
   },
   {
+    description:
+      'Skip generating types for PostgreSQL domains. (default: false)',
+    longName: 'no-domains',
+  },
+  {
     description: `Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
     longName: 'out-file',
   },
   {
     description: 'Print the generated output to the terminal.',
     longName: 'print',
+  },
+  {
+    description: 'Generate runtime enums instead of string unions.',
+    longName: 'runtime-enums',
   },
   {
     description:

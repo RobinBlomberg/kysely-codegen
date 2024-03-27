@@ -5,7 +5,7 @@ import { createIntrospectorAdapter } from '../../adapter.js';
 import { EnumMap } from '../../enum-map.js';
 import { factory } from '../../factory.js';
 import { introspectTables } from '../../introspect-tables.js';
-import type { ColumnSchema } from '../../types.js';
+import type { ColumnSchema, DialectIntrospectionOptions } from '../../types.js';
 import { PostgresParser } from './postgres.parser.js';
 
 type IntrospectedCheck = {
@@ -78,7 +78,14 @@ const introspectCheckEnums = async (db: Kysely<DB>) => {
   return enums;
 };
 
-const introspectDomains = async (db: Kysely<any>) => {
+const introspectDomains = async (
+  db: Kysely<any>,
+  options: DialectIntrospectionOptions,
+) => {
+  if (!options.domains) {
+    return [];
+  }
+
   const result = await sql<IntrospectedDomain>`
     with recursive domain_hierarchy as (
       select oid, typbasetype
@@ -142,7 +149,7 @@ export const postgresAdapter = createIntrospectorAdapter({
   introspect: async (db, options = {}) => {
     const [checkEnums, domains, enums, rawTables] = await Promise.all([
       introspectCheckEnums(db),
-      introspectDomains(db),
+      introspectDomains(db, options),
       introspectEnums(db),
       introspectTables(db, options),
     ]);
@@ -157,6 +164,7 @@ export const postgresAdapter = createIntrospectorAdapter({
         const enumValues = enums.get(enumKey);
         const checkEnumKey = `${table.schema}.${table.name}`;
         const checkEnumValues = checkEnums.get(checkEnumKey);
+
         return factory.createColumnSchema({
           ...column,
           dataType,
@@ -165,6 +173,7 @@ export const postgresAdapter = createIntrospectorAdapter({
           isArray,
         });
       });
+
       return factory.createTableSchema({ ...table, columns });
     });
 

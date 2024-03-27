@@ -14,6 +14,7 @@ export const enum NodeType {
   MODULE_REFERENCE = 'ModuleReference',
   OBJECT_EXPRESSION = 'ObjectExpression',
   PROPERTY = 'Property',
+  RUNTIME_ENUM_DECLARATION = 'RuntimeEnumDeclaration',
   TEMPLATE = 'Template',
   UNION_EXPRESSION = 'UnionExpression',
   VALUE = 'Value',

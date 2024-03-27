@@ -19,6 +19,7 @@ import { TemplateNode } from '../ast/template-node.js';
 import { UnionExpressionNode } from '../ast/union-expression-node.js';
 import { mysqlAdapter } from '../core/adapters/mysql.adapter.js';
 import { postgresAdapter } from '../core/adapters/postgres.adapter.js';
+import { RuntimeEnumDeclarationNode } from '../index.js';
 import { transform } from '../transformer/transform.js';
 import { Serializer } from './serializer.js';
 
@@ -73,7 +74,7 @@ describe('serializer', () => {
     strictEqual(
       serializer.serializeExtendsClause(
         new ExtendsClauseNode(
-          'A',
+          new IdentifierNode('A'),
           new IdentifierNode('B'),
           new IdentifierNode('A'),
           new IdentifierNode('C'),
@@ -266,10 +267,8 @@ describe('serializer', () => {
             factory.createTableSchema({
               columns: [
                 factory.createColumnSchema({
+                  comment: 'Hello!\nThis is a comment.',
                   dataType: 'json',
-                  hasDefaultValue: false,
-                  isAutoIncrementing: false,
-                  isNullable: false,
                   name: 'json',
                 }),
               ],
@@ -297,6 +296,10 @@ describe('serializer', () => {
           'export type JsonValue = JsonArray | JsonObject | JsonPrimitive;\n' +
           '\n' +
           'export interface Foo {\n' +
+          '  /**\n' +
+          '   * Hello!\n' +
+          '   * This is a comment.\n' +
+          '   */\n' +
           '  json: Json;\n' +
           '}\n' +
           '\n' +
@@ -317,13 +320,7 @@ describe('serializer', () => {
           tables: [
             factory.createTableSchema({
               columns: [
-                factory.createColumnSchema({
-                  dataType: 'json',
-                  hasDefaultValue: false,
-                  isAutoIncrementing: false,
-                  isNullable: false,
-                  name: 'json',
-                }),
+                factory.createColumnSchema({ dataType: 'json', name: 'json' }),
               ],
               name: 'foo',
               schema: 'public',
@@ -353,6 +350,27 @@ describe('serializer', () => {
           'export interface DB {\n' +
           '  foo: Foo;\n' +
           '}\n',
+      );
+    });
+
+    it('should serialize runtime enums properly', () => {
+      const enumSerializer = new Serializer({ camelCase: true });
+      strictEqual(
+        enumSerializer.serializeRuntimeEnum(
+          new RuntimeEnumDeclarationNode(
+            'Mood',
+            new UnionExpressionNode([
+              new LiteralNode('sad'),
+              new LiteralNode('happy'),
+              new LiteralNode('happy_or_sad'),
+            ]),
+          ),
+        ),
+        'enum Mood {\n' +
+          '  happy = "happy",\n' +
+          '  happyOrSad = "happy_or_sad",\n' +
+          '  sad = "sad",\n' +
+          '}',
       );
     });
   });

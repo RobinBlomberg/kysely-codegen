@@ -9,10 +9,25 @@ import { TemplateNode } from '../ast/template-node.js';
 import { UnionExpressionNode } from '../ast/union-expression-node.js';
 
 export const GLOBAL_DEFINITIONS = {
+  /**
+   * @see https://github.com/RobinBlomberg/kysely-codegen/issues/135
+   */
   ArrayType: new TemplateNode(
     ['T'],
     new ExtendsClauseNode(
-      'T',
+      new GenericExpressionNode('ArrayTypeImpl', [new IdentifierNode('T')]),
+      new ArrayExpressionNode(new InferClauseNode('U')),
+      new ArrayExpressionNode(new IdentifierNode('U')),
+      new GenericExpressionNode('ArrayTypeImpl', [new IdentifierNode('T')]),
+    ),
+  ),
+  /**
+   * @see https://github.com/RobinBlomberg/kysely-codegen/issues/135
+   */
+  ArrayTypeImpl: new TemplateNode(
+    ['T'],
+    new ExtendsClauseNode(
+      new IdentifierNode('T'),
       new GenericExpressionNode('ColumnType', [
         new InferClauseNode('S'),
         new InferClauseNode('I'),
@@ -29,7 +44,7 @@ export const GLOBAL_DEFINITIONS = {
   Generated: new TemplateNode(
     ['T'],
     new ExtendsClauseNode(
-      'T',
+      new IdentifierNode('T'),
       new GenericExpressionNode('ColumnType', [
         new InferClauseNode('S'),
         new InferClauseNode('I'),

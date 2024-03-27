@@ -24,6 +24,7 @@ export const LOG_LEVEL_NAMES = [
 export const VALID_DIALECTS = [
   'bun-sqlite',
   'libsql',
+  'mssql',
   'mysql',
   'postgres',
   'sqlite',

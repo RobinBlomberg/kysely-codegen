@@ -1,4 +1,5 @@
 import { config as loadEnv } from 'dotenv';
+import { expand as expandEnv } from 'dotenv-expand';
 import type { DialectName } from './types.js';
 
 /**
@@ -32,6 +33,10 @@ export const inferDialectName = (connectionString: string): DialectName => {
     connectionString.startsWith('pg')
   ) {
     return 'postgres';
+  }
+
+  if (connectionString.toLowerCase().includes('user id=')) {
+    return 'mssql';
   }
 
   return 'sqlite';
@@ -68,7 +73,7 @@ export const parseConnectionString = (
       );
     }
 
-    loadEnv({ path: options.envFile });
+    expandEnv(loadEnv({ path: options.envFile }));
 
     const envConnectionString = process.env[key];
     if (!envConnectionString) {

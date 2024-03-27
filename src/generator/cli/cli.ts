@@ -16,12 +16,14 @@ import { FLAGS } from './flags.js';
 export type CliOptions = {
   camelCase?: boolean;
   dialectName?: DialectName;
+  domains?: boolean;
   envFile?: string;
   excludePattern?: string;
   includePattern?: string;
   logLevel?: LogLevel;
   outFile?: string;
   print?: boolean;
+  runtimeEnums?: boolean;
   schema?: string;
   typeOnlyImports?: boolean;
   url?: string;
@@ -35,6 +37,7 @@ const generateFromCli = async (options: CliOptions) => {
   const outFile = options.outFile;
   const excludePattern = options.excludePattern;
   const includePattern = options.includePattern;
+  const runtimeEnums = options.runtimeEnums;
   const schema = options.schema;
   const typeOnlyImports = options.typeOnlyImports;
   const verify = options.verify;
@@ -132,16 +135,19 @@ export const parseCliOptions = (
   const _: string[] = argv._;
   const camelCase = parseBoolean(argv['camel-case']);
   const dialectName = argv.dialect;
+  const domains = parseBoolean(argv.domains);
+  const envFile = argv['env-file'] as string | undefined;
+  const excludePattern = argv['exclude-pattern'] as string | undefined;
   const help =
     !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
-  const envFile = argv['env-file'] as string;
-  const excludePattern = argv['exclude-pattern'] as string;
-  const includePattern = argv['include-pattern'] as string;
+  const includePattern = argv['include-pattern'] as string | undefined;
   const logLevel = getLogLevel(argv['log-level']);
   const outFile =
-    (argv['out-file'] as string) ?? (argv.print ? undefined : DEFAULT_OUT_FILE);
+    (argv['out-file'] as string | undefined) ??
+    (argv.print ? undefined : DEFAULT_OUT_FILE);
   const print = parseBoolean(argv.print);
-  const schema = argv.schema as string;
+  const runtimeEnums = parseBoolean(argv['runtime-enums']);
+  const schema = argv.schema as string | undefined;
   const typeOnlyImports = parseBoolean(argv['type-only-imports'] ?? true);
   const url = (argv.url as string) ?? DEFAULT_URL;
   const verify = parseBoolean(argv.verify ?? false);
@@ -150,7 +156,15 @@ export const parseCliOptions = (
     for (const key in argv) {
       if (
         key !== '_' &&
-        !FLAGS.some((flag) => [flag.longName, flag.shortName].includes(key))
+        !FLAGS.some((flag) => {
+          return [
+            flag.shortName,
+            flag.longName,
+            ...(flag.longName.startsWith('no-')
+              ? [flag.longName.slice(3)]
+              : []),
+          ].includes(key);
+        })
       ) {
         throw new RangeError(`Invalid flag: "${key}"`);
       }
@@ -194,12 +208,14 @@ export const parseCliOptions = (
   return {
     camelCase,
     dialectName,
+    domains,
     envFile,
     excludePattern,
     includePattern,
     logLevel,
     outFile,
     print,
+    runtimeEnums,
     schema,
     typeOnlyImports,
     url,
@@ -207,9 +223,6 @@ export const parseCliOptions = (
   };
 };
 
-/**
- * Creates a kysely-codegen command-line interface.
- */
 export const runCli = async (argv: string[]) => {
   const options = parseCliOptions(argv);
   await generateFromCli(options);

@@ -82,6 +82,15 @@ const up = async (db: Kysely<any>, dialectName: string) => {
     }
 
     await builder.execute();
+
+    if (dialectName === 'postgres') {
+      await trx.executeQuery(
+        sql`
+          comment on column foo_bar.false is
+          'This is a comment on a column.\r\n\r\nIt''s nice, isn''t it?';
+        `.compile(trx),
+      );
+    }
   });
 };
 
@@ -98,10 +107,11 @@ export const migrate = async (
   dialectName: DialectName,
   connectionString: string,
 ) => {
+  const dialect = await getAdapter(dialectName).createKyselyDialect({
+    connectionString,
+  });
   const db = new Kysely<any>({
-    dialect: getAdapter(dialectName).createKyselyDialect({
-      connectionString,
-    }),
+    dialect,
     plugins: [new CamelCasePlugin()],
   });
 
