@@ -44,6 +44,7 @@ export class Cli {
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
     const outFile = options.outFile;
+    const print = !!options.print;
     const runtimeEnums = options.runtimeEnums;
     const schema = options.schema;
     const typeOnlyImports = options.typeOnlyImports;
@@ -87,6 +88,7 @@ export class Cli {
       includePattern,
       logger,
       outFile,
+      print,
       runtimeEnums,
       schema,
       typeOnlyImports,
