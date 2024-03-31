@@ -24,7 +24,9 @@ export class MssqlDialect extends Dialect {
     >;
     const tokens = parsed.server!.split(',');
     const server = tokens[0]!;
-    const port = tokens[1] ? parseInt(tokens[1], 10) : DEFAULT_MSSQL_PORT;
+    const port = tokens[1]
+      ? Number.parseInt(tokens[1], 10)
+      : DEFAULT_MSSQL_PORT;
 
     return {
       database: parsed.database!,

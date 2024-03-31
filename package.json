@@ -49,29 +49,29 @@
   "devDependencies": {
     "@libsql/kysely-libsql": "^0.3.0",
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
-    "@robinblomberg/eslint-config-robinblomberg": "0.27.0",
+    "@robinblomberg/eslint-config-robinblomberg": "0.28.0",
     "@robinblomberg/prettier-config": "^0.1.2",
     "@types/better-sqlite3": "^7.6.9",
     "@types/git-diff": "^2.0.7",
     "@types/micromatch": "^4.0.6",
     "@types/minimist": "^1.2.5",
-    "@types/node": "^20.11.28",
-    "@types/pg": "^8.11.2",
+    "@types/node": "^20.12.2",
+    "@types/pg": "^8.11.4",
     "@types/tedious": "^4.0.14",
-    "@typescript-eslint/parser": "^7.2.0",
+    "@typescript-eslint/parser": "^7.4.0",
     "better-sqlite3": "^9.4.3",
     "eslint": "^8.57.0",
     "kysely": "^0.27.3",
-    "kysely-bun-worker": "^0.5.7",
-    "mysql2": "^3.9.2",
+    "kysely-bun-worker": "^0.6.0",
+    "mysql2": "^3.9.3",
     "npm-run-all": "^4.1.5",
-    "pg": "^8.11.3",
-    "pnpm": "^8.15.4",
+    "pg": "^8.11.4",
+    "pnpm": "^8.15.5",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.2",
+    "typescript": "^5.4.3",
     "vitest": "^1.4.0"
   },
   "peerDependencies": {
@@ -119,7 +119,10 @@
       "@robinblomberg/robinblomberg",
       "@robinblomberg/prettier"
     ],
-    "ignorePatterns": "**/src/core/outputs/*.ts"
+    "ignorePatterns": "**/src/core/outputs/*.ts",
+    "rules": {
+      "unicorn/prefer-node-protocol": 0
+    }
   },
   "prettier": "@robinblomberg/prettier-config"
 }
