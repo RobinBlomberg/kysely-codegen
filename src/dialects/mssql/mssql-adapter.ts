@@ -6,7 +6,7 @@ export class MssqlAdapter extends Adapter {
   override readonly scalars = {
     bigint: new IdentifierNode('number'),
     binary: new IdentifierNode('Buffer'),
-    bit: new IdentifierNode('Buffer'),
+    bit: new IdentifierNode('boolean'),
     char: new IdentifierNode('string'),
     date: new IdentifierNode('Date'),
     datetime: new IdentifierNode('Date'),
