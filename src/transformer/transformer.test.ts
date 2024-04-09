@@ -45,6 +45,11 @@ export const testTransformer = () => {
         dialect,
         metadata,
         runtimeEnums,
+        overrides: {
+          columns: {
+            'table.override': '{ test: string }',
+          },
+        },
       });
     };
 
@@ -71,6 +76,11 @@ export const testTransformer = () => {
                 dataType: 'text',
                 isArray: true,
                 name: 'texts',
+              }),
+              new ColumnMetadata({
+                dataType: 'text',
+                isArray: false,
+                name: 'override',
               }),
             ],
             name: 'table',
@@ -134,6 +144,10 @@ export const testTransformer = () => {
               new PropertyNode(
                 'texts',
                 new ArrayExpressionNode(new IdentifierNode('string')),
+              ),
+              new PropertyNode(
+                'override',
+                new IdentifierNode('{ test: string }'),
               ),
             ]),
           ),
