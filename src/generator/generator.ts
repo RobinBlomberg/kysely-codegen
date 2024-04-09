@@ -5,6 +5,7 @@ import { performance } from 'perf_hooks';
 import type { Dialect, Logger } from '../core';
 import { DiffChecker } from '../core';
 import { Serializer } from '../serializer';
+import type { Overrides } from '../transformer';
 import { Transformer } from '../transformer';
 
 export type GenerateOptions = {
@@ -22,6 +23,7 @@ export type GenerateOptions = {
   transformer?: Transformer;
   typeOnlyImports?: boolean;
   verify?: boolean;
+  overrides?: Overrides;
 };
 
 /**
@@ -55,6 +57,7 @@ export class Generator {
       dialect: options.dialect,
       metadata,
       runtimeEnums: !!options.runtimeEnums,
+      overrides: options.overrides,
     });
 
     const serializer =
