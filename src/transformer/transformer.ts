@@ -41,6 +41,15 @@ const unionize = (args: ExpressionNode[]) => {
   }
 };
 
+export type Overrides = {
+  /**
+   * Overrides a column's data type
+   *
+   * @example { columns: { "<table_name>.<column_name>": "{ postalCode: string; street: string; city: string }" } }
+   */
+  columns?: Record<string, string>;
+};
+
 export type TransformContext = {
   camelCase: boolean;
   defaultScalar: ExpressionNode;
@@ -52,6 +61,7 @@ export type TransformContext = {
   runtimeEnums: boolean;
   scalars: Scalars;
   symbols: SymbolCollection;
+  overrides?: Overrides;
 };
 
 export type TransformOptions = {
@@ -60,6 +70,7 @@ export type TransformOptions = {
   dialect: Dialect;
   metadata: DatabaseMetadata;
   runtimeEnums?: boolean;
+  overrides?: Overrides;
 };
 
 /**
@@ -166,6 +177,7 @@ export class Transformer {
         ...options.dialect.adapter.scalars,
       },
       symbols: new SymbolCollection(),
+      overrides: options.overrides,
     };
   }
 
@@ -251,7 +263,17 @@ export class Transformer {
     return this.#transformName(name, context);
   }
 
-  #transformColumn(column: ColumnMetadata, context: TransformContext) {
+  #transformColumn(
+    column: ColumnMetadata,
+    context: TransformContext,
+    tableName: string,
+  ) {
+    const columnName = `${tableName}.${column.name}`;
+    const columnOverride = context.overrides?.columns?.[columnName];
+    if (columnOverride !== undefined) {
+      return new IdentifierNode(columnOverride);
+    }
+
     let args = this.#transformColumnToArgs(column, context);
 
     if (column.isArray) {
@@ -343,7 +365,7 @@ export class Transformer {
 
       for (const column of table.columns) {
         const key = this.#transformName(column.name, context);
-        const value = this.#transformColumn(column, context);
+        const value = this.#transformColumn(column, context, table.name);
         const comment = column.comment;
         const tableProperty = new PropertyNode(key, value, comment);
         tableProperties.push(tableProperty);
