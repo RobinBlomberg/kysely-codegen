@@ -46,7 +46,17 @@ export type Overrides = {
   /**
    * Overrides a column's data type
    *
-   * @example { columns: { "<table_name>.<column_name>": "{ postalCode: string; street: string; city: string }" } }
+   * @example
+   * ```ts
+   * // Allows overriding of columns to be a type-safe JSON column
+   * {
+   *   columns: {
+   *     "<table_name>.<column_name>": new JSONColumnType(
+   *       new RawExpressionNode("{ postalCode: string; street: string; city: string }")
+   *     ),
+   *   }
+   * }
+   * ```
    */
   columns?: Record<string, ExpressionNode | string>;
 };
