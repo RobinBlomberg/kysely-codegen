@@ -12,6 +12,7 @@ export * from './import-clause-node';
 export * from './import-statement-node';
 export * from './infer-clause-node';
 export * from './interface-declaration-node';
+export * from './json-column-type-node';
 export * from './literal-node';
 export * from './mapped-type-node';
 export * from './module-reference-node';
