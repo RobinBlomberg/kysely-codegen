@@ -11,6 +11,7 @@ import {
   LiteralNode,
   ObjectExpressionNode,
   PropertyNode,
+  RawExpressionNode,
   RuntimeEnumDeclarationNode,
   UnionExpressionNode,
 } from '../ast';
@@ -147,7 +148,7 @@ export const testTransformer = () => {
               ),
               new PropertyNode(
                 'override',
-                new IdentifierNode('{ test: string }'),
+                new RawExpressionNode('{ test: string }'),
               ),
             ]),
           ),

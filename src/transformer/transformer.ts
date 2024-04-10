@@ -12,6 +12,7 @@ import {
   NodeType,
   ObjectExpressionNode,
   PropertyNode,
+  RawExpressionNode,
   RuntimeEnumDeclarationNode,
   UnionExpressionNode,
 } from '../ast';
@@ -274,7 +275,7 @@ export class Transformer {
     const columnName = `${tableName}.${column.name}`;
     const columnOverride = context.overrides?.columns?.[columnName];
     if (columnOverride !== undefined) {
-      return new IdentifierNode(columnOverride);
+      return new RawExpressionNode(columnOverride);
     }
 
     let args = this.#transformColumnToArgs(column, context);
