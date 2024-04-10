@@ -16,6 +16,7 @@ export type GenerateOptions = {
   includePattern?: string;
   logger?: Logger;
   outFile?: string;
+  overrides?: Overrides;
   print?: boolean;
   runtimeEnums?: boolean;
   schema?: string;
@@ -23,7 +24,6 @@ export type GenerateOptions = {
   transformer?: Transformer;
   typeOnlyImports?: boolean;
   verify?: boolean;
-  overrides?: Overrides;
 };
 
 /**

@@ -58,10 +58,10 @@ export type TransformContext = {
   enums: EnumCollection;
   imports: Imports;
   metadata: DatabaseMetadata;
+  overrides?: Overrides;
   runtimeEnums: boolean;
   scalars: Scalars;
   symbols: SymbolCollection;
-  overrides?: Overrides;
 };
 
 export type TransformOptions = {
