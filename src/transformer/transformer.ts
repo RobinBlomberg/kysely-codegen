@@ -143,6 +143,9 @@ export class Transformer {
         }
 
         break;
+      case NodeType.RAW_EXPRESSION:
+        this.#collectSymbol(node.expression, context);
+        break;
       case NodeType.TEMPLATE:
         this.#collectSymbols(node.expression, context);
         break;

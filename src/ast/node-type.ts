@@ -18,4 +18,5 @@ export const enum NodeType {
   TEMPLATE = 'Template',
   UNION_EXPRESSION = 'UnionExpression',
   VALUE = 'Value',
+  RAW_EXPRESSION = 'RawExpression',
 }

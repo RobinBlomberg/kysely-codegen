@@ -18,6 +18,7 @@ export * from './module-reference-node';
 export * from './node-type';
 export * from './object-expression-node';
 export * from './property-node';
+export * from './raw-expression-node';
 export * from './runtime-enum-declaration-node';
 export * from './statement-node';
 export * from './template-node';

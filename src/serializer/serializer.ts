@@ -14,6 +14,7 @@ import type {
   MappedTypeNode,
   ObjectExpressionNode,
   PropertyNode,
+  RawExpressionNode,
   RuntimeEnumDeclarationNode,
   StatementNode,
   UnionExpressionNode,
@@ -159,6 +160,8 @@ export class Serializer {
         return this.serializeMappedType(node);
       case NodeType.OBJECT_EXPRESSION:
         return this.serializeObjectExpression(node);
+      case NodeType.RAW_EXPRESSION:
+        return this.serializeRawExpression(node);
       case NodeType.UNION_EXPRESSION:
         return this.serializeUnionExpression(node);
     }
@@ -323,6 +326,10 @@ export class Serializer {
     data += ';\n';
 
     return data;
+  }
+
+  serializeRawExpression(node: RawExpressionNode) {
+    return node.expression;
   }
 
   serializeRuntimeEnum(node: RuntimeEnumDeclarationNode) {

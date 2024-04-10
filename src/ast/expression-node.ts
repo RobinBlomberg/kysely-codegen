@@ -6,6 +6,7 @@ import type { InferClauseNode } from './infer-clause-node';
 import type { LiteralNode } from './literal-node';
 import type { MappedTypeNode } from './mapped-type-node';
 import type { ObjectExpressionNode } from './object-expression-node';
+import type { RawExpressionNode } from './raw-expression-node';
 import type { UnionExpressionNode } from './union-expression-node';
 
 export type ExpressionNode =
@@ -17,4 +18,5 @@ export type ExpressionNode =
   | LiteralNode
   | MappedTypeNode
   | ObjectExpressionNode
+  | RawExpressionNode
   | UnionExpressionNode;
