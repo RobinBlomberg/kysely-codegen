@@ -48,7 +48,7 @@ export type Overrides = {
    *
    * @example { columns: { "<table_name>.<column_name>": "{ postalCode: string; street: string; city: string }" } }
    */
-  columns?: Record<string, string>;
+  columns?: Record<string, ExpressionNode | string>;
 };
 
 export type TransformContext = {
@@ -275,7 +275,10 @@ export class Transformer {
     const columnName = `${tableName}.${column.name}`;
     const columnOverride = context.overrides?.columns?.[columnName];
     if (columnOverride !== undefined) {
-      return new RawExpressionNode(columnOverride);
+      if (typeof columnOverride === 'string') {
+        return new RawExpressionNode(columnOverride);
+      }
+      return columnOverride;
     }
 
     let args = this.#transformColumnToArgs(column, context);

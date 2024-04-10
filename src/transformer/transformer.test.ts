@@ -49,6 +49,10 @@ export const testTransformer = () => {
         overrides: {
           columns: {
             'table.override': '{ test: string }',
+            'table.expression_override': new GenericExpressionNode(
+              'Generated',
+              [new IdentifierNode('boolean')],
+            ),
           },
         },
       });
@@ -82,6 +86,11 @@ export const testTransformer = () => {
                 dataType: 'text',
                 isArray: false,
                 name: 'override',
+              }),
+              new ColumnMetadata({
+                dataType: 'boolean',
+                isArray: false,
+                name: 'expression_override',
               }),
             ],
             name: 'table',
@@ -149,6 +158,12 @@ export const testTransformer = () => {
               new PropertyNode(
                 'override',
                 new RawExpressionNode('{ test: string }'),
+              ),
+              new PropertyNode(
+                'expression_override',
+                new GenericExpressionNode('Generated', [
+                  new IdentifierNode('boolean'),
+                ]),
               ),
             ]),
           ),
