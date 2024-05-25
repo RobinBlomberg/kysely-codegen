@@ -61,6 +61,7 @@ export class MssqlDialect extends Dialect {
               database,
               port,
               trustServerCertificate: true,
+              encrypt: options.ssl || true
             },
             server,
           });
