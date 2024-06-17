@@ -10,6 +10,7 @@ export const testCli = () => {
 
   const DEFAULT_CLI_OPTIONS: CliOptions = {
     camelCase: false,
+    singular: false,
     dialectName: undefined,
     domains: false,
     envFile: undefined,
@@ -37,6 +38,7 @@ export const testCli = () => {
       };
 
       assert(['--camel-case'], { camelCase: true });
+      assert(['--singular'], { singular: true });
       assert(['--dialect=mysql'], { dialectName: 'mysql' });
       assert(['--domains'], { domains: true });
       assert(['--no-domains'], { domains: false });

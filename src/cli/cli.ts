@@ -18,6 +18,7 @@ import { FLAGS } from './flags';
 
 export type CliOptions = {
   camelCase?: boolean;
+  singular?: boolean;
   dialectName?: DialectName | undefined;
   domains?: boolean;
   envFile?: string | undefined;
@@ -41,6 +42,7 @@ export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
 export class Cli {
   async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
+    const singular = !!options.singular;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
     const outFile = options.outFile;
@@ -82,6 +84,7 @@ export class Cli {
 
     await generator.generate({
       camelCase,
+      singular,
       db,
       dialect,
       excludePattern,
@@ -155,6 +158,7 @@ export class Cli {
 
     const _: string[] = argv._;
     const camelCase = this.#parseBoolean(argv['camel-case']);
+    const singular = this.#parseBoolean(argv['singular']);
     const dialectName = argv.dialect;
     const domains = this.#parseBoolean(argv.domains);
     const envFile = argv['env-file'] as string | undefined;
@@ -230,6 +234,7 @@ export class Cli {
 
     return {
       camelCase,
+      singular,
       dialectName,
       domains,
       envFile,

@@ -12,6 +12,10 @@ export const FLAGS: Flag[] = [
     longName: 'camel-case',
   },
   {
+    description: 'Singularize entities.',
+    longName: 'singular',
+  },
+  {
     description: `Set the SQL dialect. (values: [${VALID_DIALECTS.join(
       ', ',
     )}])`,
