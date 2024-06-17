@@ -64,6 +64,9 @@ devDependencies:
   '@types/pg':
     specifier: ^8.11.4
     version: 8.11.4
+  '@types/pluralize':
+    specifier: ^0.0.33
+    version: 0.0.33
   '@types/tedious':
     specifier: ^4.0.14
     version: 4.0.14
@@ -91,6 +94,9 @@ devDependencies:
   pg:
     specifier: ^8.11.4
     version: 8.11.4
+  pluralize:
+    specifier: ^8.0.0
+    version: 8.0.0
   pnpm:
     specifier: ^8.15.5
     version: 8.15.5
@@ -1161,6 +1167,10 @@ packages:
       '@types/node': 20.12.2
       pg-protocol: 1.6.0
       pg-types: 4.0.2
+    dev: true
+
+  /@types/pluralize@0.0.33:
+    resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
     dev: true
 
   /@types/readable-stream@4.0.10:

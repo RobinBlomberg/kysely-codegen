@@ -9,6 +9,7 @@ import { Transformer } from '../transformer';
 
 export type GenerateOptions = {
   camelCase?: boolean;
+  singular?: boolean;
   db: Kysely<any>;
   dialect: Dialect;
   excludePattern?: string;
@@ -61,6 +62,7 @@ export class Generator {
       options.serializer ??
       new Serializer({
         camelCase: !!options.camelCase,
+        singular: !!options.singular,
         typeOnlyImports: options.typeOnlyImports,
       });
     const data = serializer.serialize(nodes);

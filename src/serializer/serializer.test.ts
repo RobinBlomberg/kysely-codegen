@@ -390,5 +390,40 @@ export const testSerializer = () => {
             '}',
         ));
     });
+
+    void describe('serialize - convert plural to singular', () => {
+      const dialect = new PostgresDialect();
+      const enums = new EnumCollection();
+      const transformer = new Transformer();
+      const singularSerializer = new Serializer({ singular: true });
+
+      const ast = transformer.transform({
+        camelCase: true,
+        dialect,
+        metadata: new DatabaseMetadata(
+          [
+            new TableMetadata({
+              columns: [
+                new ColumnMetadata({ dataType: 'varchar', name: 'username' }),
+              ],
+              name: 'users',
+              schema: 'public',
+            }),
+          ],
+          enums,
+        ),
+      });
+
+      strictEqual(
+        singularSerializer.serialize(ast),
+        'export interface User {\n' +
+          '  username: string;\n' +
+          '}\n' +
+          '\n' +
+          'export interface DB {\n' +
+          '  users: User;\n' +
+          '}\n',
+      );
+    });
   });
 };

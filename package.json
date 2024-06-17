@@ -44,7 +44,8 @@
     "dotenv-expand": "^11.0.6",
     "git-diff": "^2.0.6",
     "micromatch": "^4.0.5",
-    "minimist": "^1.2.8"
+    "minimist": "^1.2.8",
+    "pluralize": "^8.0.0"
   },
   "devDependencies": {
     "@libsql/kysely-libsql": "^0.3.0",
@@ -57,6 +58,7 @@
     "@types/minimist": "^1.2.5",
     "@types/node": "^20.12.2",
     "@types/pg": "^8.11.4",
+    "@types/pluralize": "^0.0.33",
     "@types/tedious": "^4.0.14",
     "@typescript-eslint/parser": "^7.4.0",
     "better-sqlite3": "^9.4.3",
