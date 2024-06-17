@@ -404,7 +404,11 @@ export const testSerializer = () => {
           [
             new TableMetadata({
               columns: [
-                new ColumnMetadata({ dataType: 'varchar', name: 'username' }),
+                new ColumnMetadata({
+                  dataType: 'varchar',
+                  name: 'username',
+                  hasDefaultValue: true,
+                }),
               ],
               name: 'users',
               schema: 'public',
@@ -416,8 +420,14 @@ export const testSerializer = () => {
 
       strictEqual(
         singularSerializer.serialize(ast),
-        'export interface User {\n' +
-          '  username: string;\n' +
+        'import type { ColumnType } from "kysely";\n' +
+          '\n' +
+          'export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>\n' +
+          '  ? ColumnType<S, I | undefined, U>\n' +
+          '  : ColumnType<T, T | undefined, T>;\n' +
+          '\n' +
+          'export interface User {\n' +
+          '  username: Generated<string>;\n' +
           '}\n' +
           '\n' +
           'export interface DB {\n' +

@@ -185,7 +185,7 @@ export class Serializer {
   serializeGenericExpression(node: GenericExpressionNode) {
     let data = '';
 
-    data += this.singular ? singular(node.name) : node.name;
+    data += node.name;
     data += '<';
 
     for (let i = 0; i < node.args.length; i++) {
@@ -202,6 +202,10 @@ export class Serializer {
   }
 
   serializeIdentifier(node: IdentifierNode) {
+    // Prevent generic identifier such as `S` being trimmed
+    if (node.name.length < 2) {
+      return node.name;
+    }
     return this.singular ? singular(node.name) : node.name;
   }
 
