@@ -115,14 +115,17 @@ export interface DB {
 ## CLI Arguments
 ### camel-case
 `--camel-case`
+
 Use the Kysely CamelCasePlugin for generated table column names.
 
 ### dialect
 `--dialect [value]`
+
 Set the SQL dialect (values: [postgres, mysql, sqlite, mssql, libsql, bun-sqlite]).
 
 ### env-file
 `--env-file [value]`
+
 Specify the path to an environment file to use.
 
 ### Include/exclude patterns
@@ -145,42 +148,52 @@ kysely-codegen --exclude-pattern="documents.*"
 ```
 ### help
 `--help` or `--h`
+
 Run for more options.
 
 ### log-level
 `--log-level [value]`
+
 Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)
 
 ### no-domains
 `--no-domains`
+
 Skip generating types for PostgreSQL domains. (default: false)
 
 ### out-file
 `--out-file [value]`
+
 Set the file build path. (default: `.\node_modules\kysely-codegen\dist\db.d.ts`)
 
 ### print
 `--print`
+
 Print the generated output to the terminal.
 
 ### runtime-enums
 `--runtime-enums`
+
 Generate runtime enums instead of string unions.
 
 ### type-only-imports
 `--type-only-imports`
+
 Generate TypeScript 3.8+ `import type` syntax (default: true).
 
 ### url
 `--url [value]`
+
 Set the database connection string URL. This may point to an environment variable. (default: env(DATABASE_URL))
 
 ### schema
 `--schema [value]`
+
 Set the default schema of the database connection.
 
 ### verify
 `--verify`
+
 Verify that the generated types are up-to-date. (default: false)
 
 ## Using the type definitions
