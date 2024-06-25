@@ -61,7 +61,7 @@ DATABASE_URL=libsql://token@host:port/database
 >
 > If you are using _PlanetScale_, make sure your URL contains this SSL query string parameter: `ssl={"rejectUnauthorized":true}`
 
-Then run:
+Then add and run the following package.json script:
 
 ```sh
 kysely-codegen
