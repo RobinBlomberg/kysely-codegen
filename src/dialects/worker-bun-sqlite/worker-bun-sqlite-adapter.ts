@@ -1,7 +1,7 @@
 import { IdentifierNode } from '../../ast';
 import { Adapter } from '../../core';
 
-export class BunSqliteAdapter extends Adapter {
+export class WorkerBunSqliteAdapter extends Adapter {
   override readonly defaultScalar = new IdentifierNode('string');
   override readonly scalars = {
     any: new IdentifierNode('unknown'),

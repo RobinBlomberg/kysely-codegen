@@ -1,15 +1,18 @@
 import {
-  BunSqliteDialect,
+  KyselyBunSqliteDialect,
   LibsqlDialect,
   MssqlDialect,
   MysqlDialect,
   PostgresDialect,
   SqliteDialect,
+  WorkerBunSqliteDialect
 } from '../dialects';
 import type { Dialect } from './dialect';
 
 export type DialectName =
   | 'bun-sqlite'
+  | 'worker-bun-sqlite'
+  | 'kysely-bun-sqlite'
   | 'libsql'
   | 'mssql'
   | 'mysql'
@@ -32,8 +35,12 @@ export class DialectManager {
 
   getDialect(name: DialectName): Dialect {
     switch (name) {
+      // legacy
       case 'bun-sqlite':
-        return new BunSqliteDialect();
+      case 'worker-bun-sqlite':
+        return new WorkerBunSqliteDialect();
+      case 'kysely-bun-sqlite':
+        return new KyselyBunSqliteDialect();
       case 'libsql':
         return new LibsqlDialect();
       case 'mssql':
