@@ -1,4 +1,5 @@
 import type { ColumnType } from "kysely";
+import type { IPostgresInterval } from "postgres-interval";
 
 export type ArrayType<T> = ArrayTypeImpl<T> extends (infer U)[]
   ? U[]
@@ -11,6 +12,8 @@ export type ArrayTypeImpl<T> = T extends ColumnType<infer S, infer I, infer U>
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
+
+export type Interval = ColumnType<IPostgresInterval, IPostgresInterval | number, IPostgresInterval | number>;
 
 export type Status = "CONFIRMED" | "UNCONFIRMED";
 
@@ -30,6 +33,8 @@ export interface FooBar {
    */
   false: boolean;
   id: Generated<number>;
+  interval1: Interval | null;
+  interval2: Interval | null;
   nullablePosInt: number | null;
   testDomainIsBool: boolean | null;
   timestamps: ArrayType<Timestamp> | null;
