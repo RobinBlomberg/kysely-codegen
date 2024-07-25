@@ -1,4 +1,5 @@
 {
+  "enableFiletypes": ["dockercompose"],
   "words": [
     "Adminer",
     "Blomberg",
@@ -7,6 +8,7 @@
     "codegen",
     "datetime",
     "datetimeoffset",
+    "dockercompose",
     "enumlabel",
     "enumtypid",
     "geomcollection",
@@ -23,6 +25,7 @@
     "mediumblob",
     "mediumint",
     "mediumtext",
+    "mssql",
     "multilinestring",
     "multipoint",
     "multipolygon",
@@ -52,8 +55,5 @@
     "upvote",
     "varbinary",
     "varbit"
-  ],
-  "enableFiletypes": [
-    "dockercompose"
   ]
 }
