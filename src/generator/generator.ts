@@ -57,8 +57,8 @@ export class Generator {
       defaultSchema: options.schema,
       dialect: options.dialect,
       metadata,
-      runtimeEnums: !!options.runtimeEnums,
       overrides: options.overrides,
+      runtimeEnums: !!options.runtimeEnums,
     });
 
     const serializer =

@@ -4,13 +4,14 @@ import type { Kysely } from 'kysely';
 import { InsertExpression } from 'kysely/dist/cjs/parser/insert-values-parser';
 import { join } from 'path';
 import { default as parsePostgresInterval } from 'postgres-interval';
+import { JsonColumnTypeNode, RawExpressionNode } from '../ast';
 import {
   LibsqlDialect,
   MysqlDialect,
   PostgresDialect,
   SqliteDialect,
 } from '../dialects';
-import { Generator } from '../generator';
+import { GenerateOptions, Generator } from '../generator';
 import { describe, it } from '../test.utils';
 import type { Dialect } from './dialect';
 import { addExtraColumn, migrate } from './fixtures';
@@ -104,6 +105,19 @@ export const testE2E = async () => {
   await describe('e2e', async () => {
     const logger = new Logger();
 
+    const baseGenerateOptions: Omit<GenerateOptions, 'db' | 'dialect'> = {
+      camelCase: true,
+      logger,
+      overrides: {
+        columns: {
+          'foo_bar.json_typed': new JsonColumnTypeNode(
+            new RawExpressionNode('{ foo: "bar" }'),
+          ),
+          'foo_bar.overridden': new RawExpressionNode('"OVERRIDDEN"'),
+        },
+      },
+    };
+
     await it('should generate the correct output', async () => {
       for (const {
         connectionString,
@@ -118,10 +132,9 @@ export const testE2E = async () => {
         await testValues(db, inputValues, outputValues);
 
         const output = await new Generator().generate({
-          camelCase: true,
+          ...baseGenerateOptions,
           db,
           dialect,
-          logger,
         });
 
         await db.destroy();
@@ -156,18 +169,16 @@ export const testE2E = async () => {
         await testValues(db, inputValues, outputValues);
 
         await new Generator().generate({
-          camelCase: true,
+          ...baseGenerateOptions,
           db,
           dialect,
-          logger,
           outFile,
         });
 
         const output = await new Generator().generate({
-          camelCase: true,
+          ...baseGenerateOptions,
           db,
           dialect,
-          logger,
           outFile,
           verify: true,
         });
@@ -179,10 +190,9 @@ export const testE2E = async () => {
 
         try {
           await new Generator().generate({
-            camelCase: true,
+            ...baseGenerateOptions,
             db,
             dialect,
-            logger,
             outFile,
             verify: true,
           });

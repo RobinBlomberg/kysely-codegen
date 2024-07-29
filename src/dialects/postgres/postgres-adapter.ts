@@ -1,5 +1,5 @@
 import {
-  ColumnType,
+  ColumnTypeNode,
   IdentifierNode,
   ModuleReferenceNode,
   ObjectExpressionNode,
@@ -29,7 +29,7 @@ export class PostgresAdapter extends Adapter {
       new PropertyNode('y', new IdentifierNode('number')),
       new PropertyNode('radius', new IdentifierNode('number')),
     ]),
-    Int8: new ColumnType(
+    Int8: new ColumnTypeNode(
       new IdentifierNode('string'),
       new UnionExpressionNode([
         new IdentifierNode('string'),
@@ -37,7 +37,7 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('bigint'),
       ]),
     ),
-    Interval: new ColumnType(
+    Interval: new ColumnTypeNode(
       new IdentifierNode('IPostgresInterval'),
       new UnionExpressionNode([
         new IdentifierNode('IPostgresInterval'),
@@ -50,7 +50,7 @@ export class PostgresAdapter extends Adapter {
     JsonObject: JSON_OBJECT_DEFINITION,
     JsonPrimitive: JSON_PRIMITIVE_DEFINITION,
     JsonValue: JSON_VALUE_DEFINITION,
-    Numeric: new ColumnType(
+    Numeric: new ColumnTypeNode(
       new IdentifierNode('string'),
       new UnionExpressionNode([
         new IdentifierNode('string'),
@@ -61,7 +61,7 @@ export class PostgresAdapter extends Adapter {
       new PropertyNode('x', new IdentifierNode('number')),
       new PropertyNode('y', new IdentifierNode('number')),
     ]),
-    Timestamp: new ColumnType(
+    Timestamp: new ColumnTypeNode(
       new IdentifierNode('Date'),
       new UnionExpressionNode([
         new IdentifierNode('Date'),

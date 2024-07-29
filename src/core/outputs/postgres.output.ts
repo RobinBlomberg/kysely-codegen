@@ -1,4 +1,4 @@
-import type { ColumnType } from "kysely";
+import type { ColumnType, JSONColumnType } from "kysely";
 import type { IPostgresInterval } from "postgres-interval";
 
 export type ArrayType<T> = ArrayTypeImpl<T> extends (infer U)[]
@@ -14,6 +14,18 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   : ColumnType<T, T | undefined, T>;
 
 export type Interval = ColumnType<IPostgresInterval, IPostgresInterval | number | string, IPostgresInterval | number | string>;
+
+export type Json = JsonValue;
+
+export type JsonArray = JsonValue[];
+
+export type JsonObject = {
+  [K in string]?: JsonValue;
+};
+
+export type JsonPrimitive = boolean | number | string | null;
+
+export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Status = "CONFIRMED" | "UNCONFIRMED";
 
@@ -35,7 +47,10 @@ export interface FooBar {
   id: Generated<number>;
   interval1: Interval | null;
   interval2: Interval | null;
+  json: Json | null;
+  jsonTyped: JSONColumnType<{ foo: "bar" }>;
   nullablePosInt: number | null;
+  overridden: "OVERRIDDEN";
   testDomainIsBool: boolean | null;
   timestamps: ArrayType<Timestamp> | null;
   true: boolean;

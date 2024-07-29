@@ -44,14 +44,14 @@ const unionize = (args: ExpressionNode[]) => {
 
 export type Overrides = {
   /**
-   * Overrides a column's data type
+   * Specifies type overrides for columns.
    *
    * @example
    * ```ts
-   * // Allows overriding of columns to be a type-safe JSON column
+   * // Allows overriding of columns to be a type-safe JSON column:
    * {
    *   columns: {
-   *     "<table_name>.<column_name>": new JSONColumnType(
+   *     "<table_name>.<column_name>": new JsonColumnType(
    *       new RawExpressionNode("{ postalCode: string; street: string; city: string }")
    *     ),
    *   }
@@ -80,8 +80,8 @@ export type TransformOptions = {
   defaultSchema?: string;
   dialect: Dialect;
   metadata: DatabaseMetadata;
-  runtimeEnums?: boolean;
   overrides?: Overrides;
+  runtimeEnums?: boolean;
 };
 
 /**
@@ -186,12 +186,12 @@ export class Transformer {
         ...options.dialect.adapter.imports,
       },
       metadata: options.metadata,
+      overrides: options.overrides,
       runtimeEnums: !!options.runtimeEnums,
       scalars: {
         ...options.dialect.adapter.scalars,
       },
       symbols: new SymbolCollection(),
-      overrides: options.overrides,
     };
   }
 
@@ -284,11 +284,16 @@ export class Transformer {
   ) {
     const columnName = `${tableName}.${column.name}`;
     const columnOverride = context.overrides?.columns?.[columnName];
+
     if (columnOverride !== undefined) {
-      if (typeof columnOverride === 'string') {
-        return new RawExpressionNode(columnOverride);
-      }
-      return columnOverride;
+      const node =
+        typeof columnOverride === 'string'
+          ? new RawExpressionNode(columnOverride)
+          : columnOverride;
+
+      this.#collectSymbols(node, context);
+
+      return node;
     }
 
     let args = this.#transformColumnToArgs(column, context);

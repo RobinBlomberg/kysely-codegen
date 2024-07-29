@@ -8,6 +8,7 @@ import {
   ImportClauseNode,
   ImportStatementNode,
   InterfaceDeclarationNode,
+  JsonColumnTypeNode,
   LiteralNode,
   ObjectExpressionNode,
   PropertyNode,
@@ -45,16 +46,19 @@ export const testTransformer = () => {
         camelCase,
         dialect,
         metadata,
-        runtimeEnums,
         overrides: {
           columns: {
-            'table.override': '{ test: string }',
             'table.expression_override': new GenericExpressionNode(
               'Generated',
               [new IdentifierNode('boolean')],
             ),
+            'table.json_override': new JsonColumnTypeNode(
+              new RawExpressionNode('{ foo: "bar" }'),
+            ),
+            'table.raw_override': '{ test: string }',
           },
         },
+        runtimeEnums,
       });
     };
 
@@ -63,6 +67,10 @@ export const testTransformer = () => {
         [
           new TableMetadata({
             columns: [
+              new ColumnMetadata({
+                dataType: 'boolean',
+                name: 'expression_override',
+              }),
               new ColumnMetadata({
                 dataType: 'interval',
                 hasDefaultValue: true,
@@ -74,23 +82,21 @@ export const testTransformer = () => {
                 name: 'intervals',
               }),
               new ColumnMetadata({
+                dataType: 'text',
+                name: 'json_override',
+              }),
+              new ColumnMetadata({
                 dataType: 'mood',
                 name: 'mood',
               }),
               new ColumnMetadata({
                 dataType: 'text',
-                isArray: true,
-                name: 'texts',
+                name: 'raw_override',
               }),
               new ColumnMetadata({
                 dataType: 'text',
-                isArray: false,
-                name: 'override',
-              }),
-              new ColumnMetadata({
-                dataType: 'boolean',
-                isArray: false,
-                name: 'expression_override',
+                isArray: true,
+                name: 'texts',
               }),
             ],
             name: 'table',
@@ -102,7 +108,10 @@ export const testTransformer = () => {
       );
 
       deepStrictEqual(nodes, [
-        new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
+        new ImportStatementNode('kysely', [
+          new ImportClauseNode('ColumnType'),
+          new ImportClauseNode('JSONColumnType'),
+        ]),
         new ImportStatementNode('postgres-interval', [
           new ImportClauseNode('IPostgresInterval'),
         ]),
@@ -139,6 +148,12 @@ export const testTransformer = () => {
             'Table',
             new ObjectExpressionNode([
               new PropertyNode(
+                'expression_override',
+                new GenericExpressionNode('Generated', [
+                  new IdentifierNode('boolean'),
+                ]),
+              ),
+              new PropertyNode(
                 'interval',
                 new GenericExpressionNode('Generated', [
                   new IdentifierNode('Interval'),
@@ -150,20 +165,18 @@ export const testTransformer = () => {
                   new IdentifierNode('Interval'),
                 ]),
               ),
+              new PropertyNode(
+                'json_override',
+                new JsonColumnTypeNode(new RawExpressionNode('{ foo: "bar" }')),
+              ),
               new PropertyNode('mood', new IdentifierNode('Mood')),
               new PropertyNode(
-                'texts',
-                new ArrayExpressionNode(new IdentifierNode('string')),
-              ),
-              new PropertyNode(
-                'override',
+                'raw_override',
                 new RawExpressionNode('{ test: string }'),
               ),
               new PropertyNode(
-                'expression_override',
-                new GenericExpressionNode('Generated', [
-                  new IdentifierNode('boolean'),
-                ]),
+                'texts',
+                new ArrayExpressionNode(new IdentifierNode('string')),
               ),
             ]),
           ),

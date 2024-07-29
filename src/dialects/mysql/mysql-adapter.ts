@@ -1,6 +1,6 @@
 import {
   ArrayExpressionNode,
-  ColumnType,
+  ColumnTypeNode,
   IdentifierNode,
   ObjectExpressionNode,
   PropertyNode,
@@ -16,7 +16,7 @@ import {
 
 export class MysqlAdapter extends Adapter {
   override readonly definitions = {
-    Decimal: new ColumnType(
+    Decimal: new ColumnTypeNode(
       new IdentifierNode('string'),
       new UnionExpressionNode([
         new IdentifierNode('string'),
@@ -29,7 +29,7 @@ export class MysqlAdapter extends Adapter {
       new IdentifierNode('Polygon'),
       new ArrayExpressionNode(new IdentifierNode('Geometry')),
     ]),
-    Json: new ColumnType(
+    Json: new ColumnTypeNode(
       new IdentifierNode('JsonValue'),
       new IdentifierNode('string'),
       new IdentifierNode('string'),

@@ -52,7 +52,8 @@ const up = async (db: Kysely<DB>, dialect: Dialect) => {
     let builder = trx.schema
       .createTable('foo_bar')
       .addColumn('false', 'boolean', (col) => col.notNull())
-      .addColumn('true', 'boolean', (col) => col.notNull());
+      .addColumn('true', 'boolean', (col) => col.notNull())
+      .addColumn('overridden', sql`text`);
 
     if (dialect instanceof MysqlDialect) {
       builder = builder
@@ -75,7 +76,9 @@ const up = async (db: Kysely<DB>, dialect: Dialect) => {
         .addColumn('test_domain_is_bool', sql`test.is_bool`)
         .addColumn('timestamps', sql`timestamp with time zone[]`)
         .addColumn('interval1', sql`interval`)
-        .addColumn('interval2', sql`interval`);
+        .addColumn('interval2', sql`interval`)
+        .addColumn('json', sql`json`)
+        .addColumn('json_typed', sql`json`);
     } else {
       builder = builder
         .addColumn('id', 'integer', (col) =>
