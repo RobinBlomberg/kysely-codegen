@@ -12,10 +12,6 @@ export const FLAGS: Flag[] = [
     longName: 'camel-case',
   },
   {
-    description: 'Singularize entities.',
-    longName: 'singular',
-  },
-  {
     description: `Set the SQL dialect. (values: [${VALID_DIALECTS.join(
       ', ',
     )}])`,
@@ -63,6 +59,10 @@ export const FLAGS: Flag[] = [
   {
     description: 'Generate runtime enums instead of string unions.',
     longName: 'runtime-enums',
+  },
+  {
+    description: 'Singularize entities.',
+    longName: 'singular',
   },
   {
     description:

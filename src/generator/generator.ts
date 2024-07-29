@@ -9,7 +9,6 @@ import { Transformer } from '../transformer';
 
 export type GenerateOptions = {
   camelCase?: boolean;
-  singular?: boolean;
   db: Kysely<any>;
   dialect: Dialect;
   excludePattern?: string;
@@ -20,6 +19,7 @@ export type GenerateOptions = {
   runtimeEnums?: boolean;
   schema?: string;
   serializer?: Serializer;
+  singular?: boolean;
   transformer?: Transformer;
   typeOnlyImports?: boolean;
   verify?: boolean;

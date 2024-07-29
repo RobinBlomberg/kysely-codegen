@@ -1,3 +1,4 @@
+import { singular } from 'pluralize';
 import type {
   AliasDeclarationNode,
   ArrayExpressionNode,
@@ -20,7 +21,6 @@ import type {
 } from '../ast';
 import { NodeType } from '../ast';
 import { toCamelCase } from '../transformer';
-import { singular } from 'pluralize';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
@@ -202,10 +202,10 @@ export class Serializer {
   }
 
   serializeIdentifier(node: IdentifierNode) {
-    // Prevent generic identifier such as `S` being trimmed
-    if (node.name.length < 2) {
+    if (node.name.length <= 1) {
       return node.name;
     }
+
     return this.singular ? singular(node.name) : node.name;
   }
 
