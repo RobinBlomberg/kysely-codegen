@@ -27,7 +27,7 @@ const down = async (db: Kysely<any>, dialect: Dialect) => {
   });
 };
 
-const up = async (db: Kysely<any>, dialect: Dialect) => {
+const up = async (db: Kysely<DB>, dialect: Dialect) => {
   await db.transaction().execute(async (trx) => {
     if (dialect instanceof PostgresDialect) {
       await trx.schema.createSchema('test').ifNotExists().execute();
@@ -73,7 +73,9 @@ const up = async (db: Kysely<any>, dialect: Dialect) => {
         )
         .addColumn('child_domain', sql`pos_int_child`)
         .addColumn('test_domain_is_bool', sql`test.is_bool`)
-        .addColumn('timestamps', sql`timestamp with time zone[]`);
+        .addColumn('timestamps', sql`timestamp with time zone[]`)
+        .addColumn('interval1', sql`interval`)
+        .addColumn('interval2', sql`interval`);
     } else {
       builder = builder
         .addColumn('id', 'integer', (col) =>

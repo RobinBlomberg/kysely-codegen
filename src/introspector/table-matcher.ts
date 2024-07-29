@@ -1,16 +1,11 @@
-import type { Options } from 'micromatch';
 import { matcher } from 'micromatch';
-
-const OPTIONS: Options = {
-  nocase: true,
-};
 
 export class TableMatcher {
   isMatch: (string: string) => boolean;
   isSimpleGlob: boolean;
 
   constructor(pattern: string) {
-    this.isMatch = matcher(pattern, OPTIONS);
+    this.isMatch = matcher(pattern, { nocase: true });
     this.isSimpleGlob = !pattern.includes('.');
   }
 
