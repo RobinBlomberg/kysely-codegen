@@ -1,11 +1,11 @@
-import { WorkerBunSqliteAdapter } from '.';
 import type { CreateKyselyDialectOptions } from '../../core';
 import { Dialect } from '../../core';
-import { WorkerBunSqliteIntrospector } from './worker-bun-sqlite-introspector';
+import { SqliteAdapter } from '../sqlite';
+import { SqliteIntrospector } from '../sqlite/sqlite-introspector';
 
 export class WorkerBunSqliteDialect extends Dialect {
-  readonly adapter = new WorkerBunSqliteAdapter();
-  readonly introspector = new WorkerBunSqliteIntrospector();
+  readonly adapter = new SqliteAdapter();
+  readonly introspector = new SqliteIntrospector();
 
   async createKyselyDialect(options: CreateKyselyDialectOptions) {
     const { BunWorkerDialect } = await import('kysely-bun-worker');
