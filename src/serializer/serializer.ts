@@ -1,3 +1,4 @@
+import { singular } from 'pluralize';
 import type {
   AliasDeclarationNode,
   ArrayExpressionNode,
@@ -26,6 +27,7 @@ const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
 export type SerializerOptions = {
   camelCase?: boolean;
+  singular?: boolean;
   typeOnlyImports?: boolean;
 };
 
@@ -34,10 +36,12 @@ export type SerializerOptions = {
  */
 export class Serializer {
   readonly camelCase: boolean;
+  readonly singular: boolean;
   readonly typeOnlyImports: boolean;
 
   constructor(options: SerializerOptions = {}) {
     this.camelCase = options.camelCase ?? false;
+    this.singular = options.singular ?? false;
     this.typeOnlyImports = options.typeOnlyImports ?? true;
   }
 
@@ -201,7 +205,11 @@ export class Serializer {
   }
 
   serializeIdentifier(node: IdentifierNode) {
-    return node.name;
+    if (node.name.length <= 1) {
+      return node.name;
+    }
+
+    return this.singular ? singular(node.name) : node.name;
   }
 
   serializeImportClause(node: ImportClauseNode) {
@@ -259,7 +267,7 @@ export class Serializer {
     let data = '';
 
     data += 'interface ';
-    data += node.name;
+    data += this.singular ? singular(node.name) : node.name;
     data += ' ';
     data += this.serializeObjectExpression(node.body);
 

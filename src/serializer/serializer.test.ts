@@ -390,5 +390,50 @@ export const testSerializer = () => {
             '}',
         ));
     });
+
+    void describe('serialize - convert plural to singular', () => {
+      const dialect = new PostgresDialect();
+      const enums = new EnumCollection();
+      const transformer = new Transformer();
+      const singularSerializer = new Serializer({ singular: true });
+
+      const ast = transformer.transform({
+        camelCase: true,
+        dialect,
+        metadata: new DatabaseMetadata(
+          [
+            new TableMetadata({
+              columns: [
+                new ColumnMetadata({
+                  dataType: 'varchar',
+                  name: 'username',
+                  hasDefaultValue: true,
+                }),
+              ],
+              name: 'users',
+              schema: 'public',
+            }),
+          ],
+          enums,
+        ),
+      });
+
+      strictEqual(
+        singularSerializer.serialize(ast),
+        'import type { ColumnType } from "kysely";\n' +
+          '\n' +
+          'export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>\n' +
+          '  ? ColumnType<S, I | undefined, U>\n' +
+          '  : ColumnType<T, T | undefined, T>;\n' +
+          '\n' +
+          'export interface User {\n' +
+          '  username: Generated<string>;\n' +
+          '}\n' +
+          '\n' +
+          'export interface DB {\n' +
+          '  users: User;\n' +
+          '}\n',
+      );
+    });
   });
 };

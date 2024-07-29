@@ -28,6 +28,7 @@ export type CliOptions = {
   print?: boolean;
   runtimeEnums?: boolean;
   schema?: string | undefined;
+  singular?: boolean;
   typeOnlyImports?: boolean;
   url: string;
   verify?: boolean | undefined;
@@ -47,6 +48,7 @@ export class Cli {
     const print = !!options.print;
     const runtimeEnums = options.runtimeEnums;
     const schema = options.schema;
+    const singular = !!options.singular;
     const typeOnlyImports = options.typeOnlyImports;
 
     const logger = new Logger(options.logLevel);
@@ -91,6 +93,7 @@ export class Cli {
       print,
       runtimeEnums,
       schema,
+      singular,
       typeOnlyImports,
       verify: options.verify,
     });
@@ -152,7 +155,6 @@ export class Cli {
 
   parseOptions(args: string[], options?: { silent?: boolean }): CliOptions {
     const argv = minimist(args);
-
     const _: string[] = argv._;
     const camelCase = this.#parseBoolean(argv['camel-case']);
     const dialectName = argv.dialect;
@@ -169,6 +171,7 @@ export class Cli {
     const print = this.#parseBoolean(argv.print);
     const runtimeEnums = this.#parseBoolean(argv['runtime-enums']);
     const schema = argv.schema as string | undefined;
+    const singular = this.#parseBoolean(argv['singular']);
     const typeOnlyImports = this.#parseBoolean(
       argv['type-only-imports'] ?? true,
     );
@@ -230,6 +233,7 @@ export class Cli {
 
     return {
       camelCase,
+      singular,
       dialectName,
       domains,
       envFile,

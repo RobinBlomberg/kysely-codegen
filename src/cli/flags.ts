@@ -61,6 +61,10 @@ export const FLAGS: Flag[] = [
     longName: 'runtime-enums',
   },
   {
+    description: 'Singularize entities.',
+    longName: 'singular',
+  },
+  {
     description:
       'Generate TypeScript 3.8+ `import type` syntax (default: true).',
     longName: 'type-only-imports',

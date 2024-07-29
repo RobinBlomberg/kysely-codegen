@@ -21,6 +21,7 @@ export type GenerateOptions = {
   runtimeEnums?: boolean;
   schema?: string;
   serializer?: Serializer;
+  singular?: boolean;
   transformer?: Transformer;
   typeOnlyImports?: boolean;
   verify?: boolean;
@@ -64,6 +65,7 @@ export class Generator {
       options.serializer ??
       new Serializer({
         camelCase: !!options.camelCase,
+        singular: !!options.singular,
         typeOnlyImports: options.typeOnlyImports,
       });
     const data = serializer.serialize(nodes);
