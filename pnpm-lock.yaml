@@ -54,6 +54,9 @@ importers:
       '@types/better-sqlite3':
         specifier: ^7.6.11
         version: 7.6.11
+      '@types/bun':
+        specifier: ^1.1.6
+        version: 1.1.6
       '@types/git-diff':
         specifier: ^2.0.7
         version: 2.0.7
@@ -90,6 +93,9 @@ importers:
       kysely:
         specifier: ^0.27.4
         version: 0.27.4
+      kysely-bun-sqlite:
+        specifier: ^0.3.2
+        version: 0.3.2(kysely@0.27.4)
       kysely-bun-worker:
         specifier: ^0.6.2
         version: 0.6.2(kysely@0.27.4)
@@ -1034,6 +1040,9 @@ packages:
   '@types/braces@3.0.4':
     resolution: {integrity: sha512-0WR3b8eaISjEW7RpZnclONaLFDf7buaowRHdqLp4vLj54AsSAYWfh3DRbfiYJY9XDxMgx1B4sE1Afw2PGpuHOA==}
 
+  '@types/bun@1.1.6':
+    resolution: {integrity: sha512-uJgKjTdX0GkWEHZzQzFsJkWp5+43ZS7HC8sZPFnOwnSo1AsNl2q9o2bFeS23disNDqbggEgyFkKCHl/w8iZsMA==}
+
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
 
@@ -1051,6 +1060,9 @@ packages:
 
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
+
+  '@types/node@20.12.14':
+    resolution: {integrity: sha512-scnD59RpYD91xngrQQLGkE+6UrHUPzeKZWhhjBSa3HSkwjbQc38+q3RoIVEwxQGRw3M+j5hpNAM+lgV3cVormg==}
 
   '@types/node@20.14.13':
     resolution: {integrity: sha512-+bHoGiZb8UiQ0+WEtmph2IWQCjIqg8MDZMAV+ppRRhUZnquF5mQkP/9vpSwJClEiSM/C7fZZExPzfU0vJTyp8w==}
@@ -1399,6 +1411,12 @@ packages:
   builtin-modules@3.3.0:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
     engines: {node: '>=6'}
+
+  bun-types@1.1.17:
+    resolution: {integrity: sha512-Z4+OplcSd/YZq7ZsrfD00DKJeCwuNY96a1IDJyR73+cTBaFIS7SC6LhpY/W3AMEXO9iYq5NJ58WAwnwL1p5vKg==}
+
+  bun-types@1.1.21:
+    resolution: {integrity: sha512-oz9q2KGiuQZciV8oBCYfTTwJMWEFFYBF0gOyO0dsV06yQvJIiFMcUx5PDk580UJ2Po5amtwjgRJ8ksxSiCueHQ==}
 
   cac@6.7.14:
     resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}
@@ -2392,6 +2410,12 @@ packages:
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
+
+  kysely-bun-sqlite@0.3.2:
+    resolution: {integrity: sha512-YucMcOGGxNCmlAnkvNfTKZX6Bk1sYsuVVXlQN/5ZUgerlq/J9/EuR3aMOOZ25ASLM7oMglSxfeQxkiw0+hrEOQ==}
+    engines: {bun: '>=1'}
+    peerDependencies:
+      kysely: ^0.27.2
 
   kysely-bun-worker@0.6.2:
     resolution: {integrity: sha512-cL8+HymB0XsjTaHzfkrylrAemrZ9/AYCN7jX2IuIhaBJisyu5XH90BtctNZ9NcHF5ki/V2IrTeb7wi8XeyJwdA==}
@@ -4407,6 +4431,10 @@ snapshots:
 
   '@types/braces@3.0.4': {}
 
+  '@types/bun@1.1.6':
+    dependencies:
+      bun-types: 1.1.17
+
   '@types/estree@1.0.5': {}
 
   '@types/git-diff@2.0.7': {}
@@ -4420,6 +4448,10 @@ snapshots:
       '@types/braces': 3.0.4
 
   '@types/minimist@1.2.5': {}
+
+  '@types/node@20.12.14':
+    dependencies:
+      undici-types: 5.26.5
 
   '@types/node@20.14.13':
     dependencies:
@@ -4869,6 +4901,16 @@ snapshots:
       ieee754: 1.2.1
 
   builtin-modules@3.3.0: {}
+
+  bun-types@1.1.17:
+    dependencies:
+      '@types/node': 20.12.14
+      '@types/ws': 8.5.10
+
+  bun-types@1.1.21:
+    dependencies:
+      '@types/node': 20.12.14
+      '@types/ws': 8.5.10
 
   cac@6.7.14: {}
 
@@ -6063,6 +6105,11 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
+
+  kysely-bun-sqlite@0.3.2(kysely@0.27.4):
+    dependencies:
+      bun-types: 1.1.21
+      kysely: 0.27.4
 
   kysely-bun-worker@0.6.2(kysely@0.27.4):
     dependencies:

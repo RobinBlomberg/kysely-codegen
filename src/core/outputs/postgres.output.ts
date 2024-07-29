@@ -13,7 +13,7 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
-export type Interval = ColumnType<IPostgresInterval, IPostgresInterval | number, IPostgresInterval | number>;
+export type Interval = ColumnType<IPostgresInterval, IPostgresInterval | number | string, IPostgresInterval | number | string>;
 
 export type Status = "CONFIRMED" | "UNCONFIRMED";
 
