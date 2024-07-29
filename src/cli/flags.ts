@@ -12,9 +12,7 @@ export const FLAGS: Flag[] = [
     longName: 'camel-case',
   },
   {
-    description: `Set the SQL dialect. (values: [${VALID_DIALECTS.join(
-      ', ',
-    )}])`,
+    description: `Set the SQL dialect. (values: [${VALID_DIALECTS.join(', ')}])`,
     longName: 'dialect',
   },
   {
@@ -44,13 +42,18 @@ export const FLAGS: Flag[] = [
     longName: 'log-level',
   },
   {
-    description:
-      'Skip generating types for PostgreSQL domains. (default: false)',
+    description: 'Skip generating types for PostgreSQL domains.',
     longName: 'no-domains',
   },
   {
     description: `Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
     longName: 'out-file',
+  },
+  {
+    description:
+      'Specify type overrides for specific table columns in JSON format. ' +
+      '(example: {"columns":{"table_name.column_name":"{ foo: \\"bar\\" }"}})',
+    longName: 'overrides',
   },
   {
     description: 'Print the generated output to the terminal.',
@@ -66,7 +69,7 @@ export const FLAGS: Flag[] = [
   },
   {
     description:
-      'Generate TypeScript 3.8+ `import type` syntax (default: true).',
+      'Generate code using the TypeScript 3.8+ `import type` syntax. (default: true)',
     longName: 'type-only-imports',
   },
   {
@@ -80,8 +83,7 @@ export const FLAGS: Flag[] = [
     longName: 'schema',
   },
   {
-    description:
-      'Verify that the generated types are up-to-date. (default: false)',
+    description: 'Verify that the generated types are up-to-date.',
     longName: 'verify',
   },
 ];

@@ -17,6 +17,7 @@ export const testCli = () => {
     includePattern: undefined,
     logLevel: DEFAULT_LOG_LEVEL,
     outFile: DEFAULT_OUT_FILE,
+    overrides: undefined,
     print: false,
     runtimeEnums: false,
     schema: undefined,
@@ -48,6 +49,12 @@ export const testCli = () => {
       assert(['--no-domains'], { domains: false });
       assert(['--no-type-only-imports'], { typeOnlyImports: false });
       assert(['--out-file=./db.ts'], { outFile: './db.ts' });
+      assert(
+        [`--overrides={"columns":{"table.override":"{ foo: \\"bar\\" }"}}`],
+        {
+          overrides: { columns: { 'table.override': '{ foo: "bar" }' } },
+        },
+      );
       assert(['--print'], { outFile: undefined, print: true });
       assert(['--schema=foo'], { schema: 'foo' });
       assert(['--singular'], { singular: true });

@@ -7,6 +7,7 @@ import {
   Logger,
 } from '../core';
 import { Generator } from '../generator';
+import { Overrides } from '../transformer';
 import type { LOG_LEVEL_NAMES } from './constants';
 import {
   DEFAULT_LOG_LEVEL,
@@ -18,20 +19,21 @@ import { FLAGS } from './flags';
 
 export type CliOptions = {
   camelCase?: boolean;
-  dialectName?: DialectName | undefined;
+  dialectName?: DialectName;
   domains?: boolean;
-  envFile?: string | undefined;
-  excludePattern?: string | undefined;
-  includePattern?: string | undefined;
+  envFile?: string;
+  excludePattern?: string;
+  includePattern?: string;
   logLevel?: LogLevel;
-  outFile?: string | undefined;
+  outFile?: string;
+  overrides?: Overrides;
   print?: boolean;
   runtimeEnums?: boolean;
-  schema?: string | undefined;
+  schema?: string;
   singular?: boolean;
   typeOnlyImports?: boolean;
   url: string;
-  verify?: boolean | undefined;
+  verify?: boolean;
 };
 
 export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
@@ -45,11 +47,13 @@ export class Cli {
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
     const outFile = options.outFile;
+    const overrides = options.overrides;
     const print = !!options.print;
     const runtimeEnums = options.runtimeEnums;
     const schema = options.schema;
     const singular = !!options.singular;
     const typeOnlyImports = options.typeOnlyImports;
+    const verify = options.verify;
 
     const logger = new Logger(options.logLevel);
 
@@ -90,12 +94,13 @@ export class Cli {
       includePattern,
       logger,
       outFile,
+      overrides,
       print,
       runtimeEnums,
       schema,
       singular,
       typeOnlyImports,
-      verify: options.verify,
+      verify,
     });
 
     await db.destroy();
@@ -168,6 +173,7 @@ export class Cli {
     const outFile =
       (argv['out-file'] as string | undefined) ??
       (argv.print ? undefined : DEFAULT_OUT_FILE);
+    const overrides = argv.overrides ? JSON.parse(argv.overrides) : undefined;
     const print = this.#parseBoolean(argv.print);
     const runtimeEnums = this.#parseBoolean(argv['runtime-enums']);
     const schema = argv.schema as string | undefined;
@@ -241,6 +247,7 @@ export class Cli {
       includePattern,
       logLevel,
       outFile,
+      overrides,
       print,
       runtimeEnums,
       schema,
