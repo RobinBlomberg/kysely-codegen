@@ -23,6 +23,7 @@ import {
   TableMetadata,
 } from '../core';
 import { PostgresAdapter, PostgresDialect } from '../dialects';
+import { NumericParser } from '../dialects/postgres/numeric-parser';
 import { describe, it } from '../test.utils';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { Transformer } from './transformer';
@@ -34,14 +35,21 @@ export const testTransformer = () => {
       'public.mood_': ['', ',', "'", "'','"],
     });
 
-    const transform = (
-      tables: TableMetadata[],
-      camelCase: boolean,
-      runtimeEnums: boolean,
-    ) => {
-      const dialect = new PostgresDialect();
+    const transform = ({
+      camelCase,
+      numericParser,
+      runtimeEnums,
+      tables,
+    }: {
+      camelCase?: boolean;
+      numericParser?: NumericParser;
+      runtimeEnums?: boolean;
+      tables: TableMetadata[];
+    }) => {
+      const dialect = new PostgresDialect({ numericParser });
       const transformer = new Transformer();
       const metadata = new DatabaseMetadata(tables, enums);
+
       return transformer.transform({
         camelCase,
         dialect,
@@ -63,8 +71,8 @@ export const testTransformer = () => {
     };
 
     void it('should transform correctly', () => {
-      const nodes = transform(
-        [
+      const nodes = transform({
+        tables: [
           new TableMetadata({
             columns: [
               new ColumnMetadata({
@@ -103,9 +111,7 @@ export const testTransformer = () => {
             schema: 'public',
           }),
         ],
-        false,
-        false,
-      );
+      });
 
       deepStrictEqual(nodes, [
         new ImportStatementNode('kysely', [
@@ -193,8 +199,9 @@ export const testTransformer = () => {
     });
 
     void it('should be able to transform to camelCase', () => {
-      const nodes = transform(
-        [
+      const nodes = transform({
+        camelCase: true,
+        tables: [
           new TableMetadata({
             columns: [
               new ColumnMetadata({
@@ -207,9 +214,7 @@ export const testTransformer = () => {
             schema: 'public',
           }),
         ],
-        true,
-        false,
-      );
+      });
 
       deepStrictEqual(nodes, [
         new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
@@ -240,9 +245,28 @@ export const testTransformer = () => {
       ]);
     });
 
+    void it('should be able to transform using an alternative Postgres numeric parser', () => {
+      const nodes = transform({
+        numericParser: NumericParser.NUMBER,
+        tables: [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'numeric',
+                name: 'numeric',
+              }),
+            ],
+            name: 'table',
+          }),
+        ],
+      });
+
+      deepStrictEqual((nodes[1] as any).argument.body.args[0].name, 'number');
+    });
+
     void it('should transform Postgres enums correctly', () => {
-      const nodes = transform(
-        [
+      const nodes = transform({
+        tables: [
           new TableMetadata({
             columns: [
               new ColumnMetadata({
@@ -260,9 +284,7 @@ export const testTransformer = () => {
             schema: 'public',
           }),
         ],
-        false,
-        false,
-      );
+      });
 
       deepStrictEqual(nodes, [
         new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
@@ -316,8 +338,9 @@ export const testTransformer = () => {
     });
 
     void it('should transform runtime enums correctly', () => {
-      const nodes = transform(
-        [
+      const nodes = transform({
+        runtimeEnums: true,
+        tables: [
           new TableMetadata({
             columns: [
               new ColumnMetadata({
@@ -335,9 +358,7 @@ export const testTransformer = () => {
             schema: 'public',
           }),
         ],
-        false,
-        true,
-      );
+      });
 
       deepStrictEqual(nodes, [
         new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),

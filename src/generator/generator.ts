@@ -4,6 +4,7 @@ import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
 import type { Dialect, Logger } from '../core';
 import { DiffChecker } from '../core';
+import type { NumericParser } from '../dialects/postgres/numeric-parser';
 import { Serializer } from '../serializer';
 import type { Overrides } from '../transformer';
 import { Transformer } from '../transformer';
@@ -15,6 +16,7 @@ export type GenerateOptions = {
   excludePattern?: string;
   includePattern?: string;
   logger?: Logger;
+  numericParser?: NumericParser;
   outFile?: string;
   overrides?: Overrides;
   print?: boolean;

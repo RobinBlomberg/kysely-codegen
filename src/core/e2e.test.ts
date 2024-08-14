@@ -11,6 +11,7 @@ import {
   PostgresDialect,
   SqliteDialect,
 } from '../dialects';
+import { NumericParser } from '../dialects/postgres/numeric-parser';
 import type { GenerateOptions } from '../generator';
 import { Generator } from '../generator';
 import { describe, it } from '../test.utils';
@@ -35,12 +36,16 @@ const TESTS: Test[] = [
   },
   {
     connectionString: 'postgres://user:password@localhost:5433/database',
-    dialect: new PostgresDialect(),
+    dialect: new PostgresDialect({
+      numericParser: NumericParser.NUMBER_OR_STRING,
+    }),
     inputValues: {
       false: false,
       id: 1,
       interval1: parsePostgresInterval('1 day'),
       interval2: '24 months',
+      numeric1: Number.MAX_SAFE_INTEGER,
+      numeric2: String(Number.MAX_SAFE_INTEGER + 1),
       true: true,
     },
     outputValues: {
@@ -48,6 +53,8 @@ const TESTS: Test[] = [
       id: 1,
       interval1: { days: 1 },
       interval2: { years: 2 },
+      numeric1: Number.MAX_SAFE_INTEGER,
+      numeric2: String(Number.MAX_SAFE_INTEGER + 1),
       true: true,
     },
   },

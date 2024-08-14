@@ -6,6 +6,10 @@ import {
   LogLevel,
   Logger,
 } from '../core';
+import {
+  DEFAULT_NUMERIC_PARSER,
+  NumericParser,
+} from '../dialects/postgres/numeric-parser';
 import { Generator } from '../generator';
 import type { Overrides } from '../transformer';
 import type { LOG_LEVEL_NAMES } from './constants';
@@ -25,6 +29,7 @@ export type CliOptions = {
   excludePattern?: string;
   includePattern?: string;
   logLevel?: LogLevel;
+  numericParser?: NumericParser;
   outFile?: string;
   overrides?: Overrides;
   print?: boolean;
@@ -46,6 +51,7 @@ export class Cli {
     const camelCase = !!options.camelCase;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
+    const numericParser = options.numericParser;
     const outFile = options.outFile;
     const overrides = options.overrides;
     const print = !!options.print;
@@ -74,6 +80,7 @@ export class Cli {
 
     const dialectManager = new DialectManager({
       domains: !!options.domains,
+      numericParser: options.numericParser ?? DEFAULT_NUMERIC_PARSER,
     });
     const dialect = dialectManager.getDialect(
       options.dialectName ?? inferredDialectName,
@@ -93,6 +100,7 @@ export class Cli {
       excludePattern,
       includePattern,
       logger,
+      numericParser,
       outFile,
       overrides,
       print,
@@ -106,8 +114,12 @@ export class Cli {
     await db.destroy();
   }
 
-  #getLogLevel(name?: LogLevelName) {
-    switch (name) {
+  #parseBoolean(input: any) {
+    return !!input && input !== 'false';
+  }
+
+  #parseLogLevel(input: any) {
+    switch (input) {
       case 'silent':
         return LogLevel.SILENT;
       case 'info':
@@ -123,8 +135,21 @@ export class Cli {
     }
   }
 
-  #parseBoolean(input?: boolean | string) {
-    return !!input && input !== 'false';
+  #parseNumericParser(input: any) {
+    switch (input) {
+      case 'number':
+        return NumericParser.NUMBER;
+      case 'number-or-string':
+        return NumericParser.NUMBER_OR_STRING;
+      case 'string':
+        return NumericParser.STRING;
+      default:
+        return DEFAULT_NUMERIC_PARSER;
+    }
+  }
+
+  #parseString(input: any) {
+    return input === undefined ? undefined : String(input);
   }
 
   #serializeFlags() {
@@ -162,27 +187,28 @@ export class Cli {
     const argv = minimist(args);
     const _: string[] = argv._;
     const camelCase = this.#parseBoolean(argv['camel-case']);
-    const dialectName = argv.dialect;
+    const dialectName = this.#parseString(argv.dialect) as DialectName;
     const domains = this.#parseBoolean(argv.domains);
-    const envFile = argv['env-file'] as string | undefined;
-    const excludePattern = argv['exclude-pattern'] as string | undefined;
+    const envFile = this.#parseString(argv['env-file']);
+    const excludePattern = this.#parseString(argv['exclude-pattern']);
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
-    const includePattern = argv['include-pattern'] as string | undefined;
-    const logLevel = this.#getLogLevel(argv['log-level']);
+    const includePattern = this.#parseString(argv['include-pattern']);
+    const logLevel = this.#parseLogLevel(argv['log-level']);
+    const numericParser = this.#parseNumericParser(argv['numeric-parser']);
     const outFile =
-      (argv['out-file'] as string | undefined) ??
+      this.#parseString(argv['out-file']) ??
       (argv.print ? undefined : DEFAULT_OUT_FILE);
     const overrides = argv.overrides ? JSON.parse(argv.overrides) : undefined;
     const print = this.#parseBoolean(argv.print);
     const runtimeEnums = this.#parseBoolean(argv['runtime-enums']);
-    const schema = argv.schema as string | undefined;
+    const schema = this.#parseString(argv.schema);
     const singular = this.#parseBoolean(argv.singular);
     const typeOnlyImports = this.#parseBoolean(
       argv['type-only-imports'] ?? true,
     );
-    const url = (argv.url as string) ?? DEFAULT_URL;
-    const verify = this.#parseBoolean(argv.verify ?? false);
+    const url = this.#parseString(argv.url) ?? DEFAULT_URL;
+    const verify = this.#parseBoolean(argv.verify);
 
     try {
       for (const key in argv) {
@@ -239,18 +265,19 @@ export class Cli {
 
     return {
       camelCase,
-      singular,
       dialectName,
       domains,
       envFile,
       excludePattern,
       includePattern,
       logLevel,
+      numericParser,
       outFile,
       overrides,
       print,
       runtimeEnums,
       schema,
+      singular,
       typeOnlyImports,
       url,
       verify,

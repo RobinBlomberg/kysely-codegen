@@ -46,6 +46,11 @@ export const FLAGS: Flag[] = [
     longName: 'no-domains',
   },
   {
+    description:
+      'Specify which parser to use for PostgreSQL numeric values. (values: [string, number, number-or-string], default: string)',
+    longName: 'numeric-parser',
+  },
+  {
     description: `Set the file build path. (default: ${DEFAULT_OUT_FILE})`,
     longName: 'out-file',
   },

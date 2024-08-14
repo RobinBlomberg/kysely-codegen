@@ -79,7 +79,8 @@ const up = async (db: Kysely<DB>, dialect: Dialect) => {
         .addColumn('interval2', sql`interval`)
         .addColumn('json', sql`json`)
         .addColumn('json_typed', sql`json`)
-        .addColumn('numeric', sql`numeric`);
+        .addColumn('numeric1', sql`numeric`)
+        .addColumn('numeric2', sql`numeric`);
     } else {
       builder = builder
         .addColumn('id', 'integer', (col) =>

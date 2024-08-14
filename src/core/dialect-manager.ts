@@ -7,6 +7,7 @@ import {
   SqliteDialect,
   WorkerBunSqliteDialect,
 } from '../dialects';
+import type { NumericParser } from '../dialects/postgres/numeric-parser';
 import type { Dialect } from './dialect';
 
 export type DialectName =
@@ -20,7 +21,8 @@ export type DialectName =
   | 'worker-bun-sqlite';
 
 export type DialectManagerOptions = {
-  domains: boolean;
+  domains?: boolean;
+  numericParser?: NumericParser;
 };
 
 /**
@@ -29,7 +31,7 @@ export type DialectManagerOptions = {
 export class DialectManager {
   readonly #options: DialectManagerOptions;
 
-  constructor(options: DialectManagerOptions = { domains: true }) {
+  constructor(options: DialectManagerOptions) {
     this.#options = options;
   }
 

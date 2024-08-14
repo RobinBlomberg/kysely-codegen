@@ -18,20 +18,17 @@ type PostgresDomainInspector = {
 };
 
 export type PostgresIntrospectorOptions = {
-  domains: boolean;
+  domains?: boolean;
 };
 
 export class PostgresIntrospector extends Introspector<PostgresDB> {
-  readonly adapter: PostgresAdapter;
   readonly #options: PostgresIntrospectorOptions;
+  readonly adapter: PostgresAdapter;
 
-  constructor(
-    adapter: PostgresAdapter,
-    options: PostgresIntrospectorOptions = { domains: true },
-  ) {
+  constructor(adapter: PostgresAdapter, options?: PostgresIntrospectorOptions) {
     super();
+    this.#options = { domains: options?.domains ?? true };
     this.adapter = adapter;
-    this.#options = options;
   }
 
   #createDatabaseMetadata(

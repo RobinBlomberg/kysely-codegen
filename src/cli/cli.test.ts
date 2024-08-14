@@ -1,5 +1,6 @@
 import { deepStrictEqual } from 'assert';
 import { LogLevel } from '../core';
+import { DEFAULT_NUMERIC_PARSER } from '../dialects/postgres/numeric-parser';
 import { describe, it } from '../test.utils';
 import type { CliOptions } from './cli';
 import { Cli } from './cli';
@@ -16,6 +17,7 @@ export const testCli = () => {
     excludePattern: undefined,
     includePattern: undefined,
     logLevel: DEFAULT_LOG_LEVEL,
+    numericParser: DEFAULT_NUMERIC_PARSER,
     outFile: DEFAULT_OUT_FILE,
     overrides: undefined,
     print: false,
@@ -51,9 +53,7 @@ export const testCli = () => {
       assert(['--out-file=./db.ts'], { outFile: './db.ts' });
       assert(
         [`--overrides={"columns":{"table.override":"{ foo: \\"bar\\" }"}}`],
-        {
-          overrides: { columns: { 'table.override': '{ foo: "bar" }' } },
-        },
+        { overrides: { columns: { 'table.override': '{ foo: "bar" }' } } },
       );
       assert(['--print'], { outFile: undefined, print: true });
       assert(['--schema=foo'], { schema: 'foo' });

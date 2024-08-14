@@ -14,6 +14,11 @@ import {
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
 } from '../../transformer';
+import { NumericParser } from './numeric-parser';
+
+export type PostgresAdapterOptions = {
+  numericParser?: NumericParser;
+};
 
 export class PostgresAdapter extends Adapter {
   // From https://node-postgres.com/features/types:
@@ -53,8 +58,8 @@ export class PostgresAdapter extends Adapter {
     Numeric: new ColumnTypeNode(
       new IdentifierNode('string'),
       new UnionExpressionNode([
-        new IdentifierNode('string'),
         new IdentifierNode('number'),
+        new IdentifierNode('string'),
       ]),
     ),
     Point: new ObjectExpressionNode([
@@ -112,4 +117,17 @@ export class PostgresAdapter extends Adapter {
     varchar: new IdentifierNode('string'), // Specified as "character varying" in Adminer.
     xml: new IdentifierNode('string'),
   };
+
+  constructor(options?: PostgresAdapterOptions) {
+    super();
+
+    if (options?.numericParser === NumericParser.NUMBER) {
+      this.definitions.Numeric.args[0] = new IdentifierNode('number');
+    } else if (options?.numericParser === NumericParser.NUMBER_OR_STRING) {
+      this.definitions.Numeric.args[0] = new UnionExpressionNode([
+        new IdentifierNode('number'),
+        new IdentifierNode('string'),
+      ]);
+    }
+  }
 }

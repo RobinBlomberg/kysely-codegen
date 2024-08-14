@@ -1,26 +1,49 @@
 import { PostgresDialect as KyselyPostgresDialect } from 'kysely';
 import type { CreateKyselyDialectOptions } from '../../core';
 import { Dialect } from '../../core';
+import { DEFAULT_NUMERIC_PARSER, NumericParser } from './numeric-parser';
 import { PostgresAdapter } from './postgres-adapter';
 import { PostgresIntrospector } from './postgres-introspector';
 
 export type PostgresDialectOptions = {
-  domains: boolean;
+  domains?: boolean;
+  numericParser?: NumericParser;
 };
 
 export class PostgresDialect extends Dialect {
   readonly #options: PostgresDialectOptions;
-  readonly adapter = new PostgresAdapter();
+  readonly adapter: PostgresAdapter;
   readonly introspector;
 
-  constructor(options: PostgresDialectOptions = { domains: true }) {
+  constructor(options?: PostgresDialectOptions) {
     super();
-    this.#options = options;
-    this.introspector = new PostgresIntrospector(this.adapter, this.#options);
+
+    this.#options = {
+      domains: options?.domains ?? true,
+      numericParser: options?.numericParser ?? DEFAULT_NUMERIC_PARSER,
+    };
+    this.adapter = new PostgresAdapter({
+      numericParser: this.#options.numericParser,
+    });
+    this.introspector = new PostgresIntrospector(this.adapter, {
+      domains: this.#options.domains,
+    });
   }
 
   async createKyselyDialect(options: CreateKyselyDialectOptions) {
-    const { Pool } = await import('pg');
+    const { Pool, types } = await import('pg');
+
+    if (this.#options.numericParser === NumericParser.NUMBER) {
+      types.setTypeParser(1700, Number);
+    } else if (this.#options.numericParser === NumericParser.NUMBER_OR_STRING) {
+      types.setTypeParser(1700, (value) => {
+        const number = Number(value);
+        return number > Number.MAX_SAFE_INTEGER ||
+          number < Number.MIN_SAFE_INTEGER
+          ? value
+          : number;
+      });
+    }
 
     return new KyselyPostgresDialect({
       pool: new Pool({
