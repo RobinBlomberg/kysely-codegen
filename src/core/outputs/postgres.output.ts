@@ -32,6 +32,8 @@ export type JsonPrimitive = boolean | number | string | null;
 
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
+export type Numeric = ColumnType<string, number | string, number | string>;
+
 export type Status = "CONFIRMED" | "UNCONFIRMED";
 
 export type TestStatus = "BAR" | "FOO";
@@ -55,6 +57,7 @@ export interface FooBar {
   json: Json | null;
   jsonTyped: JSONColumnType<{ foo: "bar" }>;
   nullablePosInt: number | null;
+  numeric: Numeric | null;
   overridden: "OVERRIDDEN";
   testDomainIsBool: boolean | null;
   timestamps: ArrayType<Timestamp> | null;
