@@ -1,13 +1,9 @@
 import type { ExpressionNode, ModuleReferenceNode, TemplateNode } from '../ast';
 import { toPascalCase } from './case-converter';
 
-export type SymbolMap = {
-  [K in string]?: SymbolNode;
-};
+export type SymbolMap = Record<string, SymbolNode | undefined>;
 
-export type SymbolNameMap = {
-  [K in string]?: string;
-};
+export type SymbolNameMap = Record<string, string | undefined>;
 
 export type SymbolNode =
   | { node: ExpressionNode | TemplateNode; type: SymbolType.DEFINITION }

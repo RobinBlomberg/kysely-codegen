@@ -7,7 +7,7 @@ import {
   Logger,
 } from '../core';
 import { Generator } from '../generator';
-import { Overrides } from '../transformer';
+import type { Overrides } from '../transformer';
 import type { LOG_LEVEL_NAMES } from './constants';
 import {
   DEFAULT_LOG_LEVEL,
@@ -177,7 +177,7 @@ export class Cli {
     const print = this.#parseBoolean(argv.print);
     const runtimeEnums = this.#parseBoolean(argv['runtime-enums']);
     const schema = argv.schema as string | undefined;
-    const singular = this.#parseBoolean(argv['singular']);
+    const singular = this.#parseBoolean(argv.singular);
     const typeOnlyImports = this.#parseBoolean(
       argv['type-only-imports'] ?? true,
     );

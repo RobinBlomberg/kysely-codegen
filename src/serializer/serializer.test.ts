@@ -165,7 +165,7 @@ export const testSerializer = () => {
         serializer.serializeMappedType(
           new MappedTypeNode(new IdentifierNode('Json')),
         ),
-        '{\n  [K in string]?: Json;\n}',
+        '{\n  [x: string]: Json | undefined;\n}',
       );
     });
 
@@ -299,7 +299,7 @@ export const testSerializer = () => {
             'export type JsonArray = JsonValue[];\n' +
             '\n' +
             'export type JsonObject = {\n' +
-            '  [K in string]?: JsonValue;\n' +
+            '  [x: string]: JsonValue | undefined;\n' +
             '};\n' +
             '\n' +
             'export type JsonPrimitive = boolean | number | string | null;\n' +
@@ -351,7 +351,7 @@ export const testSerializer = () => {
             'export type JsonArray = JsonValue[];\n' +
             '\n' +
             'export type JsonObject = {\n' +
-            '  [K in string]?: JsonValue;\n' +
+            '  [x: string]: JsonValue | undefined;\n' +
             '};\n' +
             '\n' +
             'export type JsonPrimitive = boolean | number | string | null;\n' +

@@ -5,11 +5,11 @@ import type {
 } from '../ast';
 import { IdentifierNode } from '../ast';
 
-export type Definitions = { [K in string]?: DefinitionNode };
+export type Definitions = Record<string, DefinitionNode | undefined>;
 
-export type Imports = { [K in string]?: ModuleReferenceNode };
+export type Imports = Record<string, ModuleReferenceNode | undefined>;
 
-export type Scalars = { [K in string]?: ExpressionNode };
+export type Scalars = Record<string, ExpressionNode | undefined>;
 
 /**
  * Specifies settings for how code should be generated for the given database library.

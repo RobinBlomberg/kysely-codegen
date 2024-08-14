@@ -249,7 +249,7 @@ export class Transformer {
   }
 
   #createImportNodes(context: TransformContext) {
-    const imports: { [K in string]?: ImportClauseNode[] } = {};
+    const imports: Record<string, ImportClauseNode[] | undefined> = {};
     const importNodes: ImportStatementNode[] = [];
 
     for (const { id, name, symbol } of context.symbols.entries()) {

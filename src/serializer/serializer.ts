@@ -285,9 +285,9 @@ export class Serializer {
   serializeMappedType(node: MappedTypeNode) {
     let data = '';
 
-    data += '{\n  [K in string]?: ';
+    data += '{\n  [x: string]: ';
     data += this.serializeExpression(node.value);
-    data += ';\n}';
+    data += ' | undefined;\n}';
 
     return data;
   }

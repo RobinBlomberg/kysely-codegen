@@ -1,9 +1,9 @@
 import { deepStrictEqual, strictEqual } from 'assert';
 import { readFile } from 'fs/promises';
 import type { Kysely } from 'kysely';
-import { InsertExpression } from 'kysely/dist/cjs/parser/insert-values-parser';
+import type { InsertExpression } from 'kysely/dist/cjs/parser/insert-values-parser';
 import { join } from 'path';
-import { default as parsePostgresInterval } from 'postgres-interval';
+import parsePostgresInterval from 'postgres-interval';
 import { JsonColumnTypeNode, RawExpressionNode } from '../ast';
 import {
   LibsqlDialect,
@@ -11,7 +11,8 @@ import {
   PostgresDialect,
   SqliteDialect,
 } from '../dialects';
-import { GenerateOptions, Generator } from '../generator';
+import type { GenerateOptions } from '../generator';
+import { Generator } from '../generator';
 import { describe, it } from '../test.utils';
 import type { Dialect } from './dialect';
 import { addExtraColumn, migrate } from './fixtures';

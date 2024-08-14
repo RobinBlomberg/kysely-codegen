@@ -20,7 +20,7 @@ export type Json = JsonValue;
 export type JsonArray = JsonValue[];
 
 export type JsonObject = {
-  [K in string]?: JsonValue;
+  [x: string]: JsonValue | undefined;
 };
 
 export type JsonPrimitive = boolean | number | string | null;

@@ -1,6 +1,4 @@
-export type EnumMap = {
-  [K in string]?: string[];
-};
+export type EnumMap = Record<string, string[] | undefined>;
 
 export class EnumCollection {
   readonly enums: EnumMap = {};
