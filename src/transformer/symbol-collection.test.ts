@@ -17,6 +17,9 @@ export const testSymbolCollection = () => {
     symbols.set('__foo__bar__', symbol);
     symbols.set('Foo, Bar!', symbol);
     symbols.set('Foo$Bar', symbol);
+    symbols.set('0x123', symbol);
+    symbols.set('!', symbol);
+    symbols.set('"', symbol);
 
     deepStrictEqual(symbols.symbolNames, {
       'foo-bar': 'FooBar',
@@ -24,6 +27,9 @@ export const testSymbolCollection = () => {
       __foo__bar__: '_FooBar',
       'Foo, Bar!': 'FooBar3',
       Foo$Bar: 'Foo$Bar',
+      '0x123': '_0x123',
+      '!': '_',
+      '"': '_2',
     });
   });
 };

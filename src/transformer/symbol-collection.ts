@@ -67,6 +67,10 @@ export class SymbolCollection {
       symbolName += suffix;
     }
 
+    if (/^\d/.test(symbolName)) {
+      symbolName = `_${symbolName}`;
+    }
+
     this.symbols[id] = symbol;
     this.symbolNames[id] = symbolName;
 
