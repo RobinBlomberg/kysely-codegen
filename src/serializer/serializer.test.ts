@@ -291,7 +291,7 @@ export const testSerializer = () => {
         });
 
         strictEqual(
-          serializer.serialize(ast),
+          serializer.serializeStatements(ast),
           'import type { ColumnType } from "kysely";\n' +
             '\n' +
             'export type Json = ColumnType<JsonValue, string, string>;\n' +
@@ -345,7 +345,7 @@ export const testSerializer = () => {
         });
 
         strictEqual(
-          serializer.serialize(ast),
+          serializer.serializeStatements(ast),
           'export type Json = JsonValue;\n' +
             '\n' +
             'export type JsonArray = JsonValue[];\n' +
@@ -419,7 +419,7 @@ export const testSerializer = () => {
       });
 
       strictEqual(
-        singularSerializer.serialize(ast),
+        singularSerializer.serializeStatements(ast),
         'import type { ColumnType } from "kysely";\n' +
           '\n' +
           'export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>\n' +

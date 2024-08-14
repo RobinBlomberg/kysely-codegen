@@ -68,7 +68,7 @@ export class Generator {
         singular: !!options.singular,
         typeOnlyImports: options.typeOnlyImports,
       });
-    const data = serializer.serialize(nodes);
+    const data = serializer.serializeFile(nodes);
 
     const relativeOutDir = options.outFile
       ? `.${sep}${relative(process.cwd(), options.outFile)}`
