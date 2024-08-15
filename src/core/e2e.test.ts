@@ -152,7 +152,7 @@ export const testE2E = async () => {
       }
     });
 
-    await it('verifies generated types', async () => {
+    await it('should verify generated types', async () => {
       for (const {
         connectionString,
         dialect,

@@ -8,6 +8,7 @@ import { PostgresIntrospector } from './postgres-introspector';
 export type PostgresDialectOptions = {
   domains?: boolean;
   numericParser?: NumericParser;
+  partitions?: boolean;
 };
 
 export class PostgresDialect extends Dialect {
@@ -27,6 +28,7 @@ export class PostgresDialect extends Dialect {
     });
     this.introspector = new PostgresIntrospector(this.adapter, {
       domains: this.#options.domains,
+      partitions: this.#options.partitions,
     });
   }
 

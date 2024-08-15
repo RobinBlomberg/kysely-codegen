@@ -20,6 +20,7 @@ export const testCli = () => {
     numericParser: DEFAULT_NUMERIC_PARSER,
     outFile: DEFAULT_OUT_FILE,
     overrides: undefined,
+    partitions: false,
     print: false,
     runtimeEnums: false,
     schema: undefined,

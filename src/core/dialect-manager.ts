@@ -23,6 +23,7 @@ export type DialectName =
 export type DialectManagerOptions = {
   domains?: boolean;
   numericParser?: NumericParser;
+  partitions?: boolean;
 };
 
 /**

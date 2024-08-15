@@ -23,6 +23,7 @@ const down = async (db: Kysely<any>, dialect: Dialect) => {
       await trx.schema.dropType('status').ifExists().execute();
       await trx.schema.dropType('pos_int_child').ifExists().execute();
       await trx.schema.dropType('pos_int').ifExists().execute();
+      await trx.schema.dropTable('partitioned_table').ifExists().execute();
     }
   });
 };
@@ -44,7 +45,7 @@ const up = async (db: Kysely<DB>, dialect: Dialect) => {
       await sql`CREATE domain pos_int AS Integer CONSTRAINT positive_number CHECK (value >= 0);`.execute(
         trx,
       );
-      // Edge case where a domain is a child of another domain
+      // Edge case where a domain is a child of another domain:
       await sql`CREATE domain pos_int_child as pos_int;`.execute(trx);
       await sql`CREATE domain test.is_bool as boolean;`.execute(trx);
     }
@@ -96,6 +97,16 @@ const up = async (db: Kysely<DB>, dialect: Dialect) => {
         sql`
           comment on column foo_bar.false is
           'This is a comment on a column.\r\n\r\nIt''s nice, isn''t it?';
+        `.compile(trx),
+      );
+      await trx.schema
+        .createTable('partitioned_table')
+        .addColumn('id', 'serial')
+        .modifyEnd(sql`partition by range (id)`)
+        .execute();
+      await trx.executeQuery(
+        sql`
+          create table partition_1 partition of partitioned_table for values from (1) to (100);
         `.compile(trx),
       );
     }

@@ -61,6 +61,10 @@ export const FLAGS: Flag[] = [
     longName: 'overrides',
   },
   {
+    description: 'Include partitions of PostgreSQL tables.',
+    longName: 'partitions',
+  },
+  {
     description: 'Print the generated output to the terminal.',
     longName: 'print',
   },

@@ -19,6 +19,7 @@ export type GenerateOptions = {
   numericParser?: NumericParser;
   outFile?: string;
   overrides?: Overrides;
+  partitions?: boolean;
   print?: boolean;
   runtimeEnums?: boolean;
   schema?: string;
@@ -42,6 +43,7 @@ export class Generator {
       db: options.db,
       excludePattern: options.excludePattern,
       includePattern: options.includePattern,
+      partitions: !!options.partitions,
     });
 
     options.logger?.debug();

@@ -32,6 +32,7 @@ export type CliOptions = {
   numericParser?: NumericParser;
   outFile?: string;
   overrides?: Overrides;
+  partitions?: boolean;
   print?: boolean;
   runtimeEnums?: boolean;
   schema?: string;
@@ -54,6 +55,7 @@ export class Cli {
     const numericParser = options.numericParser;
     const outFile = options.outFile;
     const overrides = options.overrides;
+    const partitions = !!options.partitions;
     const print = !!options.print;
     const runtimeEnums = options.runtimeEnums;
     const schema = options.schema;
@@ -81,6 +83,7 @@ export class Cli {
     const dialectManager = new DialectManager({
       domains: !!options.domains,
       numericParser: options.numericParser ?? DEFAULT_NUMERIC_PARSER,
+      partitions: !!options.partitions,
     });
     const dialect = dialectManager.getDialect(
       options.dialectName ?? inferredDialectName,
@@ -103,6 +106,7 @@ export class Cli {
       numericParser,
       outFile,
       overrides,
+      partitions,
       print,
       runtimeEnums,
       schema,
@@ -200,6 +204,7 @@ export class Cli {
       this.#parseString(argv['out-file']) ??
       (argv.print ? undefined : DEFAULT_OUT_FILE);
     const overrides = argv.overrides ? JSON.parse(argv.overrides) : undefined;
+    const partitions = this.#parseBoolean(argv.partitions);
     const print = this.#parseBoolean(argv.print);
     const runtimeEnums = this.#parseBoolean(argv['runtime-enums']);
     const schema = this.#parseString(argv.schema);
@@ -274,6 +279,7 @@ export class Cli {
       numericParser,
       outFile,
       overrides,
+      partitions,
       print,
       runtimeEnums,
       schema,

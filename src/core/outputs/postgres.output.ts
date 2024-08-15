@@ -67,6 +67,11 @@ export interface FooBar {
   userStatus2: TestStatus | null;
 }
 
+export interface PartitionedTable {
+  id: Generated<number>;
+}
+
 export interface DB {
   fooBar: FooBar;
+  partitionedTable: PartitionedTable;
 }

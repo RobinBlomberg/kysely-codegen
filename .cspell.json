@@ -1,5 +1,7 @@
 {
-  "enableFiletypes": ["dockercompose"],
+  "enableFiletypes": [
+    "dockercompose"
+  ],
   "words": [
     "Adminer",
     "Blomberg",
@@ -14,6 +16,7 @@
     "geomcollection",
     "geometrycollection",
     "inet",
+    "inhrelid",
     "Introspector",
     "kysely",
     "libsql",
@@ -35,6 +38,8 @@
     "ntext",
     "nvarchar",
     "regnamespace",
+    "relname",
+    "relnamespace",
     "robinblomberg",
     "smalldatetime",
     "smallmoney",
