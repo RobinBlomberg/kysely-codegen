@@ -1,3 +1,4 @@
+import { Adapter } from '../../generator/adapter';
 import { ArrayExpressionNode } from '../../generator/ast/array-expression-node';
 import { ColumnTypeNode } from '../../generator/ast/column-type-node';
 import { IdentifierNode } from '../../generator/ast/identifier-node';
@@ -10,7 +11,6 @@ import {
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
 } from '../../generator/transformer/definitions';
-import { Adapter } from '../../introspector/adapter';
 
 export class MysqlAdapter extends Adapter {
   override readonly definitions = {

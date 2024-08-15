@@ -1,8 +1,8 @@
 import type { Kysely, TableMetadata as KyselyTableMetadata } from 'kysely';
-import { EnumCollection } from '../../introspector/enum-collection';
-import type { IntrospectOptions } from '../../introspector/introspector';
-import { Introspector } from '../../introspector/introspector';
-import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
+import { EnumCollection } from '../../enum-collection';
+import type { IntrospectOptions } from '../../introspector';
+import { Introspector } from '../../introspector';
+import { DatabaseMetadata } from '../../metadata/database-metadata';
 import type { MysqlDB } from './mysql-db';
 import { MysqlParser } from './mysql-parser';
 

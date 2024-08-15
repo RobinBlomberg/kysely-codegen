@@ -1,11 +1,11 @@
 import { Kysely, sql } from 'kysely';
-import type { DatabaseMetadata } from '../generator/core/metadata/database-metadata';
-import type { Dialect } from './dialect';
+import type { IntrospectorDialect } from './dialect';
+import type { DatabaseMetadata } from './metadata/database-metadata';
 import { TableMatcher } from './table-matcher';
 
 export type ConnectOptions = {
   connectionString: string;
-  dialect: Dialect;
+  dialect: IntrospectorDialect;
 };
 
 export type IntrospectOptions<DB> = {

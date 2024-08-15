@@ -1,5 +1,4 @@
 import type { Dialect as KyselyDialect } from 'kysely';
-import type { Adapter } from './adapter';
 import type { Introspector } from './introspector';
 
 export type CreateKyselyDialectOptions = {
@@ -10,12 +9,7 @@ export type CreateKyselyDialectOptions = {
 /**
  * A Dialect is the glue between the codegen and the specified database.
  */
-export abstract class Dialect {
-  /**
-   * The adapter for the dialect.
-   */
-  abstract readonly adapter: Adapter;
-
+export abstract class IntrospectorDialect {
   /**
    * The introspector for the dialect.
    */

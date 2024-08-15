@@ -5,8 +5,8 @@ import { MysqlDialect } from '../../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../../dialects/postgres/postgres-dialect';
 import { SqliteDialect } from '../../dialects/sqlite/sqlite-dialect';
 import { WorkerBunSqliteDialect } from '../../dialects/worker-bun-sqlite/worker-bun-sqlite-dialect';
-import type { Dialect } from '../../introspector/dialect';
-import type { NumericParser } from './numeric-parser';
+import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
+import type { GeneratorDialect } from '../dialect';
 
 export type DialectName =
   | 'bun-sqlite'
@@ -34,7 +34,7 @@ export class DialectManager {
     this.#options = options;
   }
 
-  getDialect(name: DialectName): Dialect {
+  getDialect(name: DialectName): GeneratorDialect {
     switch (name) {
       case 'kysely-bun-sqlite':
         return new KyselyBunSqliteDialect();

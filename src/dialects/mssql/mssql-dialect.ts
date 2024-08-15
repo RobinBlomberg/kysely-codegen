@@ -1,14 +1,10 @@
-import { MssqlDialect as KyselyMssqlDialect } from 'kysely';
-import type { CreateKyselyDialectOptions } from '../../introspector/dialect';
-import { Dialect } from '../../introspector/dialect';
+import { MssqlIntrospectorDialect } from '../../introspector/dialects/mssql/mssql-dialect';
 import { MssqlAdapter } from './mssql-adapter';
-import { MssqlIntrospector } from './mssql-introspector';
 
 const DEFAULT_MSSQL_PORT = 1433;
 
-export class MssqlDialect extends Dialect {
+export class MssqlDialect extends MssqlIntrospectorDialect {
   readonly adapter = new MssqlAdapter();
-  readonly introspector = new MssqlIntrospector();
 
   /**
    * @see https://www.connectionstrings.com/microsoft-data-sqlclient/using-a-non-standard-port/
@@ -35,38 +31,5 @@ export class MssqlDialect extends Dialect {
       server,
       userName: parsed['user id']!,
     };
-  }
-
-  async createKyselyDialect(options: CreateKyselyDialectOptions) {
-    const tarn = await import('tarn');
-    const tedious = await import('tedious');
-
-    const { database, password, port, server, userName } =
-      await this.#parseConnectionString(options.connectionString);
-
-    return new KyselyMssqlDialect({
-      tarn: {
-        ...tarn,
-        options: { min: 0, max: 1 },
-      },
-      tedious: {
-        ...tedious,
-        connectionFactory: () => {
-          return new tedious.Connection({
-            authentication: {
-              options: { password, userName },
-              type: 'default',
-            },
-            options: {
-              database,
-              encrypt: options.ssl ?? true,
-              port,
-              trustServerCertificate: true,
-            },
-            server,
-          });
-        },
-      },
-    });
   }
 }

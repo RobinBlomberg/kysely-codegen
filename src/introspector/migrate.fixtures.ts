@@ -1,10 +1,12 @@
+import assert from 'assert';
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
 import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
-import type { DB } from '../generator/core/outputs/postgres.output';
-import type { Dialect } from './dialect';
+import { IntrospectorDialect } from './dialect';
 
-const down = async (db: Kysely<any>, dialect: Dialect) => {
+const down = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
+  assert(dialect instanceof IntrospectorDialect);
+
   await db.transaction().execute(async (trx) => {
     await trx.schema.dropTable('boolean').ifExists().execute();
     await trx.schema.dropTable('foo_bar').ifExists().execute();
@@ -29,7 +31,9 @@ const down = async (db: Kysely<any>, dialect: Dialect) => {
   });
 };
 
-const up = async (db: Kysely<DB>, dialect: Dialect) => {
+const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
+  assert(dialect instanceof IntrospectorDialect);
+
   await db.transaction().execute(async (trx) => {
     if (dialect instanceof PostgresDialect) {
       await trx.schema.createSchema('test').ifNotExists().execute();
@@ -114,7 +118,7 @@ const up = async (db: Kysely<DB>, dialect: Dialect) => {
   });
 };
 
-export const addExtraColumn = async (db: Kysely<DB>) => {
+export const addExtraColumn = async (db: Kysely<any>) => {
   await db.transaction().execute(async (trx) => {
     const builder = trx.schema
       .alterTable('foo_bar')
@@ -123,8 +127,11 @@ export const addExtraColumn = async (db: Kysely<DB>) => {
   });
 };
 
-export const migrate = async (dialect: Dialect, connectionString: string) => {
-  const db = new Kysely<DB>({
+export const migrate = async (
+  dialect: IntrospectorDialect,
+  connectionString: string,
+) => {
+  const db = new Kysely<any>({
     dialect: await dialect.createKyselyDialect({ connectionString }),
     plugins: [new CamelCasePlugin()],
   });

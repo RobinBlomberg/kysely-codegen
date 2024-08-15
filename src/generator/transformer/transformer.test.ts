@@ -1,6 +1,11 @@
 import { deepStrictEqual } from 'assert';
 import { PostgresAdapter } from '../../dialects/postgres/postgres-adapter';
 import { PostgresDialect } from '../../dialects/postgres/postgres-dialect';
+import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
+import { EnumCollection } from '../../introspector/enum-collection';
+import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
+import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
+import { TableMetadata } from '../../introspector/metadata/table-metadata';
 import { describe, it } from '../../test.utils';
 import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
@@ -17,11 +22,6 @@ import { PropertyNode } from '../ast/property-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
 import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
-import { EnumCollection } from '../core/enum-collection';
-import { ColumnMetadata } from '../core/metadata/column-metadata';
-import { DatabaseMetadata } from '../core/metadata/database-metadata';
-import { TableMetadata } from '../core/metadata/table-metadata';
-import { NumericParser } from '../core/numeric-parser';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { Transformer } from './transformer';
 

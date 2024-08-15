@@ -8,20 +8,20 @@ import { LibsqlDialect } from '../../dialects/libsql/libsql-dialect';
 import { MysqlDialect } from '../../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../../dialects/postgres/postgres-dialect';
 import { SqliteDialect } from '../../dialects/sqlite/sqlite-dialect';
-import type { Dialect } from '../../introspector/dialect';
+import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import { addExtraColumn, migrate } from '../../introspector/migrate.fixtures';
 import { describe, it } from '../../test.utils';
 import { JsonColumnTypeNode } from '../ast/json-column-type-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
 import type { GenerateOptions } from '../cli/generator';
 import { generate } from '../cli/generator';
+import type { GeneratorDialect } from '../dialect';
 import { Logger } from './logger';
-import { NumericParser } from './numeric-parser';
 import type { DB } from './outputs/postgres.output';
 
 type Test = {
   connectionString: string;
-  dialect: Dialect;
+  dialect: GeneratorDialect;
   inputValues: Record<string, unknown>;
   outputValues: Record<string, unknown>;
 };
@@ -71,7 +71,7 @@ const TESTS: Test[] = [
   },
 ];
 
-const readDialectOutput = async (dialect: Dialect) => {
+const readDialectOutput = async (dialect: GeneratorDialect) => {
   const dialectName = dialect.constructor.name.slice(0, -'Dialect'.length);
   return await readFile(
     join(__dirname, 'outputs', `${dialectName.toLowerCase()}.output.ts`),

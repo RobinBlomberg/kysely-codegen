@@ -1,20 +1,6 @@
-import { MysqlDialect as KyselyMysqlDialect } from 'kysely';
-import type { CreateKyselyDialectOptions } from '../../introspector/dialect';
-import { Dialect } from '../../introspector/dialect';
+import { MysqlIntrospectorDialect } from '../../introspector/dialects/mysql/mysql-dialect';
 import { MysqlAdapter } from './mysql-adapter';
-import { MysqlIntrospector } from './mysql-introspector';
 
-export class MysqlDialect extends Dialect {
+export class MysqlDialect extends MysqlIntrospectorDialect {
   readonly adapter = new MysqlAdapter();
-  readonly introspector = new MysqlIntrospector();
-
-  async createKyselyDialect(options: CreateKyselyDialectOptions) {
-    const { createPool } = await import('mysql2');
-
-    return new KyselyMysqlDialect({
-      pool: createPool({
-        uri: options.connectionString,
-      }),
-    });
-  }
 }

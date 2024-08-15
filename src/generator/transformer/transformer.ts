@@ -1,5 +1,8 @@
-import type { Definitions, Imports, Scalars } from '../../introspector/adapter';
-import type { Dialect } from '../../introspector/dialect';
+import type { EnumCollection } from '../../introspector/enum-collection';
+import type { ColumnMetadata } from '../../introspector/metadata/column-metadata';
+import type { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
+import type { TableMetadata } from '../../introspector/metadata/table-metadata';
+import type { Definitions, Imports, Scalars } from '../adapter';
 import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
@@ -17,10 +20,7 @@ import { RawExpressionNode } from '../ast/raw-expression-node';
 import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node';
 import type { TemplateNode } from '../ast/template-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
-import type { EnumCollection } from '../core/enum-collection';
-import type { ColumnMetadata } from '../core/metadata/column-metadata';
-import type { DatabaseMetadata } from '../core/metadata/database-metadata';
-import type { TableMetadata } from '../core/metadata/table-metadata';
+import type { GeneratorDialect } from '../dialect';
 import { toCamelCase } from './case-converter';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { GLOBAL_IMPORTS } from './imports';
@@ -73,7 +73,7 @@ export type TransformContext = {
 export type TransformOptions = {
   camelCase?: boolean;
   defaultSchema?: string;
-  dialect: Dialect;
+  dialect: GeneratorDialect;
   metadata: DatabaseMetadata;
   overrides?: Overrides;
   runtimeEnums?: boolean;

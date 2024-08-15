@@ -4,13 +4,12 @@ import type {
   TableMetadata as KyselyTableMetadata,
 } from 'kysely';
 import { sql } from 'kysely';
-import { EnumCollection } from '../../introspector/enum-collection';
-import type { IntrospectOptions } from '../../introspector/introspector';
-import { Introspector } from '../../introspector/introspector';
-import type { ColumnMetadata } from '../../introspector/metadata/column-metadata';
-import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
-import type { TableMetadata } from '../../introspector/metadata/table-metadata';
-import type { PostgresAdapter } from './postgres-adapter';
+import { EnumCollection } from '../../enum-collection';
+import type { IntrospectOptions } from '../../introspector';
+import { Introspector } from '../../introspector';
+import type { ColumnMetadata } from '../../metadata/column-metadata';
+import { DatabaseMetadata } from '../../metadata/database-metadata';
+import type { TableMetadata } from '../../metadata/table-metadata';
 import type { PostgresDB } from './postgres-db';
 
 type PostgresDomainInspector = {
@@ -25,18 +24,21 @@ type TableReference = {
 };
 
 export type PostgresIntrospectorOptions = {
+  defaultSchema?: string;
   domains?: boolean;
   partitions?: boolean;
 };
 
 export class PostgresIntrospector extends Introspector<PostgresDB> {
-  readonly #options: PostgresIntrospectorOptions;
-  readonly adapter: PostgresAdapter;
+  protected readonly options: PostgresIntrospectorOptions;
 
-  constructor(adapter: PostgresAdapter, options?: PostgresIntrospectorOptions) {
+  constructor(options?: PostgresIntrospectorOptions) {
     super();
-    this.#options = { domains: options?.domains ?? true };
-    this.adapter = adapter;
+
+    this.options = {
+      defaultSchema: options?.defaultSchema ?? 'public',
+      domains: options?.domains ?? true,
+    };
   }
 
   #createDatabaseMetadata({
@@ -55,7 +57,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
         const columns = table.columns.map((column): ColumnMetadata => {
           const dataType = this.#getRootType(column, domains);
           const enumValues = enums.get(
-            `${column.dataTypeSchema ?? this.adapter.defaultSchema}.${dataType}`,
+            `${column.dataTypeSchema ?? this.options.defaultSchema}.${dataType}`,
           );
           const isArray = dataType.startsWith('_');
 
@@ -87,7 +89,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
         };
       })
       .filter((table) => {
-        return this.#options.partitions ? true : !table.isPartition;
+        return this.options.partitions ? true : !table.isPartition;
       });
 
     return new DatabaseMetadata(tablesMetadata, enums);
@@ -107,7 +109,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
   }
 
   async #introspectDomains(db: Kysely<PostgresDB>) {
-    if (!this.#options.domains) {
+    if (!this.options.domains) {
       return [];
     }
 
