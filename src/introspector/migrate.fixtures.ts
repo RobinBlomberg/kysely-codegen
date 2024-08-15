@@ -1,7 +1,7 @@
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
-import { MysqlDialect, PostgresDialect } from '../../dialects';
-import type { Dialect } from '../dialect';
-import type { DB } from '../outputs/postgres.output';
+import { MysqlDialect, PostgresDialect } from '../dialects';
+import type { DB } from '../generator/core/outputs/postgres.output';
+import type { Dialect } from './dialect';
 
 const down = async (db: Kysely<any>, dialect: Dialect) => {
   await db.transaction().execute(async (trx) => {

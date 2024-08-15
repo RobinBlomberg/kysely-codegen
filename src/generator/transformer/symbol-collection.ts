@@ -1,4 +1,6 @@
-import type { ExpressionNode, ModuleReferenceNode, TemplateNode } from '../ast';
+import type { ExpressionNode } from '../ast/expression-node';
+import type { ModuleReferenceNode } from '../ast/module-reference-node';
+import type { TemplateNode } from '../ast/template-node';
 import { toPascalCase } from './case-converter';
 
 export type SymbolMap = Record<string, SymbolNode | undefined>;

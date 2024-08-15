@@ -1,4 +1,4 @@
-import { Logger } from './core';
+import { Logger } from './generator/core/logger';
 
 let depth = 0;
 let passed = 0;

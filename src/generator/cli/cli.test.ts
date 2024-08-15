@@ -1,7 +1,7 @@
 import { deepStrictEqual } from 'assert';
-import { LogLevel } from '../core';
-import { DEFAULT_NUMERIC_PARSER } from '../dialects/postgres/numeric-parser';
-import { describe, it } from '../test.utils';
+import { DEFAULT_NUMERIC_PARSER } from '../../dialects';
+import { describe, it } from '../../test.utils';
+import { LogLevel } from '../core/log-level';
 import type { CliOptions } from './cli';
 import { Cli } from './cli';
 import { DEFAULT_LOG_LEVEL, DEFAULT_OUT_FILE, DEFAULT_URL } from './constants';

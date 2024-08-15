@@ -1,22 +1,23 @@
 import { deepStrictEqual, strictEqual } from 'assert';
 import { readFile } from 'fs/promises';
-import type { Kysely } from 'kysely';
+import { type Kysely } from 'kysely';
 import type { InsertExpression } from 'kysely/dist/cjs/parser/insert-values-parser';
 import { join } from 'path';
 import parsePostgresInterval from 'postgres-interval';
-import { JsonColumnTypeNode, RawExpressionNode } from '../ast';
 import {
   LibsqlDialect,
   MysqlDialect,
+  NumericParser,
   PostgresDialect,
   SqliteDialect,
-} from '../dialects';
-import { NumericParser } from '../dialects/postgres/numeric-parser';
-import type { GenerateOptions } from '../generator';
-import { Generator } from '../generator';
-import { describe, it } from '../test.utils';
-import type { Dialect } from './dialect';
-import { addExtraColumn, migrate } from './fixtures';
+} from '../../dialects';
+import type { Dialect } from '../../introspector';
+import { addExtraColumn, migrate } from '../../introspector/migrate.fixtures';
+import { describe, it } from '../../test.utils';
+import { JsonColumnTypeNode } from '../ast/json-column-type-node';
+import { RawExpressionNode } from '../ast/raw-expression-node';
+import type { GenerateOptions } from '../cli/generator';
+import { generate } from '../cli/generator';
 import { Logger } from './logger';
 import type { DB } from './outputs/postgres.output';
 
@@ -136,17 +137,9 @@ export const testE2E = async () => {
         logger.info(`Testing ${dialect.constructor.name}...`);
 
         const db = await migrate(dialect, connectionString);
-
         await testValues(db, inputValues, outputValues);
-
-        const output = await new Generator().generate({
-          ...baseGenerateOptions,
-          db,
-          dialect,
-        });
-
+        const output = await generate({ ...baseGenerateOptions, db, dialect });
         await db.destroy();
-
         const expectedOutput = await readDialectOutput(dialect);
         strictEqual(output, expectedOutput);
       }
@@ -164,26 +157,17 @@ export const testE2E = async () => {
           -'Dialect'.length,
         );
 
+        logger.info(`Testing ${dialectName}...`);
+
+        const db = await migrate(dialect, connectionString);
+        await testValues(db, inputValues, outputValues);
         const outFile = join(
           __dirname,
           'outputs',
           `${dialectName.toLowerCase()}.output.ts`,
         );
-
-        logger.info(`Testing ${dialectName}...`);
-
-        const db = await migrate(dialect, connectionString);
-
-        await testValues(db, inputValues, outputValues);
-
-        await new Generator().generate({
-          ...baseGenerateOptions,
-          db,
-          dialect,
-          outFile,
-        });
-
-        const output = await new Generator().generate({
+        await generate({ ...baseGenerateOptions, db, dialect, outFile });
+        const output = await generate({
           ...baseGenerateOptions,
           db,
           dialect,
@@ -197,7 +181,7 @@ export const testE2E = async () => {
         await addExtraColumn(db);
 
         try {
-          await new Generator().generate({
+          await generate({
             ...baseGenerateOptions,
             db,
             dialect,

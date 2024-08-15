@@ -1,6 +1,5 @@
-import { Dialect } from '../../core';
-import { SqliteAdapter } from '../sqlite';
-import { SqliteIntrospector } from '../sqlite/sqlite-introspector';
+import { Dialect } from '../../introspector';
+import { SqliteAdapter, SqliteIntrospector } from '../sqlite';
 
 export class KyselyBunSqliteDialect extends Dialect {
   readonly adapter = new SqliteAdapter();

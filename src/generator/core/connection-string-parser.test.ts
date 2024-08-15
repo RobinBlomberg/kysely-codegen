@@ -1,5 +1,5 @@
 import { deepStrictEqual } from 'assert';
-import { describe, it } from '../test.utils';
+import { describe, it } from '../../test.utils';
 import { ConnectionStringParser } from './connection-string-parser';
 
 export const testConnectionStringParser = () => {

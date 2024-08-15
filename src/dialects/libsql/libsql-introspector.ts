@@ -1,4 +1,4 @@
-import { DatabaseMetadata, EnumCollection } from '../../core';
+import { DatabaseMetadata, EnumCollection } from '../../generator';
 import type { IntrospectOptions } from '../../introspector';
 import { Introspector } from '../../introspector';
 

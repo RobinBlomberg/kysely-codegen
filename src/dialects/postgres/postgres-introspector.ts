@@ -4,8 +4,8 @@ import type {
   TableMetadata as KyselyTableMetadata,
 } from 'kysely';
 import { sql } from 'kysely';
-import type { ColumnMetadata, TableMetadata } from '../../core';
-import { DatabaseMetadata, EnumCollection } from '../../core';
+import type { ColumnMetadata, TableMetadata } from '../../generator';
+import { DatabaseMetadata, EnumCollection } from '../../generator';
 import type { IntrospectOptions } from '../../introspector';
 import { Introspector } from '../../introspector';
 import type { PostgresAdapter } from './postgres-adapter';

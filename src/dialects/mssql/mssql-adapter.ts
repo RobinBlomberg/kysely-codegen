@@ -1,5 +1,5 @@
-import { IdentifierNode } from '../../ast';
-import { Adapter } from '../../core';
+import { IdentifierNode } from '../../generator';
+import { Adapter } from '../../introspector';
 
 export class MssqlAdapter extends Adapter {
   // https://github.com/tediousjs/tedious/tree/master/src/data-types

@@ -1,17 +1,11 @@
 import minimist from 'minimist';
-import type { DialectName } from '../core';
-import {
-  ConnectionStringParser,
-  DialectManager,
-  LogLevel,
-  Logger,
-} from '../core';
-import {
-  DEFAULT_NUMERIC_PARSER,
-  NumericParser,
-} from '../dialects/postgres/numeric-parser';
-import { Generator } from '../generator';
-import type { Overrides } from '../transformer';
+import { DEFAULT_NUMERIC_PARSER, NumericParser } from '../../dialects';
+import { ConnectionStringParser } from '../core/connection-string-parser';
+import type { DialectName } from '../core/dialect-manager';
+import { DialectManager } from '../core/dialect-manager';
+import { LogLevel } from '../core/log-level';
+import { Logger } from '../core/logger';
+import type { Overrides } from '../transformer/transformer';
 import type { LOG_LEVEL_NAMES } from './constants';
 import {
   DEFAULT_LOG_LEVEL,
@@ -20,6 +14,7 @@ import {
   VALID_DIALECTS,
 } from './constants';
 import { FLAGS } from './flags';
+import { generate } from './generator';
 
 export type CliOptions = {
   camelCase?: boolean;
@@ -94,9 +89,7 @@ export class Cli {
       dialect,
     });
 
-    const generator = new Generator();
-
-    await generator.generate({
+    await generate({
       camelCase,
       db,
       dialect,

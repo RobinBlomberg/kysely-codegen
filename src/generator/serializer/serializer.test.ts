@@ -1,32 +1,28 @@
 import { strictEqual } from 'assert';
-import {
-  AliasDeclarationNode,
-  ArrayExpressionNode,
-  ExportStatementNode,
-  ExtendsClauseNode,
-  GenericExpressionNode,
-  IdentifierNode,
-  ImportClauseNode,
-  ImportStatementNode,
-  InferClauseNode,
-  InterfaceDeclarationNode,
-  LiteralNode,
-  MappedTypeNode,
-  ObjectExpressionNode,
-  PropertyNode,
-  RuntimeEnumDeclarationNode,
-  TemplateNode,
-  UnionExpressionNode,
-} from '../ast';
-import {
-  ColumnMetadata,
-  DatabaseMetadata,
-  EnumCollection,
-  TableMetadata,
-} from '../core';
-import { MysqlDialect, PostgresDialect } from '../dialects';
-import { describe, it } from '../test.utils';
-import { Transformer } from '../transformer';
+import { MysqlDialect, PostgresDialect } from '../../dialects';
+import { describe, it } from '../../test.utils';
+import { AliasDeclarationNode } from '../ast/alias-declaration-node';
+import { ArrayExpressionNode } from '../ast/array-expression-node';
+import { ExportStatementNode } from '../ast/export-statement-node';
+import { ExtendsClauseNode } from '../ast/extends-clause-node';
+import { GenericExpressionNode } from '../ast/generic-expression-node';
+import { IdentifierNode } from '../ast/identifier-node';
+import { ImportClauseNode } from '../ast/import-clause-node';
+import { ImportStatementNode } from '../ast/import-statement-node';
+import { InferClauseNode } from '../ast/infer-clause-node';
+import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
+import { LiteralNode } from '../ast/literal-node';
+import { MappedTypeNode } from '../ast/mapped-type-node';
+import { ObjectExpressionNode } from '../ast/object-expression-node';
+import { PropertyNode } from '../ast/property-node';
+import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node';
+import { TemplateNode } from '../ast/template-node';
+import { UnionExpressionNode } from '../ast/union-expression-node';
+import { EnumCollection } from '../core/enum-collection';
+import { ColumnMetadata } from '../core/metadata/column-metadata';
+import { DatabaseMetadata } from '../core/metadata/database-metadata';
+import { TableMetadata } from '../core/metadata/table-metadata';
+import { Transformer } from '../transformer/transformer';
 import { Serializer } from './serializer';
 
 export const testSerializer = () => {

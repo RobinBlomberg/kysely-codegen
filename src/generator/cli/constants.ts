@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { LogLevel } from '../core';
+import { LogLevel } from '../core/log-level';
 
 export const DEFAULT_OUT_FILE = join(
   process.cwd(),

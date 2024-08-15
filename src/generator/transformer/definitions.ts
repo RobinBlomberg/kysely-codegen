@@ -1,14 +1,12 @@
-import type { DefinitionNode } from '../ast';
-import {
-  ArrayExpressionNode,
-  ExtendsClauseNode,
-  GenericExpressionNode,
-  IdentifierNode,
-  InferClauseNode,
-  MappedTypeNode,
-  TemplateNode,
-  UnionExpressionNode,
-} from '../ast';
+import { ArrayExpressionNode } from '../ast/array-expression-node';
+import type { DefinitionNode } from '../ast/definition-node';
+import { ExtendsClauseNode } from '../ast/extends-clause-node';
+import { GenericExpressionNode } from '../ast/generic-expression-node';
+import { IdentifierNode } from '../ast/identifier-node';
+import { InferClauseNode } from '../ast/infer-clause-node';
+import { MappedTypeNode } from '../ast/mapped-type-node';
+import { TemplateNode } from '../ast/template-node';
+import { UnionExpressionNode } from '../ast/union-expression-node';
 
 export const GLOBAL_DEFINITIONS = {
   /**

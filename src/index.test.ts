@@ -1,11 +1,11 @@
-import { testCli } from './cli/cli.test';
-import { testConnectionStringParser } from './core/connection-string-parser.test';
-import { testDiffChecker } from './core/diff-checker.test';
-import { testE2E } from './core/e2e.test';
+import { testCli } from './generator/cli/cli.test';
+import { testConnectionStringParser } from './generator/core/connection-string-parser.test';
+import { testDiffChecker } from './generator/core/diff-checker.test';
+import { testE2E } from './generator/core/e2e.test';
+import { testSerializer } from './generator/serializer/serializer.test';
+import { testSymbolCollection } from './generator/transformer/symbol-collection.test';
+import { testTransformer } from './generator/transformer/transformer.test';
 import { testTableMatcher } from './introspector/table-matcher.test';
-import { testSerializer } from './serializer/serializer.test';
-import { testSymbolCollection } from './transformer/symbol-collection.test';
-import { testTransformer } from './transformer/transformer.test';
 
 (async () => {
   testCli();

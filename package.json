@@ -18,8 +18,8 @@
   "homepage": "https://github.com/RobinBlomberg/kysely-codegen#readme",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "check": "tsc --noEmit",
     "check:spelling": "cspell-cli -e dist -e pnpm-lock.yaml -e '*.svg' .",
+    "check:types": "tsc --noEmit",
     "ci": "run-s ci:*",
     "ci:build": "pnpm build",
     "ci:eslint": "pnpm lint:eslint --max-warnings=0 --report-unused-disable-directives",
@@ -130,7 +130,7 @@
       "@robinblomberg/robinblomberg",
       "@robinblomberg/prettier"
     ],
-    "ignorePatterns": "**/src/core/outputs/*.ts",
+    "ignorePatterns": "**/outputs/*.output.ts",
     "rules": {
       "unicorn/prefer-node-protocol": 0
     }

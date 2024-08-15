@@ -1,5 +1,6 @@
 import { Kysely, sql } from 'kysely';
-import type { DatabaseMetadata, Dialect } from '../core';
+import type { DatabaseMetadata } from '../generator';
+import type { Dialect } from './dialect';
 import { TableMatcher } from './table-matcher';
 
 export type ConnectOptions = {

@@ -1,30 +1,29 @@
 import { deepStrictEqual } from 'assert';
 import {
-  AliasDeclarationNode,
-  ArrayExpressionNode,
-  ExportStatementNode,
-  GenericExpressionNode,
-  IdentifierNode,
-  ImportClauseNode,
-  ImportStatementNode,
-  InterfaceDeclarationNode,
-  JsonColumnTypeNode,
-  LiteralNode,
-  ObjectExpressionNode,
-  PropertyNode,
-  RawExpressionNode,
-  RuntimeEnumDeclarationNode,
-  UnionExpressionNode,
-} from '../ast';
-import {
-  ColumnMetadata,
-  DatabaseMetadata,
-  EnumCollection,
-  TableMetadata,
-} from '../core';
-import { PostgresAdapter, PostgresDialect } from '../dialects';
-import { NumericParser } from '../dialects/postgres/numeric-parser';
-import { describe, it } from '../test.utils';
+  NumericParser,
+  PostgresAdapter,
+  PostgresDialect,
+} from '../../dialects';
+import { describe, it } from '../../test.utils';
+import { AliasDeclarationNode } from '../ast/alias-declaration-node';
+import { ArrayExpressionNode } from '../ast/array-expression-node';
+import { ExportStatementNode } from '../ast/export-statement-node';
+import { GenericExpressionNode } from '../ast/generic-expression-node';
+import { IdentifierNode } from '../ast/identifier-node';
+import { ImportClauseNode } from '../ast/import-clause-node';
+import { ImportStatementNode } from '../ast/import-statement-node';
+import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
+import { JsonColumnTypeNode } from '../ast/json-column-type-node';
+import { LiteralNode } from '../ast/literal-node';
+import { ObjectExpressionNode } from '../ast/object-expression-node';
+import { PropertyNode } from '../ast/property-node';
+import { RawExpressionNode } from '../ast/raw-expression-node';
+import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node';
+import { UnionExpressionNode } from '../ast/union-expression-node';
+import { EnumCollection } from '../core/enum-collection';
+import { ColumnMetadata } from '../core/metadata/column-metadata';
+import { DatabaseMetadata } from '../core/metadata/database-metadata';
+import { TableMetadata } from '../core/metadata/table-metadata';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { Transformer } from './transformer';
 

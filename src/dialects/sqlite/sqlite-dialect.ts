@@ -1,6 +1,6 @@
 import { SqliteDialect as KyselySqliteDialect } from 'kysely';
-import type { CreateKyselyDialectOptions } from '../../core';
-import { Dialect } from '../../core';
+import type { CreateKyselyDialectOptions } from '../../introspector';
+import { Dialect } from '../../introspector';
 import { SqliteAdapter } from './sqlite-adapter';
 import { SqliteIntrospector } from './sqlite-introspector';
 

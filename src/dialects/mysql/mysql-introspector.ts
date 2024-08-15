@@ -1,5 +1,5 @@
 import type { Kysely, TableMetadata as KyselyTableMetadata } from 'kysely';
-import { DatabaseMetadata, EnumCollection } from '../../core';
+import { DatabaseMetadata, EnumCollection } from '../../generator';
 import type { IntrospectOptions } from '../../introspector';
 import { Introspector } from '../../introspector';
 import type { MysqlDB } from './mysql-db';

@@ -1,3 +1,4 @@
+import type { NumericParser } from '../../dialects';
 import {
   KyselyBunSqliteDialect,
   LibsqlDialect,
@@ -6,9 +7,8 @@ import {
   PostgresDialect,
   SqliteDialect,
   WorkerBunSqliteDialect,
-} from '../dialects';
-import type { NumericParser } from '../dialects/postgres/numeric-parser';
-import type { Dialect } from './dialect';
+} from '../../dialects';
+import type { Dialect } from '../../introspector';
 
 export type DialectName =
   | 'bun-sqlite'

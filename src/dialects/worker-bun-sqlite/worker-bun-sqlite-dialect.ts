@@ -1,5 +1,5 @@
-import type { CreateKyselyDialectOptions } from '../../core';
-import { Dialect } from '../../core';
+import type { CreateKyselyDialectOptions } from '../../introspector';
+import { Dialect } from '../../introspector';
 import { SqliteAdapter } from '../sqlite';
 import { SqliteIntrospector } from '../sqlite/sqlite-introspector';
 

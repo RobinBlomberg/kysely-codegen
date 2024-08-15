@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { describe } from '../test.utils';
+import { describe } from '../../test.utils';
 import { DiffChecker } from './diff-checker';
 
 export const testDiffChecker = () => {

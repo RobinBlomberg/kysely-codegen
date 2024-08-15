@@ -1,6 +1,6 @@
 import { deepStrictEqual } from 'assert';
-import { IdentifierNode } from '../ast';
-import { describe } from '../test.utils';
+import { describe } from '../../test.utils';
+import { IdentifierNode } from '../ast/identifier-node';
 import type { SymbolNode } from './symbol-collection';
 import { SymbolCollection, SymbolType } from './symbol-collection';
 
