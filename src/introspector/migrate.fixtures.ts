@@ -1,5 +1,6 @@
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
-import { MysqlDialect, PostgresDialect } from '../dialects';
+import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
+import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import type { DB } from '../generator/core/outputs/postgres.output';
 import type { Dialect } from './dialect';
 

@@ -1,14 +1,12 @@
-import type { NumericParser } from '../../dialects';
-import {
-  KyselyBunSqliteDialect,
-  LibsqlDialect,
-  MssqlDialect,
-  MysqlDialect,
-  PostgresDialect,
-  SqliteDialect,
-  WorkerBunSqliteDialect,
-} from '../../dialects';
-import type { Dialect } from '../../introspector';
+import { KyselyBunSqliteDialect } from '../../dialects/kysely-bun-sqlite/kysely-bun-sqlite-dialect';
+import { LibsqlDialect } from '../../dialects/libsql/libsql-dialect';
+import { MssqlDialect } from '../../dialects/mssql/mssql-dialect';
+import { MysqlDialect } from '../../dialects/mysql/mysql-dialect';
+import { PostgresDialect } from '../../dialects/postgres/postgres-dialect';
+import { SqliteDialect } from '../../dialects/sqlite/sqlite-dialect';
+import { WorkerBunSqliteDialect } from '../../dialects/worker-bun-sqlite/worker-bun-sqlite-dialect';
+import type { Dialect } from '../../introspector/dialect';
+import type { NumericParser } from './numeric-parser';
 
 export type DialectName =
   | 'bun-sqlite'

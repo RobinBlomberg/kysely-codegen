@@ -4,14 +4,11 @@ import { type Kysely } from 'kysely';
 import type { InsertExpression } from 'kysely/dist/cjs/parser/insert-values-parser';
 import { join } from 'path';
 import parsePostgresInterval from 'postgres-interval';
-import {
-  LibsqlDialect,
-  MysqlDialect,
-  NumericParser,
-  PostgresDialect,
-  SqliteDialect,
-} from '../../dialects';
-import type { Dialect } from '../../introspector';
+import { LibsqlDialect } from '../../dialects/libsql/libsql-dialect';
+import { MysqlDialect } from '../../dialects/mysql/mysql-dialect';
+import { PostgresDialect } from '../../dialects/postgres/postgres-dialect';
+import { SqliteDialect } from '../../dialects/sqlite/sqlite-dialect';
+import type { Dialect } from '../../introspector/dialect';
 import { addExtraColumn, migrate } from '../../introspector/migrate.fixtures';
 import { describe, it } from '../../test.utils';
 import { JsonColumnTypeNode } from '../ast/json-column-type-node';
@@ -19,6 +16,7 @@ import { RawExpressionNode } from '../ast/raw-expression-node';
 import type { GenerateOptions } from '../cli/generator';
 import { generate } from '../cli/generator';
 import { Logger } from './logger';
+import { NumericParser } from './numeric-parser';
 import type { DB } from './outputs/postgres.output';
 
 type Test = {

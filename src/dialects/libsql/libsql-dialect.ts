@@ -1,5 +1,5 @@
-import type { CreateKyselyDialectOptions } from '../../introspector';
-import { Dialect } from '../../introspector';
+import type { CreateKyselyDialectOptions } from '../../introspector/dialect';
+import { Dialect } from '../../introspector/dialect';
 import { LibsqlAdapter } from './libsql-adapter';
 import { LibsqlIntrospector } from './libsql-introspector';
 

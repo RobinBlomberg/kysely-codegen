@@ -1,5 +1,6 @@
 import { strictEqual } from 'assert';
-import { MysqlDialect, PostgresDialect } from '../../dialects';
+import { MysqlDialect } from '../../dialects/mysql/mysql-dialect';
+import { PostgresDialect } from '../../dialects/postgres/postgres-dialect';
 import { describe, it } from '../../test.utils';
 import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';

@@ -1,6 +1,7 @@
-import { DatabaseMetadata, EnumCollection } from '../../generator';
-import type { IntrospectOptions } from '../../introspector';
-import { Introspector } from '../../introspector';
+import { EnumCollection } from '../../generator/core/enum-collection';
+import { DatabaseMetadata } from '../../generator/core/metadata/database-metadata';
+import type { IntrospectOptions } from '../../introspector/introspector';
+import { Introspector } from '../../introspector/introspector';
 
 export class MssqlIntrospector extends Introspector<any> {
   async introspect(options: IntrospectOptions<any>) {

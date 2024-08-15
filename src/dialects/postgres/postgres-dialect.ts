@@ -1,7 +1,10 @@
 import { PostgresDialect as KyselyPostgresDialect } from 'kysely';
-import type { CreateKyselyDialectOptions } from '../../introspector';
-import { Dialect } from '../../introspector';
-import { DEFAULT_NUMERIC_PARSER, NumericParser } from './numeric-parser';
+import {
+  DEFAULT_NUMERIC_PARSER,
+  NumericParser,
+} from '../../generator/core/numeric-parser';
+import type { CreateKyselyDialectOptions } from '../../introspector/dialect';
+import { Dialect } from '../../introspector/dialect';
 import { PostgresAdapter } from './postgres-adapter';
 import { PostgresIntrospector } from './postgres-introspector';
 

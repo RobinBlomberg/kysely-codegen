@@ -4,10 +4,12 @@ import type {
   TableMetadata as KyselyTableMetadata,
 } from 'kysely';
 import { sql } from 'kysely';
-import type { ColumnMetadata, TableMetadata } from '../../generator';
-import { DatabaseMetadata, EnumCollection } from '../../generator';
-import type { IntrospectOptions } from '../../introspector';
-import { Introspector } from '../../introspector';
+import { EnumCollection } from '../../generator/core/enum-collection';
+import type { ColumnMetadata } from '../../generator/core/metadata/column-metadata';
+import { DatabaseMetadata } from '../../generator/core/metadata/database-metadata';
+import type { TableMetadata } from '../../generator/core/metadata/table-metadata';
+import type { IntrospectOptions } from '../../introspector/introspector';
+import { Introspector } from '../../introspector/introspector';
 import type { PostgresAdapter } from './postgres-adapter';
 import type { PostgresDB } from './postgres-db';
 

@@ -1,5 +1,5 @@
 import { Kysely, sql } from 'kysely';
-import type { DatabaseMetadata } from '../generator';
+import type { DatabaseMetadata } from '../generator/core/metadata/database-metadata';
 import type { Dialect } from './dialect';
 import { TableMatcher } from './table-matcher';
 

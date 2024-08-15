@@ -1,10 +1,10 @@
 import minimist from 'minimist';
-import { DEFAULT_NUMERIC_PARSER, NumericParser } from '../../dialects';
 import { ConnectionStringParser } from '../core/connection-string-parser';
 import type { DialectName } from '../core/dialect-manager';
 import { DialectManager } from '../core/dialect-manager';
 import { LogLevel } from '../core/log-level';
 import { Logger } from '../core/logger';
+import { DEFAULT_NUMERIC_PARSER, NumericParser } from '../core/numeric-parser';
 import type { Overrides } from '../transformer/transformer';
 import type { LOG_LEVEL_NAMES } from './constants';
 import {

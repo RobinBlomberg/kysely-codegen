@@ -1,9 +1,5 @@
-import type {
-  Definitions,
-  Dialect,
-  Imports,
-  Scalars,
-} from '../../introspector';
+import type { Definitions, Imports, Scalars } from '../../introspector/adapter';
+import type { Dialect } from '../../introspector/dialect';
 import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';

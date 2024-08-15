@@ -1,18 +1,18 @@
+import { ColumnTypeNode } from '../../generator/ast/column-type-node';
+import { IdentifierNode } from '../../generator/ast/identifier-node';
+import { ModuleReferenceNode } from '../../generator/ast/module-reference-node';
+import { ObjectExpressionNode } from '../../generator/ast/object-expression-node';
+import { PropertyNode } from '../../generator/ast/property-node';
+import { UnionExpressionNode } from '../../generator/ast/union-expression-node';
+import { NumericParser } from '../../generator/core/numeric-parser';
 import {
-  ColumnTypeNode,
-  IdentifierNode,
   JSON_ARRAY_DEFINITION,
   JSON_DEFINITION,
   JSON_OBJECT_DEFINITION,
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
-  ModuleReferenceNode,
-  ObjectExpressionNode,
-  PropertyNode,
-  UnionExpressionNode,
-} from '../../generator';
-import { Adapter } from '../../introspector';
-import { NumericParser } from './numeric-parser';
+} from '../../generator/transformer/definitions';
+import { Adapter } from '../../introspector/adapter';
 
 export type PostgresAdapterOptions = {
   numericParser?: NumericParser;

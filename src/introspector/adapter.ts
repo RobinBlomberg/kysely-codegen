@@ -1,9 +1,7 @@
-import {
-  IdentifierNode,
-  type DefinitionNode,
-  type ExpressionNode,
-  type ModuleReferenceNode,
-} from '../generator';
+import type { DefinitionNode } from '../generator/ast/definition-node';
+import type { ExpressionNode } from '../generator/ast/expression-node';
+import { IdentifierNode } from '../generator/ast/identifier-node';
+import type { ModuleReferenceNode } from '../generator/ast/module-reference-node';
 
 export type Definitions = Record<string, DefinitionNode | undefined>;
 

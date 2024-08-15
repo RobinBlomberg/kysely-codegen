@@ -1,9 +1,6 @@
 import { deepStrictEqual } from 'assert';
-import {
-  NumericParser,
-  PostgresAdapter,
-  PostgresDialect,
-} from '../../dialects';
+import { PostgresAdapter } from '../../dialects/postgres/postgres-adapter';
+import { PostgresDialect } from '../../dialects/postgres/postgres-dialect';
 import { describe, it } from '../../test.utils';
 import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
@@ -24,6 +21,7 @@ import { EnumCollection } from '../core/enum-collection';
 import { ColumnMetadata } from '../core/metadata/column-metadata';
 import { DatabaseMetadata } from '../core/metadata/database-metadata';
 import { TableMetadata } from '../core/metadata/table-metadata';
+import { NumericParser } from '../core/numeric-parser';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { Transformer } from './transformer';
 
