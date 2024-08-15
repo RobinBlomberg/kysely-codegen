@@ -69,6 +69,10 @@ export const FLAGS: Flag[] = [
     longName: 'runtime-enums',
   },
   {
+    description: 'Set the default schema of the database connection.',
+    longName: 'schema',
+  },
+  {
     description: 'Singularize entities.',
     longName: 'singular',
   },
@@ -82,10 +86,6 @@ export const FLAGS: Flag[] = [
       'Set the database connection string URL. ' +
       `This may point to an environment variable. (default: ${DEFAULT_URL})`,
     longName: 'url',
-  },
-  {
-    description: 'Set the default schema of the database connection.',
-    longName: 'schema',
   },
   {
     description: 'Verify that the generated types are up-to-date.',
