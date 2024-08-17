@@ -75,7 +75,8 @@ export const FLAGS = [
     longName: 'print',
   },
   {
-    description: 'Generate runtime enums instead of string unions.',
+    description:
+      'Generate runtime enums instead of string unions for PostgreSQL enums.',
     longName: 'runtime-enums',
   },
   {
