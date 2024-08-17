@@ -4,11 +4,11 @@ import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
 import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import type { GeneratorDialect } from '../dialect';
-import { DiffChecker } from '../diff-checker';
-import type { Logger } from '../logger';
-import { Serializer } from '../serializer';
+import type { Logger } from '../logger/logger';
 import type { Overrides } from '../transformer/transformer';
 import { Transformer } from '../transformer/transformer';
+import { DiffChecker } from './diff-checker';
+import { Serializer } from './serializer';
 
 export type GenerateOptions = {
   camelCase?: boolean;

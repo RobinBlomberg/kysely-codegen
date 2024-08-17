@@ -4,10 +4,9 @@ import {
   NumericParser,
 } from '../../introspector/dialects/postgres/numeric-parser';
 import { ConnectionStringParser } from '../connection-string-parser';
-import type { DialectName } from '../dialect-manager';
-import { DialectManager } from '../dialect-manager';
-import { LogLevel } from '../log-level';
-import { Logger } from '../logger';
+import { generate } from '../generator/generator';
+import { LogLevel } from '../logger/log-level';
+import { Logger } from '../logger/logger';
 import type { Overrides } from '../transformer/transformer';
 import type { LOG_LEVEL_NAMES } from './constants';
 import {
@@ -16,8 +15,9 @@ import {
   DEFAULT_URL,
   VALID_DIALECTS,
 } from './constants';
+import type { DialectName } from './dialect-manager';
+import { DialectManager } from './dialect-manager';
 import { FLAGS } from './flags';
-import { generate } from './generator';
 
 export type CliOptions = {
   camelCase?: boolean;

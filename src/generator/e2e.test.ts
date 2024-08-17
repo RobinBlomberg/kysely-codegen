@@ -8,14 +8,14 @@ import { describe, test } from 'vitest';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import { JsonColumnTypeNode } from './ast/json-column-type-node';
 import { RawExpressionNode } from './ast/raw-expression-node';
-import type { GenerateOptions } from './cli/generator';
-import { generate } from './cli/generator';
 import type { GeneratorDialect } from './dialect';
 import { LibsqlDialect } from './dialects/libsql/libsql-dialect';
 import { MysqlDialect } from './dialects/mysql/mysql-dialect';
 import { PostgresDialect } from './dialects/postgres/postgres-dialect';
 import { SqliteDialect } from './dialects/sqlite/sqlite-dialect';
 import { addExtraColumn, migrate } from './e2e.fixtures';
+import type { GenerateOptions } from './generator/generator';
+import { generate } from './generator/generator';
 import type { DB } from './snapshots/postgres.snapshot';
 
 type Test = {

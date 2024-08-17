@@ -1,7 +1,7 @@
 import { config as loadEnv } from 'dotenv';
 import { expand as expandEnv } from 'dotenv-expand';
-import type { DialectName } from './dialect-manager';
-import type { Logger } from './logger';
+import type { DialectName } from './cli/dialect-manager';
+import type { Logger } from './logger/logger';
 
 const CALL_STATEMENT_REGEXP = /^\s*([a-z]+)\s*\(\s*(.*)\s*\)\s*$/;
 const DIALECT_PARTS_REGEXP = /([^:]*)(.*)/;
