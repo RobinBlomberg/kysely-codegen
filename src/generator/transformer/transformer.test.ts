@@ -44,7 +44,7 @@ describe(Transformer.name, () => {
   }) => {
     const dialect = new PostgresDialect({ numericParser });
     const transformer = new Transformer();
-    const metadata = new DatabaseMetadata(tables, enums);
+    const metadata = new DatabaseMetadata({ enums, tables });
 
     return transformer.transform({
       camelCase,

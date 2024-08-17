@@ -266,8 +266,9 @@ describe(Serializer.name, () => {
       const ast = transformer.transform({
         camelCase: true,
         dialect,
-        metadata: new DatabaseMetadata(
-          [
+        metadata: new DatabaseMetadata({
+          enums,
+          tables: [
             new TableMetadata({
               columns: [
                 new ColumnMetadata({
@@ -280,8 +281,7 @@ describe(Serializer.name, () => {
               schema: 'public',
             }),
           ],
-          enums,
-        ),
+        }),
       });
 
       strictEqual(
@@ -324,16 +324,16 @@ describe(Serializer.name, () => {
       const ast = transformer.transform({
         camelCase: true,
         dialect,
-        metadata: new DatabaseMetadata(
-          [
+        metadata: new DatabaseMetadata({
+          enums,
+          tables: [
             new TableMetadata({
               columns: [new ColumnMetadata({ dataType: 'json', name: 'json' })],
               name: 'foo',
               schema: 'public',
             }),
           ],
-          enums,
-        ),
+        }),
       });
 
       strictEqual(
@@ -392,8 +392,9 @@ describe(Serializer.name, () => {
     const ast = transformer.transform({
       camelCase: true,
       dialect,
-      metadata: new DatabaseMetadata(
-        [
+      metadata: new DatabaseMetadata({
+        enums,
+        tables: [
           new TableMetadata({
             columns: [
               new ColumnMetadata({
@@ -406,8 +407,7 @@ describe(Serializer.name, () => {
             schema: 'public',
           }),
         ],
-        enums,
-      ),
+      }),
     });
 
     strictEqual(

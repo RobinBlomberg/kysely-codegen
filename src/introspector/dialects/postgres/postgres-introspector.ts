@@ -45,14 +45,14 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     domains,
     enums,
     partitions,
-    tables,
+    tables: rawTables,
   }: {
     domains: PostgresDomainInspector[];
     enums: EnumCollection;
     partitions: TableReference[];
     tables: KyselyTableMetadata[];
   }) {
-    const tablesMetadata = tables
+    const tables = rawTables
       .map((table): TableMetadata => {
         const columns = table.columns.map((column): ColumnMetadata => {
           const dataType = this.#getRootType(column, domains);
@@ -92,7 +92,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
         return this.options.partitions ? true : !table.isPartition;
       });
 
-    return new DatabaseMetadata(tablesMetadata, enums);
+    return new DatabaseMetadata({ enums, tables });
   }
 
   #getRootType(

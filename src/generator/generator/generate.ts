@@ -68,8 +68,8 @@ export const generate = async (options: GenerateOptions) => {
   const serializer =
     options.serializer ??
     new Serializer({
-      camelCase: !!options.camelCase,
-      singular: !!options.singular,
+      camelCase: options.camelCase,
+      singular: options.singular,
       typeOnlyImports: options.typeOnlyImports,
     });
   const data = serializer.serializeFile(nodes);
