@@ -1,13 +1,15 @@
 import minimist from 'minimist';
+import { ConnectionStringParser } from '../generator/connection-string-parser';
+import type { DialectName } from '../generator/dialect-manager';
+import { DialectManager } from '../generator/dialect-manager';
+import { generate } from '../generator/generator/generator';
+import { LogLevel } from '../generator/logger/log-level';
+import { Logger } from '../generator/logger/logger';
+import type { Overrides } from '../generator/transformer/transformer';
 import {
   DEFAULT_NUMERIC_PARSER,
   NumericParser,
-} from '../../introspector/dialects/postgres/numeric-parser';
-import { ConnectionStringParser } from '../connection-string-parser';
-import { generate } from '../generator/generator';
-import { LogLevel } from '../logger/log-level';
-import { Logger } from '../logger/logger';
-import type { Overrides } from '../transformer/transformer';
+} from '../introspector/dialects/postgres/numeric-parser';
 import type { LOG_LEVEL_NAMES } from './constants';
 import {
   DEFAULT_LOG_LEVEL,
@@ -15,8 +17,6 @@ import {
   DEFAULT_URL,
   VALID_DIALECTS,
 } from './constants';
-import type { DialectName } from './dialect-manager';
-import { DialectManager } from './dialect-manager';
 import { FLAGS } from './flags';
 
 export type CliOptions = {

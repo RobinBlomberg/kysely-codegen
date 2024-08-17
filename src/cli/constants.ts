@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { LogLevel } from '../logger/log-level';
+import { LogLevel } from '../generator/logger/log-level';
 
 export const DEFAULT_OUT_FILE = join(
   process.cwd(),

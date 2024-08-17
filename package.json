@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "author": "Robin Blomberg",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -25,7 +25,7 @@
     "ci:eslint": "pnpm lint:eslint --max-warnings=0 --report-unused-disable-directives",
     "ci:prettier": "pnpm lint:prettier",
     "ci:test": "pnpm test",
-    "dev": "tsx watch ./src/generator/cli/bin.ts",
+    "dev": "tsx watch ./src/cli/bin.ts",
     "docker:up": "docker-compose up -d",
     "fix": "run-s fix:*",
     "fix:eslint": "eslint --fix src",
