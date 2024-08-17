@@ -5,7 +5,7 @@ import { DialectManager } from '../generator/dialect-manager';
 import { generate } from '../generator/generator/generate';
 import { LogLevel } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
-import type { Overrides } from '../generator/transformer/transformer';
+import type { Overrides } from '../generator/transformer/transform';
 import {
   DEFAULT_NUMERIC_PARSER,
   NumericParser,

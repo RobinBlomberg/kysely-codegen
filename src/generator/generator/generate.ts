@@ -5,8 +5,7 @@ import { performance } from 'perf_hooks';
 import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
-import type { Overrides } from '../transformer/transformer';
-import { Transformer } from '../transformer/transformer';
+import { transform, type Overrides } from '../transformer/transform';
 import { DiffChecker } from './diff-checker';
 import { Serializer } from './serializer';
 
@@ -26,7 +25,6 @@ export type GenerateOptions = {
   schema?: string;
   serializer?: Serializer;
   singular?: boolean;
-  transformer?: Transformer;
   typeOnlyImports?: boolean;
   verify?: boolean;
 };
@@ -55,8 +53,7 @@ export const generate = async (options: GenerateOptions) => {
 
   options.logger?.debug();
 
-  const transformer = options.transformer ?? new Transformer();
-  const nodes = transformer.transform({
+  const nodes = transform({
     camelCase: !!options.camelCase,
     defaultSchema: options.schema,
     dialect: options.dialect,
@@ -79,8 +76,8 @@ export const generate = async (options: GenerateOptions) => {
     : null;
 
   if (options.print) {
-    console.log();
-    console.log(data);
+    console.info();
+    console.info(data);
   } else if (relativeOutDir) {
     if (options.verify) {
       let existingTypes: string;

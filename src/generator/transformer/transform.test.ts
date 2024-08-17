@@ -23,15 +23,15 @@ import { UnionExpressionNode } from '../ast/union-expression-node';
 import { PostgresAdapter } from '../dialects/postgres/postgres-adapter';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { GLOBAL_DEFINITIONS } from './definitions';
-import { Transformer } from './transformer';
+import { transform } from './transform';
 
-describe(Transformer.name, () => {
+describe(transform.name, () => {
   const enums = new EnumCollection({
     'public.mood': ['happy', 'ok', 'sad'],
     'public.mood_': ['', ',', "'", "'','"],
   });
 
-  const transform = ({
+  const transformWithDefaults = ({
     camelCase,
     numericParser,
     runtimeEnums,
@@ -42,14 +42,10 @@ describe(Transformer.name, () => {
     runtimeEnums?: boolean;
     tables: TableMetadata[];
   }) => {
-    const dialect = new PostgresDialect({ numericParser });
-    const transformer = new Transformer();
-    const metadata = new DatabaseMetadata({ enums, tables });
-
-    return transformer.transform({
+    return transform({
       camelCase,
-      dialect,
-      metadata,
+      dialect: new PostgresDialect({ numericParser }),
+      metadata: new DatabaseMetadata({ enums, tables }),
       overrides: {
         columns: {
           'table.expression_override': new GenericExpressionNode('Generated', [
@@ -66,7 +62,7 @@ describe(Transformer.name, () => {
   };
 
   it('should transform correctly', () => {
-    const nodes = transform({
+    const nodes = transformWithDefaults({
       tables: [
         new TableMetadata({
           columns: [
@@ -194,7 +190,7 @@ describe(Transformer.name, () => {
   });
 
   it('should be able to transform to camelCase', () => {
-    const nodes = transform({
+    const nodes = transformWithDefaults({
       camelCase: true,
       tables: [
         new TableMetadata({
@@ -241,7 +237,7 @@ describe(Transformer.name, () => {
   });
 
   it('should be able to transform using an alternative Postgres numeric parser', () => {
-    const nodes = transform({
+    const nodes = transformWithDefaults({
       numericParser: NumericParser.NUMBER,
       tables: [
         new TableMetadata({
@@ -260,7 +256,7 @@ describe(Transformer.name, () => {
   });
 
   it('should transform Postgres enums correctly', () => {
-    const nodes = transform({
+    const nodes = transformWithDefaults({
       tables: [
         new TableMetadata({
           columns: [
@@ -332,8 +328,8 @@ describe(Transformer.name, () => {
     ]);
   });
 
-  it('should transform runtime enums correctly', () => {
-    const nodes = transform({
+  it('should transform Postgres runtime enums correctly', () => {
+    const nodes = transformWithDefaults({
       runtimeEnums: true,
       tables: [
         new TableMetadata({

@@ -23,7 +23,7 @@ import { TemplateNode } from '../ast/template-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
 import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
-import { Transformer } from '../transformer/transformer';
+import { transform } from '../transformer/transform';
 import { Serializer } from './serializer';
 
 describe(Serializer.name, () => {
@@ -261,9 +261,8 @@ describe(Serializer.name, () => {
     test('should serialize JSON fields properly', () => {
       const dialect = new MysqlDialect();
       const enums = new EnumCollection();
-      const transformer = new Transformer();
 
-      const ast = transformer.transform({
+      const ast = transform({
         camelCase: true,
         dialect,
         metadata: new DatabaseMetadata({
@@ -319,9 +318,8 @@ describe(Serializer.name, () => {
     test('should serialize Postgres JSON fields properly', () => {
       const dialect = new PostgresDialect();
       const enums = new EnumCollection();
-      const transformer = new Transformer();
 
-      const ast = transformer.transform({
+      const ast = transform({
         camelCase: true,
         dialect,
         metadata: new DatabaseMetadata({
@@ -386,10 +384,9 @@ describe(Serializer.name, () => {
   test('should be able to singularize table names', () => {
     const dialect = new PostgresDialect();
     const enums = new EnumCollection();
-    const transformer = new Transformer();
     const singularSerializer = new Serializer({ singular: true });
 
-    const ast = transformer.transform({
+    const ast = transform({
       camelCase: true,
       dialect,
       metadata: new DatabaseMetadata({
