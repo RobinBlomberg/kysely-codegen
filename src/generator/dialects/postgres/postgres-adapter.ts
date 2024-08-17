@@ -1,18 +1,18 @@
-import { Adapter } from '../../generator/adapter';
-import { ColumnTypeNode } from '../../generator/ast/column-type-node';
-import { IdentifierNode } from '../../generator/ast/identifier-node';
-import { ModuleReferenceNode } from '../../generator/ast/module-reference-node';
-import { ObjectExpressionNode } from '../../generator/ast/object-expression-node';
-import { PropertyNode } from '../../generator/ast/property-node';
-import { UnionExpressionNode } from '../../generator/ast/union-expression-node';
+import { NumericParser } from '../../../introspector/dialects/postgres/numeric-parser';
+import { Adapter } from '../../adapter';
+import { ColumnTypeNode } from '../../ast/column-type-node';
+import { IdentifierNode } from '../../ast/identifier-node';
+import { ModuleReferenceNode } from '../../ast/module-reference-node';
+import { ObjectExpressionNode } from '../../ast/object-expression-node';
+import { PropertyNode } from '../../ast/property-node';
+import { UnionExpressionNode } from '../../ast/union-expression-node';
 import {
   JSON_ARRAY_DEFINITION,
   JSON_DEFINITION,
   JSON_OBJECT_DEFINITION,
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
-} from '../../generator/transformer/definitions';
-import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
+} from '../../transformer/definitions';
 
 export type PostgresAdapterOptions = {
   numericParser?: NumericParser;

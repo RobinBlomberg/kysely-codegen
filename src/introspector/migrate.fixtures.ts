@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
-import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
-import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { IntrospectorDialect } from './dialect';
+import { MysqlIntrospectorDialect } from './dialects/mysql/mysql-dialect';
+import { PostgresIntrospectorDialect } from './dialects/postgres/postgres-dialect';
 
 const down = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
   assert(dialect instanceof IntrospectorDialect);
@@ -11,7 +11,7 @@ const down = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
     await trx.schema.dropTable('boolean').ifExists().execute();
     await trx.schema.dropTable('foo_bar').ifExists().execute();
 
-    if (dialect instanceof PostgresDialect) {
+    if (dialect instanceof PostgresIntrospectorDialect) {
       await trx.schema
         .withSchema('test')
         .dropType('status')
@@ -35,7 +35,7 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
   assert(dialect instanceof IntrospectorDialect);
 
   await db.transaction().execute(async (trx) => {
-    if (dialect instanceof PostgresDialect) {
+    if (dialect instanceof PostgresIntrospectorDialect) {
       await trx.schema.createSchema('test').ifNotExists().execute();
       await trx.schema
         .withSchema('test')
@@ -61,11 +61,11 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
       .addColumn('true', 'boolean', (col) => col.notNull())
       .addColumn('overridden', sql`text`);
 
-    if (dialect instanceof MysqlDialect) {
+    if (dialect instanceof MysqlIntrospectorDialect) {
       builder = builder
         .addColumn('id', 'serial')
         .addColumn('user_status', sql`enum('CONFIRMED','UNCONFIRMED')`);
-    } else if (dialect instanceof PostgresDialect) {
+    } else if (dialect instanceof PostgresIntrospectorDialect) {
       builder = builder
         .addColumn('id', 'serial')
         .addColumn('user_status', sql`status`)
@@ -97,7 +97,7 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
 
     await builder.execute();
 
-    if (dialect instanceof PostgresDialect) {
+    if (dialect instanceof PostgresIntrospectorDialect) {
       await trx.executeQuery(
         sql`
           comment on column foo_bar.false is

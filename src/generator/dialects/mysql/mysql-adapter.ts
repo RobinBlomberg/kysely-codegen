@@ -1,16 +1,16 @@
-import { Adapter } from '../../generator/adapter';
-import { ArrayExpressionNode } from '../../generator/ast/array-expression-node';
-import { ColumnTypeNode } from '../../generator/ast/column-type-node';
-import { IdentifierNode } from '../../generator/ast/identifier-node';
-import { ObjectExpressionNode } from '../../generator/ast/object-expression-node';
-import { PropertyNode } from '../../generator/ast/property-node';
-import { UnionExpressionNode } from '../../generator/ast/union-expression-node';
+import { Adapter } from '../../adapter';
+import { ArrayExpressionNode } from '../../ast/array-expression-node';
+import { ColumnTypeNode } from '../../ast/column-type-node';
+import { IdentifierNode } from '../../ast/identifier-node';
+import { ObjectExpressionNode } from '../../ast/object-expression-node';
+import { PropertyNode } from '../../ast/property-node';
+import { UnionExpressionNode } from '../../ast/union-expression-node';
 import {
   JSON_ARRAY_DEFINITION,
   JSON_OBJECT_DEFINITION,
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
-} from '../../generator/transformer/definitions';
+} from '../../transformer/definitions';
 
 export class MysqlAdapter extends Adapter {
   override readonly definitions = {

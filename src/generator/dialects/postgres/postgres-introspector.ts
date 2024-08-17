@@ -4,12 +4,12 @@ import type {
   TableMetadata as KyselyTableMetadata,
 } from 'kysely';
 import { sql } from 'kysely';
-import { EnumCollection } from '../../introspector/enum-collection';
-import type { IntrospectOptions } from '../../introspector/introspector';
-import { Introspector } from '../../introspector/introspector';
-import type { ColumnMetadata } from '../../introspector/metadata/column-metadata';
-import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
-import type { TableMetadata } from '../../introspector/metadata/table-metadata';
+import { EnumCollection } from '../../../introspector/enum-collection';
+import type { IntrospectOptions } from '../../../introspector/introspector';
+import { Introspector } from '../../../introspector/introspector';
+import type { ColumnMetadata } from '../../../introspector/metadata/column-metadata';
+import { DatabaseMetadata } from '../../../introspector/metadata/database-metadata';
+import type { TableMetadata } from '../../../introspector/metadata/table-metadata';
 import type { PostgresAdapter } from './postgres-adapter';
 import type { PostgresDB } from './postgres-db';
 

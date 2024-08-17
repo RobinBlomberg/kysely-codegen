@@ -1,9 +1,13 @@
-import { MssqlIntrospectorDialect } from '../../introspector/dialects/mssql/mssql-dialect';
+import { MssqlIntrospectorDialect } from '../../../introspector/dialects/mssql/mssql-dialect';
+import type { GeneratorDialect } from '../../dialect';
 import { MssqlAdapter } from './mssql-adapter';
 
 const DEFAULT_MSSQL_PORT = 1433;
 
-export class MssqlDialect extends MssqlIntrospectorDialect {
+export class MssqlDialect
+  extends MssqlIntrospectorDialect
+  implements GeneratorDialect
+{
   readonly adapter = new MssqlAdapter();
 
   /**

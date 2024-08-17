@@ -1,6 +1,4 @@
 import { strictEqual } from 'assert';
-import { MysqlDialect } from '../../dialects/mysql/mysql-dialect';
-import { PostgresDialect } from '../../dialects/postgres/postgres-dialect';
 import { EnumCollection } from '../../introspector/enum-collection';
 import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
 import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
@@ -23,6 +21,8 @@ import { PropertyNode } from '../ast/property-node';
 import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node';
 import { TemplateNode } from '../ast/template-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
+import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
+import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { Transformer } from '../transformer/transformer';
 import { Serializer } from './serializer';
 
