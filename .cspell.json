@@ -1,5 +1,7 @@
 {
-  "enableFiletypes": ["dockercompose"],
+  "enableFiletypes": [
+    "dockercompose"
+  ],
   "words": [
     "Adminer",
     "Blomberg",
@@ -11,6 +13,7 @@
     "dockercompose",
     "enumlabel",
     "enumtypid",
+    "execa",
     "geomcollection",
     "geometrycollection",
     "inet",

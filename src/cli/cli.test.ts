@@ -1,5 +1,8 @@
 import { deepStrictEqual } from 'assert';
+import { execa } from 'execa';
+import { join } from 'path';
 import { describe, it } from 'vitest';
+import packageJson from '../../package.json';
 import { LogLevel } from '../generator/logger/log-level';
 import { DEFAULT_NUMERIC_PARSER } from '../introspector/dialects/postgres/numeric-parser';
 import type { CliOptions } from './cli';
@@ -29,6 +32,13 @@ describe(Cli.name, () => {
     url: DEFAULT_URL,
     verify: false,
   };
+
+  it('should be able to start the CLI', async () => {
+    await execa`pnpm build`;
+    const binPath = join(process.cwd(), packageJson.bin['kysely-codegen']);
+    const output = await execa`node ${binPath} --help`.then((a) => a.stdout);
+    deepStrictEqual(output.includes('--help, -h'), true);
+  });
 
   it('should parse options correctly', () => {
     const assert = (args: string[], expectedOptions: Partial<CliOptions>) => {
