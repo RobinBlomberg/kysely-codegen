@@ -3,10 +3,10 @@ import type { Kysely } from 'kysely';
 import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
 import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
-import { DiffChecker } from '../core/diff-checker';
-import type { Logger } from '../core/logger';
 import type { GeneratorDialect } from '../dialect';
-import { Serializer } from '../serializer/serializer';
+import { DiffChecker } from '../diff-checker';
+import type { Logger } from '../logger';
+import { Serializer } from '../serializer';
 import type { Overrides } from '../transformer/transformer';
 import { Transformer } from '../transformer/transformer';
 

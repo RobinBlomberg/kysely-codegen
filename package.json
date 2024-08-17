@@ -129,7 +129,7 @@
       "@robinblomberg/robinblomberg",
       "@robinblomberg/prettier"
     ],
-    "ignorePatterns": "**/outputs/*.output.ts",
+    "ignorePatterns": "**/snapshots/*.snapshot.ts",
     "rules": {
       "unicorn/prefer-node-protocol": 0
     }

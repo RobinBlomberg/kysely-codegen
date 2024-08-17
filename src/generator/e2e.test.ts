@@ -16,7 +16,7 @@ import { MysqlDialect } from './dialects/mysql/mysql-dialect';
 import { PostgresDialect } from './dialects/postgres/postgres-dialect';
 import { SqliteDialect } from './dialects/sqlite/sqlite-dialect';
 import { addExtraColumn, migrate } from './e2e.fixtures';
-import type { DB } from './test-outputs/postgres.output';
+import type { DB } from './snapshots/postgres.snapshot';
 
 type Test = {
   connectionString: string;
@@ -25,7 +25,7 @@ type Test = {
   outputValues: Record<string, unknown>;
 };
 
-const TEST_OUTPUTS_DIR = join(__dirname, 'test-outputs');
+const SNAPSHOTS_DIR = join(__dirname, 'snapshots');
 
 const TESTS: Test[] = [
   {
@@ -75,7 +75,7 @@ const TESTS: Test[] = [
 const readDialectOutput = async (dialect: GeneratorDialect) => {
   const dialectName = dialect.constructor.name.slice(0, -'Dialect'.length);
   return await readFile(
-    join(TEST_OUTPUTS_DIR, `${dialectName.toLowerCase()}.output.ts`),
+    join(SNAPSHOTS_DIR, `${dialectName.toLowerCase()}.snapshot.ts`),
     'utf8',
   );
 };
@@ -155,8 +155,8 @@ describe('E2E', () => {
           -'Dialect'.length,
         );
         const outFile = join(
-          TEST_OUTPUTS_DIR,
-          `${dialectName.toLowerCase()}.output.ts`,
+          SNAPSHOTS_DIR,
+          `${dialectName.toLowerCase()}.snapshot.ts`,
         );
         await generate({ ...baseGenerateOptions, db, dialect, outFile });
         const output = await generate({
