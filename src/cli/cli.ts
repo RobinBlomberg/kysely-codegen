@@ -255,12 +255,11 @@ export class Cli {
     } catch (error) {
       if (this.logLevel > LogLevel.SILENT) {
         if (error instanceof Error) {
-          console.error(new Logger().serializeError(error.message));
-
           if (this.logLevel >= LogLevel.DEBUG) {
             console.error();
             throw error;
           } else {
+            console.error(new Logger().serializeError(error.message));
             process.exit(0);
           }
         } else {
