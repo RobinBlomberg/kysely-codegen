@@ -4,9 +4,9 @@ import { type Kysely } from 'kysely';
 import type { InsertExpression } from 'kysely/dist/cjs/parser/insert-values-parser';
 import { join } from 'path';
 import parsePostgresInterval from 'postgres-interval';
+import { describe, test } from 'vitest';
 import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import { addExtraColumn, migrate } from '../../introspector/migrate.fixtures';
-import { describe, it } from '../../test.utils';
 import { JsonColumnTypeNode } from '../ast/json-column-type-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
 import type { GenerateOptions } from '../cli/generator';
@@ -16,7 +16,6 @@ import { LibsqlDialect } from '../dialects/libsql/libsql-dialect';
 import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { SqliteDialect } from '../dialects/sqlite/sqlite-dialect';
-import { Logger } from './logger';
 import type { DB } from './outputs/postgres.output';
 
 type Test = {
@@ -108,57 +107,51 @@ const testValues = async (
   }
 };
 
-export const testE2E = async () => {
-  await describe('e2e', async () => {
-    const logger = new Logger();
-
-    const baseGenerateOptions: Omit<GenerateOptions, 'db' | 'dialect'> = {
-      camelCase: true,
-      logger,
-      overrides: {
-        columns: {
-          'foo_bar.json_typed': new JsonColumnTypeNode(
-            new RawExpressionNode('{ foo: "bar" }'),
-          ),
-          'foo_bar.overridden': new RawExpressionNode('"OVERRIDDEN"'),
-        },
+describe('E2E', () => {
+  const baseGenerateOptions: Omit<GenerateOptions, 'db' | 'dialect'> = {
+    camelCase: true,
+    overrides: {
+      columns: {
+        'foo_bar.json_typed': new JsonColumnTypeNode(
+          new RawExpressionNode('{ foo: "bar" }'),
+        ),
+        'foo_bar.overridden': new RawExpressionNode('"OVERRIDDEN"'),
       },
-    };
+    },
+  };
 
-    await it('should generate the correct output', async () => {
-      for (const {
-        connectionString,
-        dialect,
-        inputValues,
-        outputValues,
-      } of TESTS) {
-        logger.info(`Testing ${dialect.constructor.name}...`);
-
+  describe('should generate the correct output', () => {
+    for (const {
+      connectionString,
+      dialect,
+      inputValues,
+      outputValues,
+    } of TESTS) {
+      test(dialect.constructor.name, async () => {
         const db = await migrate(dialect, connectionString);
         await testValues(db, inputValues, outputValues);
         const output = await generate({ ...baseGenerateOptions, db, dialect });
         await db.destroy();
         const expectedOutput = await readDialectOutput(dialect);
         strictEqual(output, expectedOutput);
-      }
-    });
+      });
+    }
+  });
 
-    await it('should verify generated types', async () => {
-      for (const {
-        connectionString,
-        dialect,
-        inputValues,
-        outputValues,
-      } of TESTS) {
+  describe('should verify generated types', () => {
+    for (const {
+      connectionString,
+      dialect,
+      inputValues,
+      outputValues,
+    } of TESTS) {
+      test(dialect.constructor.name, async () => {
+        const db = await migrate(dialect, connectionString);
+        await testValues(db, inputValues, outputValues);
         const dialectName = dialect.constructor.name.slice(
           0,
           -'Dialect'.length,
         );
-
-        logger.info(`Testing ${dialectName}...`);
-
-        const db = await migrate(dialect, connectionString);
-        await testValues(db, inputValues, outputValues);
         const outFile = join(
           __dirname,
           'outputs',
@@ -198,7 +191,7 @@ export const testE2E = async () => {
         }
 
         await db.destroy();
-      }
-    });
+      });
+    }
   });
-};
+});

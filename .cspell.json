@@ -1,7 +1,5 @@
 {
-  "enableFiletypes": [
-    "dockercompose"
-  ],
+  "enableFiletypes": ["dockercompose"],
   "words": [
     "Adminer",
     "Blomberg",
@@ -59,6 +57,7 @@
     "uniqueidentifier",
     "upvote",
     "varbinary",
-    "varbit"
+    "varbit",
+    "vitest"
   ]
 }
