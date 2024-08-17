@@ -24,33 +24,25 @@ export class Logger {
 
   debug(...values: unknown[]) {
     if (this.logLevel >= LogLevel.DEBUG) {
-      for (const value of values) {
-        console.debug(this.serializeDebug(value));
-      }
+      console.debug(...values.map((value) => this.serializeDebug(value)));
     }
   }
 
   error(...values: unknown[]) {
     if (this.logLevel >= LogLevel.ERROR) {
-      for (const value of values) {
-        console.error(this.serializeError(value));
-      }
+      console.error(...values.map((value) => this.serializeError(value)));
     }
   }
 
   info(...values: unknown[]) {
     if (this.logLevel >= LogLevel.INFO) {
-      for (const value of values) {
-        console.info(this.serializeInfo(value));
-      }
+      console.info(...values.map((value) => this.serializeInfo(value)));
     }
   }
 
   log(...values: unknown[]) {
     if (this.logLevel >= LogLevel.INFO) {
-      for (const value of values) {
-        console.log(value);
-      }
+      console.log(...values);
     }
   }
 
@@ -76,17 +68,13 @@ export class Logger {
 
   success(...values: unknown[]) {
     if (this.logLevel >= LogLevel.INFO) {
-      for (const value of values) {
-        console.log(this.serializeSuccess(value));
-      }
+      console.log(...values.map((value) => this.serializeSuccess(value)));
     }
   }
 
   warn(...values: unknown[]) {
     if (this.logLevel >= LogLevel.WARN) {
-      for (const value of values) {
-        console.warn(this.serializeWarn(value));
-      }
+      console.warn(...values.map((value) => this.serializeWarn(value)));
     }
   }
 }

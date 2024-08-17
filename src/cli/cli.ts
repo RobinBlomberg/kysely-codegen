@@ -46,6 +46,8 @@ export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
  * Creates a kysely-codegen command-line interface.
  */
 export class Cli {
+  logLevel = DEFAULT_LOG_LEVEL;
+
   async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
     const excludePattern = options.excludePattern;
@@ -161,6 +163,8 @@ export class Cli {
 
   parseOptions(args: string[], options?: { silent?: boolean }): CliOptions {
     const argv = minimist(args);
+    const logLevel = (this.logLevel = this.#parseLogLevel(argv['log-level']));
+
     const _: string[] = argv._;
     const camelCase = this.#parseBoolean(argv['camel-case']);
     const dialectName = this.#parseString(argv.dialect) as DialectName;
@@ -170,7 +174,6 @@ export class Cli {
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
     const includePattern = this.#parseString(argv['include-pattern']);
-    const logLevel = this.#parseLogLevel(argv['log-level']);
     const numericParser = this.#parseNumericParser(argv['numeric-parser']);
     const outFile =
       this.#parseString(argv['out-file']) ??
@@ -187,57 +190,40 @@ export class Cli {
     const url = this.#parseString(argv.url) ?? DEFAULT_URL;
     const verify = this.#parseBoolean(argv.verify);
 
-    try {
-      for (const key in argv) {
-        if (
-          key !== '_' &&
-          !FLAGS.some((flag) => {
-            return [
-              flag.shortName,
-              flag.longName,
-              ...(flag.longName.startsWith('no-')
-                ? [flag.longName.slice(3)]
-                : []),
-            ].includes(key);
-          })
-        ) {
-          throw new RangeError(`Invalid flag: "${key}"`);
-        }
+    for (const key in argv) {
+      if (
+        key !== '_' &&
+        !FLAGS.some((flag) => {
+          return [
+            flag.shortName,
+            flag.longName,
+            ...(flag.longName.startsWith('no-')
+              ? [flag.longName.slice(3)]
+              : []),
+          ].includes(key);
+        })
+      ) {
+        throw new RangeError(`Invalid flag: "${key}"`);
       }
+    }
 
-      if (help && !options?.silent) {
-        this.#showHelp();
-      }
+    if (help && !options?.silent) {
+      this.#showHelp();
+    }
 
-      if (dialectName && !VALID_DIALECTS.includes(dialectName)) {
-        const dialectValues = VALID_DIALECTS.join(', ');
-        throw new RangeError(
-          `Parameter '--dialect' must have one of the following values: ${dialectValues}`,
-        );
-      }
+    if (dialectName && !VALID_DIALECTS.includes(dialectName)) {
+      const dialectValues = VALID_DIALECTS.join(', ');
+      throw new RangeError(
+        `Parameter '--dialect' must have one of the following values: ${dialectValues}`,
+      );
+    }
 
-      if (!url) {
-        throw new TypeError(
-          "Parameter '--url' must be a valid connection string. Examples:\n\n" +
-            '  --url=postgres://username:password@mydomain.com/database\n' +
-            '  --url=env(DATABASE_URL)',
-        );
-      }
-    } catch (error) {
-      if (logLevel > LogLevel.SILENT) {
-        if (error instanceof Error) {
-          console.error(new Logger().serializeError(error.message));
-
-          if (logLevel >= LogLevel.DEBUG) {
-            console.error();
-            throw error;
-          } else {
-            process.exit(0);
-          }
-        } else {
-          throw error;
-        }
-      }
+    if (!url) {
+      throw new TypeError(
+        "Parameter '--url' must be a valid connection string. Examples:\n\n" +
+          '  --url=postgres://username:password@mydomain.com/database\n' +
+          '  --url=env(DATABASE_URL)',
+      );
     }
 
     return {
@@ -263,7 +249,24 @@ export class Cli {
   }
 
   async run(argv: string[]) {
-    const options = this.parseOptions(argv);
-    await this.generate(options);
+    try {
+      const options = this.parseOptions(argv);
+      await this.generate(options);
+    } catch (error) {
+      if (this.logLevel > LogLevel.SILENT) {
+        if (error instanceof Error) {
+          console.error(new Logger().serializeError(error.message));
+
+          if (this.logLevel >= LogLevel.DEBUG) {
+            console.error();
+            throw error;
+          } else {
+            process.exit(0);
+          }
+        } else {
+          throw error;
+        }
+      }
+    }
   }
 }
