@@ -5,18 +5,18 @@ import type { InsertExpression } from 'kysely/dist/cjs/parser/insert-values-pars
 import { join } from 'path';
 import parsePostgresInterval from 'postgres-interval';
 import { describe, test } from 'vitest';
-import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
-import { addExtraColumn, migrate } from '../../introspector/migrate.fixtures';
-import { JsonColumnTypeNode } from '../ast/json-column-type-node';
-import { RawExpressionNode } from '../ast/raw-expression-node';
-import type { GenerateOptions } from '../cli/generator';
-import { generate } from '../cli/generator';
-import type { GeneratorDialect } from '../dialect';
-import { LibsqlDialect } from '../dialects/libsql/libsql-dialect';
-import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
-import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
-import { SqliteDialect } from '../dialects/sqlite/sqlite-dialect';
-import type { DB } from './outputs/postgres.output';
+import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
+import { JsonColumnTypeNode } from './ast/json-column-type-node';
+import { RawExpressionNode } from './ast/raw-expression-node';
+import type { GenerateOptions } from './cli/generator';
+import { generate } from './cli/generator';
+import type { GeneratorDialect } from './dialect';
+import { LibsqlDialect } from './dialects/libsql/libsql-dialect';
+import { MysqlDialect } from './dialects/mysql/mysql-dialect';
+import { PostgresDialect } from './dialects/postgres/postgres-dialect';
+import { SqliteDialect } from './dialects/sqlite/sqlite-dialect';
+import { addExtraColumn, migrate } from './e2e.fixtures';
+import type { DB } from './test-outputs/postgres.output';
 
 type Test = {
   connectionString: string;
@@ -24,6 +24,8 @@ type Test = {
   inputValues: Record<string, unknown>;
   outputValues: Record<string, unknown>;
 };
+
+const TEST_OUTPUTS_DIR = join(__dirname, 'test-outputs');
 
 const TESTS: Test[] = [
   {
@@ -73,7 +75,7 @@ const TESTS: Test[] = [
 const readDialectOutput = async (dialect: GeneratorDialect) => {
   const dialectName = dialect.constructor.name.slice(0, -'Dialect'.length);
   return await readFile(
-    join(__dirname, 'outputs', `${dialectName.toLowerCase()}.output.ts`),
+    join(TEST_OUTPUTS_DIR, `${dialectName.toLowerCase()}.output.ts`),
     'utf8',
   );
 };
@@ -153,8 +155,7 @@ describe('E2E', () => {
           -'Dialect'.length,
         );
         const outFile = join(
-          __dirname,
-          'outputs',
+          TEST_OUTPUTS_DIR,
           `${dialectName.toLowerCase()}.output.ts`,
         );
         await generate({ ...baseGenerateOptions, db, dialect, outFile });
