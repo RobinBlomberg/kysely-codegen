@@ -35,8 +35,8 @@
     "lint:prettier": "prettier --check src",
     "prepublishOnly": "pnpm run ci",
     "start": "node ./dist/cli/bin.js",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "upgrade": "ncu -u"
   },
   "dependencies": {
