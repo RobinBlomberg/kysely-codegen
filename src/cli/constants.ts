@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
 import { LogLevel } from '../generator/logger/log-level';
 
 export const DEFAULT_OUT_FILE = join(
@@ -10,6 +11,8 @@ export const DEFAULT_OUT_FILE = join(
 );
 
 export const DEFAULT_LOG_LEVEL = LogLevel.WARN;
+
+export const DEFAULT_RUNTIME_ENUMS_STYLE = RuntimeEnumsStyle.PASCAL_CASE;
 
 export const DEFAULT_URL = 'env(DATABASE_URL)';
 

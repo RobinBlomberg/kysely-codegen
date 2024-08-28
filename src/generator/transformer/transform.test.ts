@@ -22,6 +22,7 @@ import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node
 import { UnionExpressionNode } from '../ast/union-expression-node';
 import { PostgresAdapter } from '../dialects/postgres/postgres-adapter';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
+import type { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { transform } from './transform';
 
@@ -40,6 +41,7 @@ describe(transform.name, () => {
     camelCase?: boolean;
     numericParser?: NumericParser;
     runtimeEnums?: boolean;
+    runtimeEnumsStyle?: RuntimeEnumsStyle;
     tables: TableMetadata[];
   }) => {
     return transform({
@@ -354,25 +356,10 @@ describe(transform.name, () => {
     deepStrictEqual(nodes, [
       new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
       new ExportStatementNode(
-        new RuntimeEnumDeclarationNode(
-          'Mood',
-          new UnionExpressionNode([
-            new LiteralNode('happy'),
-            new LiteralNode('ok'),
-            new LiteralNode('sad'),
-          ]),
-        ),
+        new RuntimeEnumDeclarationNode('Mood', ['happy', 'ok', 'sad']),
       ),
       new ExportStatementNode(
-        new RuntimeEnumDeclarationNode(
-          'Mood2',
-          new UnionExpressionNode([
-            new LiteralNode(''),
-            new LiteralNode(','),
-            new LiteralNode("'"),
-            new LiteralNode("'','"),
-          ]),
-        ),
+        new RuntimeEnumDeclarationNode('Mood2', ['', ',', "'", "'','"]),
       ),
       new ExportStatementNode(
         new AliasDeclarationNode('Generated', GLOBAL_DEFINITIONS.Generated),

@@ -19,12 +19,14 @@ import type { RawExpressionNode } from '../ast/raw-expression-node';
 import type { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node';
 import type { StatementNode } from '../ast/statement-node';
 import type { UnionExpressionNode } from '../ast/union-expression-node';
-import { toCamelCase } from '../utils/case-converter';
+import { toPascalCase, toScreamingSnakeCase } from '../utils/case-converter';
+import { RuntimeEnumsStyle } from './runtime-enums-style';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
 export type SerializerOptions = {
   camelCase?: boolean;
+  runtimeEnumsStyle?: RuntimeEnumsStyle;
   singular?: boolean;
   typeOnlyImports?: boolean;
 };
@@ -34,11 +36,13 @@ export type SerializerOptions = {
  */
 export class Serializer {
   readonly camelCase: boolean;
+  readonly runtimeEnumsStyle?: RuntimeEnumsStyle;
   readonly singular: boolean;
   readonly typeOnlyImports: boolean;
 
   constructor(options: SerializerOptions = {}) {
     this.camelCase = options.camelCase ?? false;
+    this.runtimeEnumsStyle = options.runtimeEnumsStyle;
     this.singular = options.singular ?? false;
     this.typeOnlyImports = options.typeOnlyImports ?? true;
   }
@@ -326,30 +330,23 @@ export class Serializer {
     data += node.name;
     data += ' {\n';
 
-    const args =
-      node.body.type === NodeType.UNION_EXPRESSION
-        ? node.body.args
-        : [node.body];
-
-    args.sort((a, b) => {
-      return (a as LiteralNode<string>).value.localeCompare(
-        (b as LiteralNode<string>).value,
-      );
+    const members = [...node.members].sort(([a], [b]) => {
+      return a.localeCompare(b);
     });
 
-    for (const arg of args) {
-      if (arg.type === NodeType.LITERAL && typeof arg.value === 'string') {
-        const serializedArg = this.serializeLiteral(arg);
-        const enumValueName = this.camelCase
-          ? toCamelCase(arg.value)
-          : arg.value;
-        data += '  ';
-        data += enumValueName;
-        data += ' = ';
-        data += serializedArg;
-        data += ',';
-        data += '\n';
+    for (const member of members) {
+      data += '  ';
+
+      if (this.runtimeEnumsStyle === RuntimeEnumsStyle.PASCAL_CASE) {
+        data += toPascalCase(member[0]);
+      } else {
+        data += toScreamingSnakeCase(member[0]);
       }
+
+      data += ' = ';
+      data += this.serializeLiteral(member[1]);
+      data += ',';
+      data += '\n';
     }
 
     data += '}';

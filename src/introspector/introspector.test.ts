@@ -150,7 +150,7 @@ describe(Introspector.name, () => {
             new DatabaseMetadata({
               enums: new EnumCollection({
                 'public.status': ['CONFIRMED', 'UNCONFIRMED'],
-                'test.status': ['BAR', 'FOO'],
+                'test.status': ['ABC_DEF', 'GHI_JKL'],
               }),
               tables: [
                 new TableMetadata({
@@ -190,7 +190,7 @@ describe(Introspector.name, () => {
                     new ColumnMetadata({
                       dataType: 'status',
                       dataTypeSchema: 'test',
-                      enumValues: ['BAR', 'FOO'],
+                      enumValues: ['ABC_DEF', 'GHI_JKL'],
                       isNullable: true,
                       name: 'user_status_2',
                     }),

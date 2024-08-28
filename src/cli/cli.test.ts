@@ -26,6 +26,7 @@ describe(Cli.name, () => {
     partitions: false,
     print: false,
     runtimeEnums: false,
+    runtimeEnumsStyle: undefined,
     schema: undefined,
     singular: false,
     typeOnlyImports: true,

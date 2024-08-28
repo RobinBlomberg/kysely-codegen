@@ -1,4 +1,9 @@
-import { DEFAULT_OUT_FILE, DEFAULT_URL, VALID_DIALECTS } from './constants';
+import {
+  DEFAULT_OUT_FILE,
+  DEFAULT_RUNTIME_ENUMS_STYLE,
+  DEFAULT_URL,
+  VALID_DIALECTS,
+} from './constants';
 
 type Flag = {
   default?: string;
@@ -78,6 +83,13 @@ export const FLAGS = [
     description:
       'Generate runtime enums instead of string unions for PostgreSQL enums.',
     longName: 'runtime-enums',
+  },
+  {
+    default: DEFAULT_RUNTIME_ENUMS_STYLE,
+    description:
+      'Which naming convention to use for runtime enum keys. Only works with `--runtime-enums`.',
+    longName: 'runtime-enums',
+    values: ['pascal-case', 'screaming-snake-case'],
   },
   {
     description: 'Set the default schema for the database connection.',

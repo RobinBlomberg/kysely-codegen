@@ -21,9 +21,12 @@ import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node
 import type { TemplateNode } from '../ast/template-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
 import type { GeneratorDialect } from '../dialect';
-import { toCamelCase } from '../utils/case-converter';
+import { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
+import { toKyselyCamelCase } from '../utils/case-converter';
 import { GLOBAL_DEFINITIONS } from './definitions';
+import { IdentifierStyle } from './identifier-style';
 import { GLOBAL_IMPORTS } from './imports';
+import type { SymbolNode } from './symbol-collection';
 import { SymbolCollection, SymbolType } from './symbol-collection';
 
 export type Overrides = {
@@ -53,8 +56,9 @@ export type TransformContext = {
   enums: EnumCollection;
   imports: Imports;
   metadata: DatabaseMetadata;
-  overrides?: Overrides;
+  overrides: Overrides | undefined;
   runtimeEnums: boolean;
+  runtimeEnumsStyle: RuntimeEnumsStyle | undefined;
   scalars: Scalars;
   symbols: SymbolCollection;
 };
@@ -66,6 +70,7 @@ export type TransformOptions = {
   metadata: DatabaseMetadata;
   overrides?: Overrides;
   runtimeEnums?: boolean;
+  runtimeEnumsStyle?: RuntimeEnumsStyle;
 };
 
 const collectSymbol = (name: string, context: TransformContext) => {
@@ -168,6 +173,7 @@ const createContext = (options: TransformOptions): TransformContext => {
     metadata: options.metadata,
     overrides: options.overrides,
     runtimeEnums: !!options.runtimeEnums,
+    runtimeEnumsStyle: options.runtimeEnumsStyle,
     scalars: {
       ...options.dialect.adapter.scalars,
     },
@@ -197,17 +203,18 @@ const createDatabaseExportNode = (context: TransformContext) => {
 };
 
 const createRuntimeEnumDefinitionNodes = (context: TransformContext) => {
-  const runtimeEnumDefinitionNodes: ExportStatementNode[] = [];
+  const exportStatements: ExportStatementNode[] = [];
 
-  for (const { name, symbol } of context.symbols.entries()) {
-    if (symbol.type === SymbolType.RUNTIME_ENUM_DEFINITION) {
-      const argument = new RuntimeEnumDeclarationNode(name, symbol.node);
-      const runtimeEnumDefinitionNode = new ExportStatementNode(argument);
-      runtimeEnumDefinitionNodes.push(runtimeEnumDefinitionNode);
+  for (const { symbol } of context.symbols.entries()) {
+    if (symbol.type !== SymbolType.RUNTIME_ENUM_DEFINITION) {
+      continue;
     }
+
+    const exportStatement = new ExportStatementNode(symbol.node);
+    exportStatements.push(exportStatement);
   }
 
-  return runtimeEnumDefinitionNodes.sort((a, b) => {
+  return exportStatements.sort((a, b) => {
     return a.argument.name.localeCompare(b.argument.name);
   });
 };
@@ -216,11 +223,13 @@ const createDefinitionNodes = (context: TransformContext) => {
   const definitionNodes: ExportStatementNode[] = [];
 
   for (const { name, symbol } of context.symbols.entries()) {
-    if (symbol.type === SymbolType.DEFINITION) {
-      const argument = new AliasDeclarationNode(name, symbol.node);
-      const definitionNode = new ExportStatementNode(argument);
-      definitionNodes.push(definitionNode);
+    if (symbol.type !== SymbolType.DEFINITION) {
+      continue;
     }
+
+    const argument = new AliasDeclarationNode(name, symbol.node);
+    const definitionNode = new ExportStatementNode(argument);
+    definitionNodes.push(definitionNode);
   }
 
   return definitionNodes.sort((a, b) =>
@@ -233,11 +242,13 @@ const createImportNodes = (context: TransformContext) => {
   const importNodes: ImportStatementNode[] = [];
 
   for (const { id, name, symbol } of context.symbols.entries()) {
-    if (symbol.type === SymbolType.MODULE_REFERENCE) {
-      (imports[symbol.node.name] ??= []).push(
-        new ImportClauseNode(id, name === id ? null : name),
-      );
+    if (symbol.type !== SymbolType.MODULE_REFERENCE) {
+      continue;
     }
+
+    (imports[symbol.node.name] ??= []).push(
+      new ImportClauseNode(id, name === id ? null : name),
+    );
   }
 
   for (const [moduleName, symbolImports] of Object.entries(imports)) {
@@ -332,12 +343,24 @@ const transformColumnToArgs = (
   const enumValues = context.enums.get(dataTypeId);
 
   if (enumValues) {
-    const enumNode = unionize(transformEnum(enumValues));
+    if (context.runtimeEnums) {
+      const symbol: SymbolNode = {
+        node: new RuntimeEnumDeclarationNode(symbolId, enumValues, {
+          identifierStyle:
+            context.runtimeEnumsStyle === RuntimeEnumsStyle.SCREAMING_SNAKE_CASE
+              ? IdentifierStyle.SCREAMING_SNAKE_CASE
+              : IdentifierStyle.KYSELY_PASCAL_CASE,
+        }),
+        type: SymbolType.RUNTIME_ENUM_DEFINITION,
+      };
+      symbol.node.name = context.symbols.set(symbolId, symbol);
+      const node = new IdentifierNode(symbol.node.name);
+      return [node];
+    }
+
     const symbolName = context.symbols.set(symbolId, {
-      node: enumNode,
-      type: context.runtimeEnums
-        ? SymbolType.RUNTIME_ENUM_DEFINITION
-        : SymbolType.DEFINITION,
+      node: unionize(transformEnum(enumValues)),
+      type: SymbolType.DEFINITION,
     });
     const node = new IdentifierNode(symbolName);
     return [node];
@@ -362,7 +385,7 @@ const transformEnum = (enumValues: string[]) => {
 };
 
 const transformName = (name: string, context: TransformContext) => {
-  return context.camelCase ? toCamelCase(name) : name;
+  return context.camelCase ? toKyselyCamelCase(name) : name;
 };
 
 const transformTables = (context: TransformContext) => {

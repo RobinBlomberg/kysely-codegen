@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { describe, test } from 'vitest';
+import { describe, it, test } from 'vitest';
 import { EnumCollection } from '../../introspector/enum-collection';
 import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
 import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
@@ -24,12 +24,13 @@ import { UnionExpressionNode } from '../ast/union-expression-node';
 import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { transform } from '../transformer/transform';
+import { RuntimeEnumsStyle } from './runtime-enums-style';
 import { Serializer } from './serializer';
 
 describe(Serializer.name, () => {
   const serializer = new Serializer();
 
-  test('serializeAliasDeclaration', () => {
+  test(Serializer.prototype.serializeAliasDeclaration.name, () => {
     strictEqual(
       serializer.serializeAliasDeclaration(
         new AliasDeclarationNode('MyType', new LiteralNode('foo')),
@@ -53,7 +54,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeArrayExpression', () => {
+  test(Serializer.prototype.serializeArrayExpression.name, () => {
     strictEqual(
       serializer.serializeArrayExpression(
         new ArrayExpressionNode(new IdentifierNode('Json')),
@@ -62,7 +63,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeExportStatement', () => {
+  test(Serializer.prototype.serializeExportStatement.name, () => {
     strictEqual(
       serializer.serializeExportStatement(
         new ExportStatementNode(
@@ -73,7 +74,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeExtendsClause', () => {
+  test(Serializer.prototype.serializeExtendsClause.name, () => {
     strictEqual(
       serializer.serializeExtendsClause(
         new ExtendsClauseNode(
@@ -87,7 +88,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeGenericExpression', () => {
+  test(Serializer.prototype.serializeGenericExpression.name, () => {
     strictEqual(
       serializer.serializeGenericExpression(
         new GenericExpressionNode('MyType', [
@@ -99,14 +100,14 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeIdentifier', () => {
+  test(Serializer.prototype.serializeIdentifier.name, () => {
     strictEqual(
       serializer.serializeIdentifier(new IdentifierNode('MyIdentifier')),
       'MyIdentifier',
     );
   });
 
-  test('serializeImportClause', () => {
+  test(Serializer.prototype.serializeImportClause.name, () => {
     strictEqual(
       serializer.serializeImportClause(new ImportClauseNode('ColumnType')),
       'ColumnType',
@@ -117,7 +118,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeImportStatement', () => {
+  test(Serializer.prototype.serializeImportStatement.name, () => {
     strictEqual(
       serializer.serializeImportStatement(
         new ImportStatementNode('kysely', [
@@ -129,14 +130,14 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeInferClause', () => {
+  test(Serializer.prototype.serializeInferClause.name, () => {
     strictEqual(
       serializer.serializeInferClause(new InferClauseNode('A')),
       'infer A',
     );
   });
 
-  test('serializeInterfaceDeclaration', () => {
+  test(Serializer.prototype.serializeInterfaceDeclaration.name, () => {
     strictEqual(
       serializer.serializeInterfaceDeclaration(
         new InterfaceDeclarationNode(
@@ -150,11 +151,11 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeLiteral', () => {
+  test(Serializer.prototype.serializeLiteral.name, () => {
     strictEqual(serializer.serializeLiteral(new LiteralNode('foo')), '"foo"');
   });
 
-  test('serializeMappedType', () => {
+  test(Serializer.prototype.serializeMappedType.name, () => {
     strictEqual(
       serializer.serializeMappedType(
         new MappedTypeNode(new IdentifierNode('Json')),
@@ -163,7 +164,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeObjectExpression', () => {
+  test(Serializer.prototype.serializeObjectExpression.name, () => {
     strictEqual(
       serializer.serializeObjectExpression(new ObjectExpressionNode([])),
       '{}',
@@ -179,8 +180,8 @@ describe(Serializer.name, () => {
     );
   });
 
-  describe('serializeObjectExpression', () => {
-    test('should order fields properly', () => {
+  describe(Serializer.prototype.serializeObjectExpression.name, () => {
+    it('should order fields properly', () => {
       strictEqual(
         serializer.serializeObjectExpression(
           new ObjectExpressionNode([
@@ -208,7 +209,7 @@ describe(Serializer.name, () => {
     });
   });
 
-  test('serializeProperty', () => {
+  test(Serializer.prototype.serializeProperty.name, () => {
     strictEqual(
       serializer.serializeProperty(
         new PropertyNode('foo', new IdentifierNode('Foo')),
@@ -223,42 +224,95 @@ describe(Serializer.name, () => {
     );
   });
 
-  test('serializeUnionExpression', () => {
-    strictEqual(
-      serializer.serializeUnionExpression(
-        new UnionExpressionNode([
-          new IdentifierNode('JsonArray'),
-          new IdentifierNode('JsonObject'),
-          new IdentifierNode('JsonPrimitive'),
-        ]),
-      ),
-      'JsonArray | JsonObject | JsonPrimitive',
-    );
-  });
+  describe(Serializer.prototype.serializeRuntimeEnum.name, () => {
+    it('should serialize runtime enums properly in pascal case', () => {
+      const enumSerializer = new Serializer({
+        camelCase: true,
+        runtimeEnumsStyle: RuntimeEnumsStyle.PASCAL_CASE,
+      });
 
-  describe('serializeUnionExpression', () => {
-    test('should order union constituents properly', () => {
       strictEqual(
-        serializer.serializeUnionExpression(
-          new UnionExpressionNode([
-            new IdentifierNode('z_TYPE'),
-            new IdentifierNode('undefined'),
-            new IdentifierNode('Aa_Type'),
-            new IdentifierNode('AA3Type'),
-            new IdentifierNode('Z_TYPE'),
-            new IdentifierNode('HType'),
-            new IdentifierNode('null'),
-            new IdentifierNode('AA_Type'),
-            new IdentifierNode('Aa3Type'),
+        enumSerializer.serializeRuntimeEnum(
+          new RuntimeEnumDeclarationNode('Mood', [
+            'sad',
+            'happy',
+            'happy_or_sad',
           ]),
         ),
-        'AA3Type | AA_Type | Aa3Type | Aa_Type | HType | Z_TYPE | z_TYPE | null | undefined',
+        'enum Mood {\n' +
+          '  Happy = "happy",\n' +
+          '  HappyOrSad = "happy_or_sad",\n' +
+          '  Sad = "sad",\n' +
+          '}',
+      );
+    });
+
+    it('should serialize runtime enums properly in screaming snake case', () => {
+      const enumSerializer = new Serializer({ camelCase: true });
+
+      strictEqual(
+        enumSerializer.serializeRuntimeEnum(
+          new RuntimeEnumDeclarationNode('Mood', [
+            'sad',
+            'happy',
+            'happy_or_sad',
+          ]),
+        ),
+        'enum Mood {\n' +
+          '  HAPPY = "happy",\n' +
+          '  HAPPY_OR_SAD = "happy_or_sad",\n' +
+          '  SAD = "sad",\n' +
+          '}',
       );
     });
   });
 
-  describe('serialize', () => {
-    test('should serialize JSON fields properly', () => {
+  describe(Serializer.prototype.serializeStatements.name, () => {
+    it('should be able to singularize table names', () => {
+      const dialect = new PostgresDialect();
+      const enums = new EnumCollection();
+      const singularSerializer = new Serializer({ singular: true });
+
+      const ast = transform({
+        camelCase: true,
+        dialect,
+        metadata: new DatabaseMetadata({
+          enums,
+          tables: [
+            new TableMetadata({
+              columns: [
+                new ColumnMetadata({
+                  dataType: 'varchar',
+                  name: 'username',
+                  hasDefaultValue: true,
+                }),
+              ],
+              name: 'users',
+              schema: 'public',
+            }),
+          ],
+        }),
+      });
+
+      strictEqual(
+        singularSerializer.serializeStatements(ast),
+        'import type { ColumnType } from "kysely";\n' +
+          '\n' +
+          'export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>\n' +
+          '  ? ColumnType<S, I | undefined, U>\n' +
+          '  : ColumnType<T, T | undefined, T>;\n' +
+          '\n' +
+          'export interface User {\n' +
+          '  username: Generated<string>;\n' +
+          '}\n' +
+          '\n' +
+          'export interface DB {\n' +
+          '  users: User;\n' +
+          '}\n',
+      );
+    });
+
+    it('should serialize JSON fields properly', () => {
       const dialect = new MysqlDialect();
       const enums = new EnumCollection();
 
@@ -312,10 +366,8 @@ describe(Serializer.name, () => {
           '}\n',
       );
     });
-  });
 
-  describe('serialize', () => {
-    test('should serialize Postgres JSON fields properly', () => {
+    it('should serialize Postgres JSON fields properly', () => {
       const dialect = new PostgresDialect();
       const enums = new EnumCollection();
 
@@ -359,69 +411,24 @@ describe(Serializer.name, () => {
     });
   });
 
-  describe('serialize', () => {
-    const enumSerializer = new Serializer({ camelCase: true });
-    test('should serialize runtime enums properly', () =>
+  describe(Serializer.prototype.serializeUnionExpression.name, () => {
+    it('should serialize union constituents properly with the correct ordering', () => {
       strictEqual(
-        enumSerializer.serializeRuntimeEnum(
-          new RuntimeEnumDeclarationNode(
-            'Mood',
-            new UnionExpressionNode([
-              new LiteralNode('sad'),
-              new LiteralNode('happy'),
-              new LiteralNode('happy_or_sad'),
-            ]),
-          ),
+        serializer.serializeUnionExpression(
+          new UnionExpressionNode([
+            new IdentifierNode('z_TYPE'),
+            new IdentifierNode('undefined'),
+            new IdentifierNode('Aa_Type'),
+            new IdentifierNode('AA3Type'),
+            new IdentifierNode('Z_TYPE'),
+            new IdentifierNode('HType'),
+            new IdentifierNode('null'),
+            new IdentifierNode('AA_Type'),
+            new IdentifierNode('Aa3Type'),
+          ]),
         ),
-        'enum Mood {\n' +
-          '  happy = "happy",\n' +
-          '  happyOrSad = "happy_or_sad",\n' +
-          '  sad = "sad",\n' +
-          '}',
-      ));
-  });
-
-  test('should be able to singularize table names', () => {
-    const dialect = new PostgresDialect();
-    const enums = new EnumCollection();
-    const singularSerializer = new Serializer({ singular: true });
-
-    const ast = transform({
-      camelCase: true,
-      dialect,
-      metadata: new DatabaseMetadata({
-        enums,
-        tables: [
-          new TableMetadata({
-            columns: [
-              new ColumnMetadata({
-                dataType: 'varchar',
-                name: 'username',
-                hasDefaultValue: true,
-              }),
-            ],
-            name: 'users',
-            schema: 'public',
-          }),
-        ],
-      }),
+        'AA3Type | AA_Type | Aa3Type | Aa_Type | HType | Z_TYPE | z_TYPE | null | undefined',
+      );
     });
-
-    strictEqual(
-      singularSerializer.serializeStatements(ast),
-      'import type { ColumnType } from "kysely";\n' +
-        '\n' +
-        'export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>\n' +
-        '  ? ColumnType<S, I | undefined, U>\n' +
-        '  : ColumnType<T, T | undefined, T>;\n' +
-        '\n' +
-        'export interface User {\n' +
-        '  username: Generated<string>;\n' +
-        '}\n' +
-        '\n' +
-        'export interface DB {\n' +
-        '  users: User;\n' +
-        '}\n',
-    );
   });
 });

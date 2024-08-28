@@ -6,6 +6,16 @@
 import type { ColumnType, JSONColumnType } from "kysely";
 import type { IPostgresInterval } from "postgres-interval";
 
+export enum Status {
+  Confirmed = "CONFIRMED",
+  Unconfirmed = "UNCONFIRMED",
+}
+
+export enum TestStatus {
+  AbcDef = "ABC_DEF",
+  GhiJkl = "GHI_JKL",
+}
+
 export type ArrayType<T> = ArrayTypeImpl<T> extends (infer U)[]
   ? U[]
   : ArrayTypeImpl<T>;
@@ -33,10 +43,6 @@ export type JsonPrimitive = boolean | number | string | null;
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Numeric = ColumnType<number | string, number | string, number | string>;
-
-export type Status = "CONFIRMED" | "UNCONFIRMED";
-
-export type TestStatus = "ABC_DEF" | "GHI_JKL";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 

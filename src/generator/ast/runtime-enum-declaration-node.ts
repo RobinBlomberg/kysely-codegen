@@ -1,13 +1,43 @@
-import type { ExpressionNode } from './expression-node';
+import type { IdentifierStyle } from '../transformer/identifier-style';
+import type { SymbolEntry } from '../transformer/symbol-collection';
+import { SymbolCollection, SymbolType } from '../transformer/symbol-collection';
+import { LiteralNode } from './literal-node';
 import { NodeType } from './node-type';
 
+type RuntimeEnumMember = [key: string, value: LiteralNode<string>];
+
 export class RuntimeEnumDeclarationNode {
-  readonly body: ExpressionNode;
-  readonly name: string;
+  readonly members: RuntimeEnumMember[];
+  name: string;
   readonly type = NodeType.RUNTIME_ENUM_DECLARATION;
 
-  constructor(name: string, body: ExpressionNode) {
+  constructor(
+    name: string,
+    literals: string[],
+    options?: { identifierStyle?: IdentifierStyle },
+  ) {
+    this.members = [];
     this.name = name;
-    this.body = body;
+
+    const symbolCollection = new SymbolCollection({
+      entries: literals.map(
+        (literal): SymbolEntry => [
+          literal,
+          {
+            node: new LiteralNode(literal),
+            type: SymbolType.RUNTIME_ENUM_MEMBER,
+          },
+        ],
+      ),
+      identifierStyle: options?.identifierStyle,
+    });
+
+    for (const { id, symbol } of symbolCollection.entries()) {
+      if (symbol.type !== SymbolType.RUNTIME_ENUM_MEMBER) {
+        continue;
+      }
+
+      this.members.push([id, symbol.node]);
+    }
   }
 }

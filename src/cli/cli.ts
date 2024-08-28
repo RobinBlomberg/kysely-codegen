@@ -3,6 +3,7 @@ import { ConnectionStringParser } from '../generator/connection-string-parser';
 import type { DialectName } from '../generator/dialect-manager';
 import { DialectManager } from '../generator/dialect-manager';
 import { generate } from '../generator/generator/generate';
+import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
 import { LogLevel } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import type { Overrides } from '../generator/transformer/transform';
@@ -33,6 +34,7 @@ export type CliOptions = {
   partitions?: boolean;
   print?: boolean;
   runtimeEnums?: boolean;
+  runtimeEnumsStyle?: RuntimeEnumsStyle;
   schema?: string;
   singular?: boolean;
   typeOnlyImports?: boolean;
@@ -58,6 +60,7 @@ export class Cli {
     const partitions = !!options.partitions;
     const print = !!options.print;
     const runtimeEnums = options.runtimeEnums;
+    const runtimeEnumsStyle = options.runtimeEnumsStyle;
     const schema = options.schema;
     const singular = !!options.singular;
     const typeOnlyImports = options.typeOnlyImports;
@@ -107,6 +110,7 @@ export class Cli {
       partitions,
       print,
       runtimeEnums,
+      runtimeEnumsStyle,
       schema,
       singular,
       typeOnlyImports,
@@ -150,6 +154,15 @@ export class Cli {
     }
   }
 
+  #parseRuntimeEnumsStyle(input: any) {
+    switch (input) {
+      case 'pascal-case':
+        return RuntimeEnumsStyle.PASCAL_CASE;
+      case 'screaming-snake-case':
+        return RuntimeEnumsStyle.SCREAMING_SNAKE_CASE;
+    }
+  }
+
   #parseString(input: any) {
     return input === undefined ? undefined : String(input);
   }
@@ -182,6 +195,9 @@ export class Cli {
     const partitions = this.#parseBoolean(argv.partitions);
     const print = this.#parseBoolean(argv.print);
     const runtimeEnums = this.#parseBoolean(argv['runtime-enums']);
+    const runtimeEnumsStyle = this.#parseRuntimeEnumsStyle(
+      argv['runtime-enums-style'],
+    );
     const schema = this.#parseString(argv.schema);
     const singular = this.#parseBoolean(argv.singular);
     const typeOnlyImports = this.#parseBoolean(
@@ -240,6 +256,7 @@ export class Cli {
       partitions,
       print,
       runtimeEnums,
+      runtimeEnumsStyle,
       schema,
       singular,
       typeOnlyImports,

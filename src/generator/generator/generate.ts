@@ -7,6 +7,7 @@ import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
 import { transform, type Overrides } from '../transformer/transform';
 import { DiffChecker } from './diff-checker';
+import type { RuntimeEnumsStyle } from './runtime-enums-style';
 import { Serializer } from './serializer';
 
 export type GenerateOptions = {
@@ -22,6 +23,7 @@ export type GenerateOptions = {
   partitions?: boolean;
   print?: boolean;
   runtimeEnums?: boolean;
+  runtimeEnumsStyle?: RuntimeEnumsStyle;
   schema?: string;
   serializer?: Serializer;
   singular?: boolean;
@@ -60,12 +62,14 @@ export const generate = async (options: GenerateOptions) => {
     metadata,
     overrides: options.overrides,
     runtimeEnums: !!options.runtimeEnums,
+    runtimeEnumsStyle: options.runtimeEnumsStyle,
   });
 
   const serializer =
     options.serializer ??
     new Serializer({
       camelCase: options.camelCase,
+      runtimeEnumsStyle: options.runtimeEnumsStyle,
       singular: options.singular,
       typeOnlyImports: options.typeOnlyImports,
     });

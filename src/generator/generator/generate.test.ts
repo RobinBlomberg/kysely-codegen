@@ -16,6 +16,7 @@ import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { SqliteDialect } from '../dialects/sqlite/sqlite-dialect';
 import type { GenerateOptions } from './generate';
 import { generate } from './generate';
+import { RuntimeEnumsStyle } from './runtime-enums-style';
 
 type Test = {
   connectionString: string;
@@ -71,9 +72,25 @@ describe(generate.name, () => {
       test(dialect.constructor.name, async () => {
         const db = await migrate(dialect, connectionString);
         const output = await generate({ ...baseGenerateOptions, db, dialect });
-        await db.destroy();
         const expectedOutput = await readDialectOutput(dialect);
         strictEqual(output, expectedOutput);
+
+        if (dialect instanceof PostgresDialect) {
+          const runtimeEnumsOutput = await generate({
+            ...baseGenerateOptions,
+            db,
+            dialect,
+            runtimeEnums: true,
+            runtimeEnumsStyle: RuntimeEnumsStyle.PASCAL_CASE,
+          });
+          const expectedRuntimeEnumsOutput = await readFile(
+            join(SNAPSHOTS_DIR, 'postgres-runtime-enums.snapshot.ts'),
+            'utf8',
+          );
+          strictEqual(runtimeEnumsOutput, expectedRuntimeEnumsOutput);
+        }
+
+        await db.destroy();
       });
     }
   });

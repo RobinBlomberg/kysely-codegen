@@ -40,7 +40,7 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
       await trx.schema
         .withSchema('test')
         .createType('status')
-        .asEnum(['FOO', 'BAR'])
+        .asEnum(['ABC_DEF', 'GHI_JKL'])
         .execute();
       await trx.schema
         .createType('status')
