@@ -14,7 +14,7 @@ export type Scalars = Record<string, ExpressionNode | undefined>;
  */
 export abstract class Adapter {
   readonly defaultScalar: ExpressionNode = new IdentifierNode('unknown');
-  readonly defaultSchema: string | null = null;
+  readonly defaultSchemas: string[] = [];
   readonly definitions: Definitions = {};
   readonly imports: Imports = {};
   readonly scalars: Scalars = {};

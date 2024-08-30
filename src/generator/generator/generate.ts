@@ -24,7 +24,7 @@ export type GenerateOptions = {
   print?: boolean;
   runtimeEnums?: boolean;
   runtimeEnumsStyle?: RuntimeEnumsStyle;
-  schema?: string;
+  schemas?: string[];
   serializer?: Serializer;
   singular?: boolean;
   typeOnlyImports?: boolean;
@@ -57,7 +57,7 @@ export const generate = async (options: GenerateOptions) => {
 
   const nodes = transform({
     camelCase: !!options.camelCase,
-    defaultSchema: options.schema,
+    defaultSchemas: options.schemas,
     dialect: options.dialect,
     metadata,
     overrides: options.overrides,

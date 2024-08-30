@@ -25,7 +25,7 @@ export class PostgresAdapter extends Adapter {
   // PostgreSQL server as a string and node-postgres will pass it through without modifying it in
   // any way."
   override readonly defaultScalar = new IdentifierNode('string');
-  override readonly defaultSchema = 'public';
+  override readonly defaultSchemas = ['public'];
   override readonly definitions = {
     Circle: new ObjectExpressionNode([
       new PropertyNode('x', new IdentifierNode('number')),

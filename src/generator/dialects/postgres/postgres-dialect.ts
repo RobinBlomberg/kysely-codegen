@@ -4,7 +4,7 @@ import type { GeneratorDialect } from '../../dialect';
 import { PostgresAdapter } from './postgres-adapter';
 
 type PostgresDialectOptions = {
-  defaultSchema?: string;
+  defaultSchema?: string[];
   domains?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;
