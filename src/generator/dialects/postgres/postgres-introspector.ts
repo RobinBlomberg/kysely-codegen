@@ -166,7 +166,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
 
   async #introspectPartitions(db: Kysely<PostgresDB>) {
     const result = await sql<TableReference>`
-      select pg_namespace.nspname schema, pg_class.relname name
+      select pg_namespace.nspname as schema, pg_class.relname as name
       from pg_inherits
       join pg_class on pg_inherits.inhrelid = pg_class.oid
       join pg_namespace on pg_namespace.oid = pg_class.relnamespace;
