@@ -68,7 +68,7 @@ export const FLAGS = [
   {
     description:
       'Specify type overrides for specific table columns in JSON format.',
-    example: '{"columns":{"table_name.column_name":"{ foo: \\"bar\\" }"}}',
+    example: '{"columns":{"table_name.column_name":"{foo:\\"bar\\"}"}}',
     longName: 'overrides',
   },
   {
@@ -88,7 +88,7 @@ export const FLAGS = [
     default: DEFAULT_RUNTIME_ENUMS_STYLE,
     description:
       'Which naming convention to use for runtime enum keys. Only works with `--runtime-enums`.',
-    longName: 'runtime-enums',
+    longName: 'runtime-enums-style',
     values: ['pascal-case', 'screaming-snake-case'],
   },
   {
