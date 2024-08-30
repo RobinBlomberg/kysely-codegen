@@ -4,7 +4,7 @@ import { IntrospectorDialect } from '../../dialect';
 import { DEFAULT_NUMERIC_PARSER, NumericParser } from './numeric-parser';
 import { PostgresIntrospector } from './postgres-introspector';
 
-export type PostgresDialectOptions = {
+type PostgresDialectOptions = {
   defaultSchema?: string;
   domains?: boolean;
   numericParser?: NumericParser;

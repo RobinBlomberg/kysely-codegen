@@ -9,14 +9,14 @@ const DIALECT_PARTS_REGEXP = /([^:]*)(.*)/;
 /**
  * @see https://dev.mysql.com/doc/refman/8.0/en/connecting-using-uri-or-key-value-pairs.html
  */
-export type ParseConnectionStringOptions = {
+type ParseConnectionStringOptions = {
   connectionString: string;
   dialectName?: DialectName;
   envFile?: string;
   logger?: Logger;
 };
 
-export type ParsedConnectionString = {
+type ParsedConnectionString = {
   connectionString: string;
   inferredDialectName: DialectName;
 };

@@ -26,17 +26,6 @@ const toWords = (string: string) => {
 
 /**
  * @example
- * toCamelCase('foo_bar')
- * // => 'fooBar'
- */
-export const toCamelCase = (string: string) => {
-  return toWords(string)
-    .map((w, i) => (i ? toUpperFirst(w.toLowerCase()) : w.toLowerCase()))
-    .join('');
-};
-
-/**
- * @example
  * toKyselyCamelCase('foo_bar')
  * // => 'fooBar'
  */

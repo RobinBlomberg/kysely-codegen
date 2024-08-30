@@ -18,5 +18,4 @@ export const enum NodeType {
   RUNTIME_ENUM_DECLARATION = 'RuntimeEnumDeclaration',
   TEMPLATE = 'Template',
   UNION_EXPRESSION = 'UnionExpression',
-  VALUE = 'Value',
 }

@@ -11,7 +11,6 @@ import {
   DEFAULT_NUMERIC_PARSER,
   NumericParser,
 } from '../introspector/dialects/postgres/numeric-parser';
-import type { LOG_LEVEL_NAMES } from './constants';
 import {
   DEFAULT_LOG_LEVEL,
   DEFAULT_OUT_FILE,
@@ -41,8 +40,6 @@ export type CliOptions = {
   url: string;
   verify?: boolean;
 };
-
-export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
 
 /**
  * Creates a kysely-codegen command-line interface.

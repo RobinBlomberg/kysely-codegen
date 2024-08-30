@@ -14,7 +14,7 @@ import {
   JSON_VALUE_DEFINITION,
 } from '../../transformer/definitions';
 
-export type PostgresAdapterOptions = {
+type PostgresAdapterOptions = {
   numericParser?: NumericParser;
 };
 

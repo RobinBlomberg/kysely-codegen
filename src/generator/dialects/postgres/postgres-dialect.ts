@@ -3,7 +3,7 @@ import { PostgresIntrospectorDialect } from '../../../introspector/dialects/post
 import type { GeneratorDialect } from '../../dialect';
 import { PostgresAdapter } from './postgres-adapter';
 
-export type PostgresDialectOptions = {
+type PostgresDialectOptions = {
   defaultSchema?: string;
   domains?: boolean;
   numericParser?: NumericParser;

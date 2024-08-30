@@ -11,9 +11,9 @@ import { IdentifierStyle } from './identifier-style';
 
 export type SymbolEntry = [id: string, symbol: SymbolNode];
 
-export type SymbolMap = Record<string, SymbolNode | undefined>;
+type SymbolMap = Record<string, SymbolNode | undefined>;
 
-export type SymbolNameMap = Record<string, string | undefined>;
+type SymbolNameMap = Record<string, string | undefined>;
 
 export type SymbolNode =
   | { node: ExpressionNode | TemplateNode; type: SymbolType.DEFINITION }

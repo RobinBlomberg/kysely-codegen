@@ -2,6 +2,7 @@ import {
   DEFAULT_OUT_FILE,
   DEFAULT_RUNTIME_ENUMS_STYLE,
   DEFAULT_URL,
+  LOG_LEVEL_NAMES,
   VALID_DIALECTS,
 } from './constants';
 
@@ -12,7 +13,7 @@ type Flag = {
   examples?: string[];
   longName: string;
   shortName?: string;
-  values?: string[];
+  values?: readonly string[];
 };
 
 export const FLAGS = [
@@ -48,7 +49,7 @@ export const FLAGS = [
     default: 'warn',
     description: 'Set the terminal log level.',
     longName: 'log-level',
-    values: ['debug', 'info', 'warn', 'error', 'silent'],
+    values: LOG_LEVEL_NAMES,
   },
   {
     description: 'Skip generating types for PostgreSQL domains.',

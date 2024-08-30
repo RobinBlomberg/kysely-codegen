@@ -18,7 +18,7 @@ export type DialectName =
   | 'sqlite'
   | 'worker-bun-sqlite';
 
-export type DialectManagerOptions = {
+type DialectManagerOptions = {
   domains?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;

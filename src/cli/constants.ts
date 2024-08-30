@@ -17,11 +17,11 @@ export const DEFAULT_RUNTIME_ENUMS_STYLE = RuntimeEnumsStyle.PASCAL_CASE;
 export const DEFAULT_URL = 'env(DATABASE_URL)';
 
 export const LOG_LEVEL_NAMES = [
-  'silent',
+  'debug',
   'info',
   'warn',
   'error',
-  'debug',
+  'silent',
 ] as const;
 
 export const VALID_DIALECTS = [

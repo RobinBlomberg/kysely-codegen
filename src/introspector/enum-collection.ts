@@ -1,4 +1,4 @@
-export type EnumMap = Record<string, string[] | undefined>;
+type EnumMap = Record<string, string[] | undefined>;
 
 export class EnumCollection {
   readonly enums: EnumMap = {};

@@ -3,7 +3,7 @@ import type { IntrospectorDialect } from './dialect';
 import type { DatabaseMetadata } from './metadata/database-metadata';
 import { TableMatcher } from './table-matcher';
 
-export type ConnectOptions = {
+type ConnectOptions = {
   connectionString: string;
   dialect: IntrospectorDialect;
 };

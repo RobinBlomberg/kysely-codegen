@@ -48,7 +48,7 @@ export type Overrides = {
   columns?: Record<string, ExpressionNode | string>;
 };
 
-export type TransformContext = {
+type TransformContext = {
   camelCase: boolean;
   defaultScalar: ExpressionNode;
   defaultSchema: string | null;
@@ -63,7 +63,7 @@ export type TransformContext = {
   symbols: SymbolCollection;
 };
 
-export type TransformOptions = {
+type TransformOptions = {
   camelCase?: boolean;
   defaultSchema?: string;
   dialect: GeneratorDialect;

@@ -24,7 +24,7 @@ import { RuntimeEnumsStyle } from './runtime-enums-style';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
-export type SerializerOptions = {
+type SerializerOptions = {
   camelCase?: boolean;
   runtimeEnumsStyle?: RuntimeEnumsStyle;
   singular?: boolean;
