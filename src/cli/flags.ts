@@ -93,7 +93,7 @@ export const FLAGS = [
     values: ['pascal-case', 'screaming-snake-case'],
   },
   {
-    description: 'Set the default schema for the database connection.',
+    description: 'Set the default schema(s) for the database connection.',
     longName: 'schema',
   },
   {
