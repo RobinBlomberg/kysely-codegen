@@ -17,7 +17,7 @@ import {
   DEFAULT_URL,
   VALID_DIALECTS,
 } from './constants';
-import { FLAGS, flagsString } from './flags';
+import { FLAGS, serializeFlags } from './flags';
 
 export type CliOptions = {
   camelCase?: boolean;
@@ -166,7 +166,9 @@ export class Cli {
 
   #showHelp() {
     console.info(
-      ['', 'kysely-codegen [options]', '', flagsString, ''].join('\n'),
+      ['', 'kysely-codegen [options]', '', serializeFlags(FLAGS), ''].join(
+        '\n',
+      ),
     );
     process.exit(0);
   }

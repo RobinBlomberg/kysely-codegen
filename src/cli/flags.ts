@@ -118,7 +118,7 @@ export const FLAGS = [
   },
 ];
 
-const serializeFlags = (flags: Flag[]) => {
+export const serializeFlags = (flags: Flag[]) => {
   const lines: { fullDescription: string; line: string }[] = [];
   const sortedFlags = flags.sort((a, b) => {
     return a.longName.localeCompare(b.longName);
@@ -159,5 +159,3 @@ const serializeFlags = (flags: Flag[]) => {
     })
     .join('\n');
 };
-
-export const flagsString = serializeFlags(FLAGS);
