@@ -34,7 +34,7 @@ export type CliOptions = {
   print?: boolean;
   runtimeEnums?: boolean;
   runtimeEnumsStyle?: RuntimeEnumsStyle;
-  schema?: string;
+  schemas: string[];
   singular?: boolean;
   typeOnlyImports?: boolean;
   url: string;
@@ -58,7 +58,7 @@ export class Cli {
     const print = !!options.print;
     const runtimeEnums = options.runtimeEnums;
     const runtimeEnumsStyle = options.runtimeEnumsStyle;
-    const schema = options.schema;
+    const schemas = options.schemas;
     const singular = !!options.singular;
     const typeOnlyImports = options.typeOnlyImports;
     const verify = options.verify;
@@ -108,7 +108,7 @@ export class Cli {
       print,
       runtimeEnums,
       runtimeEnumsStyle,
-      schema,
+      schemas,
       singular,
       typeOnlyImports,
       verify,
@@ -164,6 +164,12 @@ export class Cli {
     return input === undefined ? undefined : String(input);
   }
 
+  #parseStringArray(input: any) {
+    if (input === undefined) return [];
+    if (!Array.isArray(input)) return [String(input)];
+    return input.map(String);
+  }
+
   #showHelp() {
     console.info(
       ['', 'kysely-codegen [options]', '', serializeFlags(FLAGS), ''].join(
@@ -197,7 +203,7 @@ export class Cli {
     const runtimeEnumsStyle = this.#parseRuntimeEnumsStyle(
       argv['runtime-enums-style'],
     );
-    const schema = this.#parseString(argv.schema);
+    const schemas = this.#parseStringArray(argv.schema);
     const singular = this.#parseBoolean(argv.singular);
     const typeOnlyImports = this.#parseBoolean(
       argv['type-only-imports'] ?? true,
@@ -256,7 +262,7 @@ export class Cli {
       print,
       runtimeEnums,
       runtimeEnumsStyle,
-      schema,
+      schemas,
       singular,
       typeOnlyImports,
       url,

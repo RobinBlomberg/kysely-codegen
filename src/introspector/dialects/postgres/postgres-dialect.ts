@@ -5,7 +5,7 @@ import { DEFAULT_NUMERIC_PARSER, NumericParser } from './numeric-parser';
 import { PostgresIntrospector } from './postgres-introspector';
 
 type PostgresDialectOptions = {
-  defaultSchema?: string;
+  defaultSchemas?: string[];
   domains?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;
@@ -19,11 +19,12 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
     super();
 
     this.introspector = new PostgresIntrospector({
-      defaultSchema: options?.defaultSchema,
+      defaultSchemas: options?.defaultSchemas,
       domains: options?.domains,
       partitions: options?.partitions,
     });
     this.options = {
+      defaultSchemas: options?.defaultSchemas,
       domains: options?.domains ?? true,
       numericParser: options?.numericParser ?? DEFAULT_NUMERIC_PARSER,
     };

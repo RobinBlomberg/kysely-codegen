@@ -51,7 +51,7 @@ export type Overrides = {
 type TransformContext = {
   camelCase: boolean;
   defaultScalar: ExpressionNode;
-  defaultSchema: string | null;
+  defaultSchemas: string[];
   definitions: Definitions;
   enums: EnumCollection;
   imports: Imports;
@@ -65,7 +65,7 @@ type TransformContext = {
 
 type TransformOptions = {
   camelCase?: boolean;
-  defaultSchema?: string;
+  defaultSchemas?: string[];
   dialect: GeneratorDialect;
   metadata: DatabaseMetadata;
   overrides?: Overrides;
@@ -159,8 +159,8 @@ const createContext = (options: TransformOptions): TransformContext => {
     camelCase: !!options.camelCase,
     defaultScalar:
       options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
-    defaultSchema:
-      options.defaultSchema ?? options.dialect.adapter.defaultSchema,
+    defaultSchemas:
+      options.defaultSchemas ?? options.dialect.adapter.defaultSchemas,
     definitions: {
       ...GLOBAL_DEFINITIONS,
       ...options.dialect.adapter.definitions,
@@ -264,8 +264,8 @@ const getTableIdentifier = (
 ) => {
   const name =
     table.schema &&
-    context.defaultSchema &&
-    table.schema !== context.defaultSchema
+    context.defaultSchemas.length > 0 &&
+    !context.defaultSchemas.includes(table.schema)
       ? `${table.schema}.${table.name}`
       : table.name;
   return transformName(name, context);
@@ -331,12 +331,14 @@ const transformColumnToArgs = (
 
   // Used as a unique identifier for the data type:
   const dataTypeId = `${
-    column.dataTypeSchema ?? context.defaultSchema
+    column.dataTypeSchema ?? context.defaultSchemas
   }.${dataType}`;
 
   // Used for serializing the name of the symbol:
   const symbolId =
-    column.dataTypeSchema && column.dataTypeSchema !== context.defaultSchema
+    column.dataTypeSchema &&
+    context.defaultSchemas.length > 0 &&
+    !context.defaultSchemas.includes(column.dataTypeSchema)
       ? `${column.dataTypeSchema}.${dataType}`
       : dataType;
 

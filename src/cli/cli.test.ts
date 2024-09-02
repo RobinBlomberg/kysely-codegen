@@ -27,7 +27,7 @@ describe(Cli.name, () => {
     print: false,
     runtimeEnums: false,
     runtimeEnumsStyle: undefined,
-    schema: undefined,
+    schemas: [],
     singular: false,
     typeOnlyImports: true,
     url: DEFAULT_URL,
@@ -67,7 +67,8 @@ describe(Cli.name, () => {
       { overrides: { columns: { 'table.override': '{ foo: "bar" }' } } },
     );
     assert(['--print'], { outFile: undefined, print: true });
-    assert(['--schema=foo'], { schema: 'foo' });
+    assert(['--schema=foo'], { schemas: ['foo'] });
+    assert(['--schema=foo', '--schema=bar'], { schemas: ['foo', 'bar'] });
     assert(['--singular'], { singular: true });
     assert(['--type-only-imports'], { typeOnlyImports: true });
     assert(['--type-only-imports=false'], { typeOnlyImports: false });

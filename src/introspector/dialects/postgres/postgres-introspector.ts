@@ -24,7 +24,7 @@ type TableReference = {
 };
 
 type PostgresIntrospectorOptions = {
-  defaultSchema?: string;
+  defaultSchemas?: string[];
   domains?: boolean;
   partitions?: boolean;
 };
@@ -36,7 +36,10 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     super();
 
     this.options = {
-      defaultSchema: options?.defaultSchema ?? 'public',
+      defaultSchemas:
+        options?.defaultSchemas && options.defaultSchemas.length > 0
+          ? options.defaultSchemas
+          : ['public'],
       domains: options?.domains ?? true,
     };
   }
@@ -57,7 +60,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
         const columns = table.columns.map((column): ColumnMetadata => {
           const dataType = this.#getRootType(column, domains);
           const enumValues = enums.get(
-            `${column.dataTypeSchema ?? this.options.defaultSchema}.${dataType}`,
+            `${column.dataTypeSchema ?? this.options.defaultSchemas}.${dataType}`,
           );
           const isArray = dataType.startsWith('_');
 
