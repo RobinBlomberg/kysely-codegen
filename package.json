@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.13.1",
+  "version": "0.16.5",
   "author": "Robin Blomberg",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -17,13 +17,15 @@
   },
   "homepage": "https://github.com/RobinBlomberg/kysely-codegen#readme",
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "check": "tsc --noEmit",
+    "build": "rimraf dist && tsc --project ./tsconfig.build.json",
+    "check:types": "tsc --noEmit",
     "ci": "run-s ci:*",
     "ci:build": "pnpm build",
     "ci:eslint": "pnpm lint:eslint --max-warnings=0 --report-unused-disable-directives",
     "ci:prettier": "pnpm lint:prettier",
+    "ci:spelling": "cspell-cli -e dist -e pnpm-lock.yaml -e '*.svg' .",
     "ci:test": "pnpm test",
+    "ci:unused": "knip",
     "dev": "tsx watch ./src/cli/bin.ts",
     "docker:up": "docker-compose up -d",
     "fix": "run-s fix:*",
@@ -34,8 +36,8 @@
     "lint:prettier": "prettier --check src",
     "prepublishOnly": "pnpm run ci",
     "start": "node ./dist/cli/bin.js",
-    "test": "ts-node-dev ./src/index.test.ts",
-    "test:watch": "ts-node-dev --quiet --respawn ./src/index.test.ts",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "upgrade": "ncu -u"
   },
   "dependencies": {
@@ -43,47 +45,51 @@
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",
     "git-diff": "^2.0.6",
-    "micromatch": "^4.0.5",
-    "minimist": "^1.2.8"
+    "micromatch": "^4.0.8",
+    "minimist": "^1.2.8",
+    "pluralize": "^8.0.0"
   },
   "devDependencies": {
-    "@libsql/kysely-libsql": "^0.3.0",
+    "@libsql/kysely-libsql": "^0.4.1",
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
-    "@robinblomberg/eslint-config-robinblomberg": "0.26.0",
+    "@robinblomberg/eslint-config-robinblomberg": "0.28.0",
     "@robinblomberg/prettier-config": "^0.1.2",
-    "@types/better-sqlite3": "^7.6.9",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/bun": "^1.1.8",
     "@types/git-diff": "^2.0.7",
-    "@types/micromatch": "^4.0.6",
+    "@types/micromatch": "^4.0.9",
     "@types/minimist": "^1.2.5",
-    "@types/node": "^20.11.25",
-    "@types/pg": "^8.11.2",
+    "@types/node": "^22.5.1",
+    "@types/pg": "^8.11.7",
+    "@types/pluralize": "^0.0.33",
     "@types/tedious": "^4.0.14",
-    "@typescript-eslint/parser": "^7.1.1",
-    "better-sqlite3": "^9.4.3",
+    "better-sqlite3": "^11.2.1",
+    "cspell-cli": "^8.13.3",
     "eslint": "^8.57.0",
-    "kysely": "^0.27.2",
-    "kysely-bun-worker": "^0.5.7",
-    "mysql2": "^3.9.2",
+    "execa": "^9.3.1",
+    "knip": "^5.27.5",
+    "kysely": "^0.27.4",
+    "mysql2": "^3.11.0",
     "npm-run-all": "^4.1.5",
-    "pg": "^8.11.3",
-    "pnpm": "^8.15.4",
-    "prettier": "^3.2.5",
-    "rimraf": "^5.0.5",
-    "ts-node-dev": "^2.0.0",
-    "tsx": "^4.7.1",
-    "typescript": "^5.4.2",
-    "vitest": "^1.3.1"
+    "pg": "^8.12.0",
+    "postgres-interval": "^4.0.2",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   },
   "peerDependencies": {
     "@libsql/kysely-libsql": "^0.3.0",
     "@tediousjs/connection-string": "^0.5.0",
     "better-sqlite3": ">=7.6.2",
     "kysely": "^0.27.0",
+    "kysely-bun-sqlite": "^0.3.2",
     "kysely-bun-worker": "^0.5.3",
     "mysql2": "^2.3.3 || ^3.0.0",
     "pg": "^8.8.0",
     "tarn": "^3.0.0",
-    "tedious": "^16.6.0"
+    "tedious": "^18.0.0"
   },
   "peerDependenciesMeta": {
     "@libsql/kysely-libsql": {
@@ -98,8 +104,11 @@
     "kysely": {
       "optional": false
     },
+    "kysely-bun-sqlite": {
+      "optional": true
+    },
     "kysely-bun-worker": {
-      "optional": false
+      "optional": true
     },
     "mysql2": {
       "optional": true
@@ -119,7 +128,29 @@
       "@robinblomberg/robinblomberg",
       "@robinblomberg/prettier"
     ],
-    "ignorePatterns": "**/src/core/outputs/*.ts"
+    "ignorePatterns": "**/snapshots/*.snapshot.ts",
+    "rules": {
+      "unicorn/prefer-node-protocol": 0
+    }
+  },
+  "knip": {
+    "ignore": [
+      "src/db.ts",
+      "**/*.snapshot.ts"
+    ],
+    "ignoreBinaries": [
+      "docker-compose",
+      "ncu"
+    ],
+    "ignoreDependencies": [
+      "@libsql/kysely-libsql",
+      "@tediousjs/connection-string",
+      "better-sqlite3",
+      "mysql2",
+      "pg",
+      "tarn",
+      "tedious"
+    ]
   },
   "prettier": "@robinblomberg/prettier-config"
 }

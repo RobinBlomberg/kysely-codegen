@@ -6,7 +6,10 @@
 
 - [Installation](#installation)
 - [Generating type definitions](#generating-type-definitions)
+- [Include/exclude patterns](#includeexclude-patterns)
+- [Help](#help)
 - [Using the type definitions](#using-the-type-definitions)
+- [Issue funding](#issue-funding)
 
 ## Installation
 
@@ -99,24 +102,26 @@ export interface DB {
 
 ## Include/exclude patterns
 
-You can choose which tables should be included during code generation by providing a glob pattern to the `--include` and `--exclude` flags. We use [micromatch](https://github.com/micromatch/micromatch) under the hood which provides advanced glob support. For instance, if you only want to include your public tables:
+You can choose which tables should be included during code generation by providing a glob pattern to the `--include-pattern` and `--exclude-pattern` flags. We use [micromatch](https://github.com/micromatch/micromatch) under the hood which provides advanced glob support. For instance, if you only want to include your public tables:
 
 ```bash
-kysely-codegen --include="public.*"
+kysely-codegen --include-pattern="public.*"
 ```
 
 You can also include only certain tables within a schema:
 
 ```bash
-kysely-codegen --include="public.+(user|post)"
+kysely-codegen --include-pattern="public.+(user|post)"
 ```
 
 Or exclude an entire class of tables:
+
 ```bash
-kysely-codegen --exclude="documents.*"
+kysely-codegen --exclude-pattern="documents.*"
 ```
 
 ## Help
+
 For more options, run `kysely-codegen --help`.
 
 ## Using the type definitions
@@ -139,3 +144,9 @@ const db = new Kysely<DB>({
 const rows = await db.selectFrom('user').selectAll().execute();
 //    ^ { company_id: number | null; created_at: Date; email: string; id: number; ... }[]
 ```
+
+## Issue funding
+
+We use [Polar.sh](https://polar.sh/RobinBlomberg) to upvote and promote specific features that you would like to see implemented. Check the backlog and help out:
+
+<a href="https://polar.sh/RobinBlomberg"><img src="https://polar.sh/embed/fund-our-backlog.svg?org=RobinBlomberg" /></a>
