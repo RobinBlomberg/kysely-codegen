@@ -41,7 +41,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
           ? options.defaultSchemas
           : ['public'],
       domains: options?.domains ?? true,
-      partitions: options?.partitions ?? true,
+      partitions: !!options?.partitions,
     };
   }
 
