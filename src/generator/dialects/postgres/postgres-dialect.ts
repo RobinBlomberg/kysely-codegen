@@ -17,7 +17,7 @@ export class PostgresDialect
   readonly adapter: PostgresAdapter;
 
   constructor(options?: PostgresDialectOptions) {
-    super({ ...options, partitions: true });
+    super(options);
 
     this.adapter = new PostgresAdapter({
       numericParser: this.options.numericParser,
