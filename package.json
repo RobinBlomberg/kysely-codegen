@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.16.6",
+  "version": "0.16.7",
   "author": "Robin Blomberg",
   "license": "MIT",
   "main": "./dist/index.js",
