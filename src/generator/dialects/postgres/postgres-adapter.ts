@@ -119,12 +119,20 @@ export class PostgresAdapter extends Adapter {
     super();
 
     if (options?.numericParser === NumericParser.NUMBER) {
-      this.definitions.Numeric.args[0] = new IdentifierNode('number');
-    } else if (options?.numericParser === NumericParser.NUMBER_OR_STRING) {
-      this.definitions.Numeric.args[0] = new UnionExpressionNode([
+      this.definitions.Numeric = new ColumnTypeNode(
         new IdentifierNode('number'),
-        new IdentifierNode('string'),
-      ]);
+        new UnionExpressionNode([
+          new IdentifierNode('number'),
+          new IdentifierNode('string'),
+        ]),
+      );
+    } else if (options?.numericParser === NumericParser.NUMBER_OR_STRING) {
+      this.definitions.Numeric = new ColumnTypeNode(
+        new UnionExpressionNode([
+          new IdentifierNode('number'),
+          new IdentifierNode('string'),
+        ]),
+      );
     }
   }
 }

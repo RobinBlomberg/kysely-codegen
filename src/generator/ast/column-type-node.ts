@@ -4,9 +4,11 @@ import { GenericExpressionNode } from './generic-expression-node';
 export class ColumnTypeNode extends GenericExpressionNode {
   constructor(
     selectType: ExpressionNode,
-    insertType = selectType,
-    updateType = insertType,
+    ...insertAndUpdateTypes:
+      | []
+      | [insertType: ExpressionNode]
+      | [insertType: ExpressionNode, updateType: ExpressionNode]
   ) {
-    super('ColumnType', [selectType, insertType, updateType]);
+    super('ColumnType', [selectType, ...insertAndUpdateTypes]);
   }
 }
