@@ -69,10 +69,6 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('Date'),
         new IdentifierNode('string'),
       ]),
-      new UnionExpressionNode([
-        new IdentifierNode('Date'),
-        new IdentifierNode('string'),
-      ]),
     ),
   };
   override readonly imports = {
