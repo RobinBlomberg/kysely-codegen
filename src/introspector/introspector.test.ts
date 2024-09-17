@@ -41,6 +41,7 @@ const TESTS: Test[] = [
       interval2: '24 months',
       numeric1: Number.MAX_SAFE_INTEGER,
       numeric2: String(Number.MAX_SAFE_INTEGER + 1),
+      timestamps: ['2024-09-17T08:05:00.000Z'],
       true: true,
     },
     outputValues: {
@@ -50,6 +51,7 @@ const TESTS: Test[] = [
       interval2: { years: 2 },
       numeric1: Number.MAX_SAFE_INTEGER,
       numeric2: String(Number.MAX_SAFE_INTEGER + 1),
+      timestamps: [new Date('2024-09-17T08:05:00.000Z')],
       true: true,
     },
   },

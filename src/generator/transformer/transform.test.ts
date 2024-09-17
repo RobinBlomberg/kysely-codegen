@@ -103,6 +103,16 @@ describe(transform.name, () => {
           name: 'table',
           schema: 'public',
         }),
+        new TableMetadata({
+          columns: [
+            new ColumnMetadata({
+              dataType: 'integer',
+              name: 'id',
+            }),
+          ],
+          name: 'other_table',
+          schema: 'not_public',
+        }),
       ],
     });
 
@@ -139,6 +149,14 @@ describe(transform.name, () => {
             new LiteralNode('happy'),
             new LiteralNode('ok'),
             new LiteralNode('sad'),
+          ]),
+        ),
+      ),
+      new ExportStatementNode(
+        new InterfaceDeclarationNode(
+          'NotPublicOtherTable',
+          new ObjectExpressionNode([
+            new PropertyNode('id', new IdentifierNode('string')),
           ]),
         ),
       ),
@@ -184,6 +202,10 @@ describe(transform.name, () => {
         new InterfaceDeclarationNode(
           'DB',
           new ObjectExpressionNode([
+            new PropertyNode(
+              'not_public.other_table',
+              new IdentifierNode('NotPublicOtherTable'),
+            ),
             new PropertyNode('table', new IdentifierNode('Table')),
           ]),
         ),

@@ -160,7 +160,9 @@ const createContext = (options: TransformOptions): TransformContext => {
     defaultScalar:
       options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
     defaultSchemas:
-      options.defaultSchemas ?? options.dialect.adapter.defaultSchemas,
+      options.defaultSchemas && options.defaultSchemas.length > 0
+        ? options.defaultSchemas
+        : options.dialect.adapter.defaultSchemas,
     definitions: {
       ...GLOBAL_DEFINITIONS,
       ...options.dialect.adapter.definitions,
