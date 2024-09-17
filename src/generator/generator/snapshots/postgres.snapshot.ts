@@ -18,7 +18,7 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
-export type Interval = ColumnType<IPostgresInterval, IPostgresInterval | number | string, IPostgresInterval | number | string>;
+export type Interval = ColumnType<IPostgresInterval, IPostgresInterval | number | string>;
 
 export type Json = JsonValue;
 
@@ -32,13 +32,13 @@ export type JsonPrimitive = boolean | number | string | null;
 
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
-export type Numeric = ColumnType<number | string, number | string, number | string>;
+export type Numeric = ColumnType<number | string>;
 
 export type Status = "CONFIRMED" | "UNCONFIRMED";
 
 export type TestStatus = "ABC_DEF" | "GHI_JKL";
 
-export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+export type Timestamp = ColumnType<Date, Date | string>;
 
 export interface FooBar {
   array: string[] | null;
