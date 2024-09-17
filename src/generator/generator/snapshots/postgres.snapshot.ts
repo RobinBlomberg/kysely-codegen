@@ -38,7 +38,7 @@ export type Status = "CONFIRMED" | "UNCONFIRMED";
 
 export type TestStatus = "ABC_DEF" | "GHI_JKL";
 
-export type Timestamp = ColumnType<Date | string>;
+export type Timestamp = ColumnType<Date, Date | string>;
 
 export interface FooBar {
   array: string[] | null;

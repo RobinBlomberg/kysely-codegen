@@ -44,7 +44,7 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Numeric = ColumnType<number | string>;
 
-export type Timestamp = ColumnType<Date | string>;
+export type Timestamp = ColumnType<Date, Date | string>;
 
 export interface FooBar {
   array: string[] | null;
