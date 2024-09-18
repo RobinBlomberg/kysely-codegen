@@ -31,12 +31,12 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
   }
 
   async createKyselyDialect(options: CreateKyselyDialectOptions) {
-    const { Pool, types } = await import('pg');
+    const { default: pg } = await import('pg');
 
     if (this.options.numericParser === NumericParser.NUMBER) {
-      types.setTypeParser(1700, Number);
+      pg.types.setTypeParser(1700, Number);
     } else if (this.options.numericParser === NumericParser.NUMBER_OR_STRING) {
-      types.setTypeParser(1700, (value) => {
+      pg.types.setTypeParser(1700, (value) => {
         const number = Number(value);
         return number > Number.MAX_SAFE_INTEGER ||
           number < Number.MIN_SAFE_INTEGER
@@ -46,7 +46,7 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
     }
 
     return new KyselyPostgresDialect({
-      pool: new Pool({
+      pool: new pg.Pool({
         connectionString: options.connectionString,
         ssl: options.ssl ? { rejectUnauthorized: false } : false,
       }),
