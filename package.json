@@ -26,7 +26,7 @@
     "ci:spelling": "cspell-cli -e dist -e pnpm-lock.yaml -e '*.svg' .",
     "ci:test": "pnpm test",
     "ci:unused": "knip",
-    "dev": "tsx watch ./src/cli/bin.ts",
+    "dev": "tsx watch ./src/cli/bin.ts --env-file .env.local",
     "docker:up": "docker-compose up -d",
     "fix": "run-s fix:*",
     "fix:eslint": "eslint --fix src",
@@ -35,7 +35,7 @@
     "lint:eslint": "eslint src",
     "lint:prettier": "prettier --check src",
     "prepublishOnly": "pnpm run ci",
-    "start": "node ./dist/cli/bin.js",
+    "start": "pnpm build && node ./dist/cli/bin.js --env-file .env.local",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "upgrade": "ncu -u"
