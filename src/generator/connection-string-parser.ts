@@ -74,7 +74,7 @@ export class ConnectionStringParser {
 
       if (typeof key !== 'string') {
         throw new TypeError(
-          `Parameter 0 of function '${name}' must be a string.`,
+          `Argument 0 of function '${name}' must be a string.`,
         );
       }
 
