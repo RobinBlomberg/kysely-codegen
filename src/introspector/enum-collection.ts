@@ -4,22 +4,28 @@ export class EnumCollection {
   readonly enums: EnumMap = {};
 
   constructor(enums: EnumMap = {}) {
-    this.enums = enums;
+    this.enums = Object.fromEntries(
+      Object.entries(enums).map(([key, value]) => {
+        return [key.toLowerCase(), value];
+      }),
+    );
   }
 
   add(key: string, value: string) {
-    (this.enums[key] ??= []).push(value);
+    (this.enums[key.toLowerCase()] ??= []).push(value);
   }
 
   get(key: string) {
-    return this.enums[key]?.sort((a, b) => a.localeCompare(b)) ?? null;
+    return (
+      this.enums[key.toLowerCase()]?.sort((a, b) => a.localeCompare(b)) ?? null
+    );
   }
 
   has(key: string) {
-    return !!this.enums[key];
+    return !!this.enums[key.toLowerCase()];
   }
 
   set(key: string, values: string[]) {
-    this.enums[key] = values;
+    this.enums[key.toLowerCase()] = values;
   }
 }
