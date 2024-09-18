@@ -34,7 +34,7 @@ export type CliOptions = {
   print?: boolean;
   runtimeEnums?: boolean;
   runtimeEnumsStyle?: RuntimeEnumsStyle;
-  schemas: string[];
+  schemas?: string[];
   singular?: boolean;
   typeOnlyImports?: boolean;
   url: string;
