@@ -78,9 +78,15 @@ export class ConnectionStringParser {
         );
       }
 
-      expandEnv(loadEnv({ path: options.envFile }));
+      const { error } = expandEnv(loadEnv({ path: options.envFile }));
 
-      options.logger?.info('Loaded environment variables from .env file.');
+      if (error) {
+        throw error;
+      }
+
+      options.logger?.info(
+        `Loaded environment variables from '${options.envFile}'.`,
+      );
 
       const envConnectionString = process.env[key];
       if (!envConnectionString) {
