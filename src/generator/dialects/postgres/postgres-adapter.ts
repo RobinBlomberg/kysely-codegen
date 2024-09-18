@@ -39,9 +39,19 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('number'),
         new IdentifierNode('bigint'),
       ]),
+      new UnionExpressionNode([
+        new IdentifierNode('string'),
+        new IdentifierNode('number'),
+        new IdentifierNode('bigint'),
+      ]),
     ),
     Interval: new ColumnTypeNode(
       new IdentifierNode('IPostgresInterval'),
+      new UnionExpressionNode([
+        new IdentifierNode('IPostgresInterval'),
+        new IdentifierNode('number'),
+        new IdentifierNode('string'),
+      ]),
       new UnionExpressionNode([
         new IdentifierNode('IPostgresInterval'),
         new IdentifierNode('number'),
@@ -59,6 +69,10 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('number'),
         new IdentifierNode('string'),
       ]),
+      new UnionExpressionNode([
+        new IdentifierNode('number'),
+        new IdentifierNode('string'),
+      ]),
     ),
     Point: new ObjectExpressionNode([
       new PropertyNode('x', new IdentifierNode('number')),
@@ -66,6 +80,10 @@ export class PostgresAdapter extends Adapter {
     ]),
     Timestamp: new ColumnTypeNode(
       new IdentifierNode('Date'),
+      new UnionExpressionNode([
+        new IdentifierNode('Date'),
+        new IdentifierNode('string'),
+      ]),
       new UnionExpressionNode([
         new IdentifierNode('Date'),
         new IdentifierNode('string'),
@@ -122,6 +140,10 @@ export class PostgresAdapter extends Adapter {
     if (options?.numericParser === NumericParser.NUMBER) {
       this.definitions.Numeric = new ColumnTypeNode(
         new IdentifierNode('number'),
+        new UnionExpressionNode([
+          new IdentifierNode('number'),
+          new IdentifierNode('string'),
+        ]),
         new UnionExpressionNode([
           new IdentifierNode('number'),
           new IdentifierNode('string'),

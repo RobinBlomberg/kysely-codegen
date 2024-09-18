@@ -1,4 +1,5 @@
 import { ArrayExpressionNode } from '../ast/array-expression-node';
+import { ColumnTypeNode } from '../ast/column-type-node';
 import type { DefinitionNode } from '../ast/definition-node';
 import { ExtendsClauseNode } from '../ast/extends-clause-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
@@ -28,16 +29,16 @@ export const GLOBAL_DEFINITIONS = {
     ['T'],
     new ExtendsClauseNode(
       new IdentifierNode('T'),
-      new GenericExpressionNode('ColumnType', [
+      new ColumnTypeNode(
         new InferClauseNode('S'),
         new InferClauseNode('I'),
         new InferClauseNode('U'),
-      ]),
-      new GenericExpressionNode('ColumnType', [
+      ),
+      new ColumnTypeNode(
         new ArrayExpressionNode(new IdentifierNode('S')),
         new ArrayExpressionNode(new IdentifierNode('I')),
         new ArrayExpressionNode(new IdentifierNode('U')),
-      ]),
+      ),
       new ArrayExpressionNode(new IdentifierNode('T')),
     ),
   ),
@@ -45,27 +46,27 @@ export const GLOBAL_DEFINITIONS = {
     ['T'],
     new ExtendsClauseNode(
       new IdentifierNode('T'),
-      new GenericExpressionNode('ColumnType', [
+      new ColumnTypeNode(
         new InferClauseNode('S'),
         new InferClauseNode('I'),
         new InferClauseNode('U'),
-      ]),
-      new GenericExpressionNode('ColumnType', [
+      ),
+      new ColumnTypeNode(
         new IdentifierNode('S'),
         new UnionExpressionNode([
           new IdentifierNode('I'),
           new IdentifierNode('undefined'),
         ]),
         new IdentifierNode('U'),
-      ]),
-      new GenericExpressionNode('ColumnType', [
+      ),
+      new ColumnTypeNode(
         new IdentifierNode('T'),
         new UnionExpressionNode([
           new IdentifierNode('T'),
           new IdentifierNode('undefined'),
         ]),
         new IdentifierNode('T'),
-      ]),
+      ),
     ),
   ),
 };
