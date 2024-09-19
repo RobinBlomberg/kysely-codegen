@@ -21,13 +21,22 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
       string
     >;
     const tokens = parsed.server!.split(',');
-    const server = tokens[0]!;
-    const port = tokens[1]
-      ? Number.parseInt(tokens[1], 10)
-      : DEFAULT_MSSQL_PORT;
-
+    const serverAndInstance = tokens[0]!.split('\\');
+    const server = serverAndInstance[0]!;
+    const instanceName = serverAndInstance[1];
+    /**
+     * Instance name and port are mutually exclusive
+     * @see https://tediousjs.github.io/tedious/api-connection.html#:~:text=options.instanceName
+     */
+    const port =
+      instanceName === undefined
+        ? tokens[1]
+          ? Number.parseInt(tokens[1], 10)
+          : DEFAULT_MSSQL_PORT
+        : undefined;
     return {
       database: parsed.database!,
+      instanceName,
       password: parsed.password!,
       port,
       server,
@@ -39,7 +48,7 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
     const tarn = await import('tarn');
     const tedious = await import('tedious');
 
-    const { database, password, port, server, userName } =
+    const { database, instanceName, password, port, server, userName } =
       await this.#parseConnectionString(options.connectionString);
 
     return new KyselyMssqlDialect({
@@ -58,6 +67,7 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
             options: {
               database,
               encrypt: options.ssl ?? true,
+              instanceName,
               port,
               trustServerCertificate: true,
             },
