@@ -42,6 +42,10 @@ export const FLAGS = [
     longName: 'exclude-pattern',
   },
   {
+    description: 'Generate zod schemas instead of TS types.',
+    longName: 'generate-zod-schemas',
+  },
+  {
     description: 'Print this message.',
     longName: 'help',
     shortName: 'h',

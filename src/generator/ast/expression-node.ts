@@ -1,4 +1,5 @@
 import type { ArrayExpressionNode } from './array-expression-node';
+import type { EnumExpressionNode } from './enum-expression-node';
 import type { ExtendsClauseNode } from './extends-clause-node';
 import type { GenericExpressionNode } from './generic-expression-node';
 import type { IdentifierNode } from './identifier-node';
@@ -19,4 +20,5 @@ export type ExpressionNode =
   | MappedTypeNode
   | ObjectExpressionNode
   | RawExpressionNode
-  | UnionExpressionNode;
+  | UnionExpressionNode
+  | EnumExpressionNode;

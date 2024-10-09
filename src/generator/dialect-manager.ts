@@ -8,6 +8,7 @@ import { MysqlDialect } from './dialects/mysql/mysql-dialect';
 import { PostgresDialect } from './dialects/postgres/postgres-dialect';
 import { SqliteDialect } from './dialects/sqlite/sqlite-dialect';
 import { WorkerBunSqliteDialect } from './dialects/worker-bun-sqlite/worker-bun-sqlite-dialect';
+import { PostgresZodDialect } from './dialects/zod-dialects/postgres-zod/postgres-zod-dialect';
 
 export type DialectName =
   | 'bun-sqlite'
@@ -24,6 +25,7 @@ type DialectManagerOptions = {
   domains?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;
+  generateZod: boolean;
 };
 
 /**
@@ -37,22 +39,31 @@ export class DialectManager {
   }
 
   getDialect(name: DialectName): GeneratorDialect {
-    switch (name) {
-      case 'kysely-bun-sqlite':
-        return new KyselyBunSqliteDialect();
-      case 'libsql':
-        return new LibsqlDialect();
-      case 'mssql':
-        return new MssqlDialect();
-      case 'mysql':
-        return new MysqlDialect();
-      case 'postgres':
-        return new PostgresDialect(this.#options);
-      case 'bun-sqlite': // Legacy.
-      case 'worker-bun-sqlite':
-        return new WorkerBunSqliteDialect();
-      default:
-        return new SqliteDialect();
+    if (this.#options.generateZod) {
+      switch (name) {
+        case 'postgres':
+          return new PostgresZodDialect();
+        default:
+          throw new Error(`Missing zod dialect for ${name}`)
+      }
+    } else {
+      switch (name) {
+        case 'kysely-bun-sqlite':
+          return new KyselyBunSqliteDialect();
+        case 'libsql':
+          return new LibsqlDialect();
+        case 'mssql':
+          return new MssqlDialect();
+        case 'mysql':
+          return new MysqlDialect();
+        case 'postgres':
+          return new PostgresDialect(this.#options);
+        case 'bun-sqlite': // Legacy.
+        case 'worker-bun-sqlite':
+          return new WorkerBunSqliteDialect();
+        default:
+          return new SqliteDialect();
+      }
     }
   }
 }
