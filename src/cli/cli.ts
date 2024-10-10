@@ -4,6 +4,7 @@ import type { DialectName } from '../generator/dialect-manager';
 import { DialectManager } from '../generator/dialect-manager';
 import { generate } from '../generator/generator/generate';
 import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
+import { ZodSerializer } from '../generator/generator/zod/zodSerializer';
 import { LogLevel } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import type { Overrides } from '../generator/transformer/transform';
@@ -25,6 +26,7 @@ export type CliOptions = {
   domains?: boolean;
   envFile?: string;
   excludePattern?: string;
+  generateZod?: boolean;
   includePattern?: string;
   logLevel?: LogLevel;
   numericParser?: NumericParser;
@@ -50,6 +52,7 @@ export class Cli {
   async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
     const excludePattern = options.excludePattern;
+    const generateZod = options.generateZod;
     const includePattern = options.includePattern;
     const numericParser = options.numericParser;
     const outFile = options.outFile;
@@ -84,10 +87,18 @@ export class Cli {
       domains: !!options.domains,
       numericParser: options.numericParser ?? DEFAULT_NUMERIC_PARSER,
       partitions: !!options.partitions,
+      generateZod: generateZod ?? false,
     });
     const dialect = dialectManager.getDialect(
       options.dialectName ?? inferredDialectName,
     );
+
+    const serializer = generateZod ? new ZodSerializer({
+      camelCase: options.camelCase,
+      runtimeEnumsStyle: options.runtimeEnumsStyle,
+      singular: options.singular,
+      typeOnlyImports: options.typeOnlyImports,
+    }) : undefined;
 
     const db = await dialect.introspector.connect({
       connectionString,
@@ -99,6 +110,7 @@ export class Cli {
       db,
       dialect,
       excludePattern,
+      generateZod,
       includePattern,
       logger,
       numericParser,
@@ -109,6 +121,7 @@ export class Cli {
       runtimeEnums,
       runtimeEnumsStyle,
       schemas,
+      serializer,
       singular,
       typeOnlyImports,
       verify,
@@ -189,6 +202,7 @@ export class Cli {
     const domains = this.#parseBoolean(argv.domains);
     const envFile = this.#parseString(argv['env-file']);
     const excludePattern = this.#parseString(argv['exclude-pattern']);
+    const generateZod = this.#parseBoolean(argv['generate-zod-schemas']);
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
     const includePattern = this.#parseString(argv['include-pattern']);
@@ -253,6 +267,7 @@ export class Cli {
       domains,
       envFile,
       excludePattern,
+      generateZod,
       includePattern,
       logLevel,
       numericParser,

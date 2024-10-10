@@ -6,6 +6,7 @@ import type { NumericParser } from '../../introspector/dialects/postgres/numeric
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
 import { transform, type Overrides } from '../transformer/transform';
+import { zodTransform } from '../transformer/zod/zod-transform';
 import { DiffChecker } from './diff-checker';
 import type { RuntimeEnumsStyle } from './runtime-enums-style';
 import { Serializer } from './serializer';
@@ -15,6 +16,7 @@ export type GenerateOptions = {
   db: Kysely<any>;
   dialect: GeneratorDialect;
   excludePattern?: string;
+  generateZod?: boolean;
   includePattern?: string;
   logger?: Logger;
   numericParser?: NumericParser;
@@ -55,7 +57,9 @@ export const generate = async (options: GenerateOptions) => {
 
   options.logger?.debug();
 
-  const nodes = transform({
+  const transformFunction = options.generateZod ? zodTransform : transform
+
+  const nodes = transformFunction({
     camelCase: !!options.camelCase,
     defaultSchemas: options.schemas,
     dialect: options.dialect,
