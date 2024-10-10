@@ -94,7 +94,7 @@ export class PostgresZodAdapter extends Adapter {
     tsquery: new IdentifierNode('z.string()'),
     tsvector: new IdentifierNode('z.string()'),
     txid_snapshot: new IdentifierNode('z.string()'),
-    uuid: new IdentifierNode('z.string()'),
+    uuid: new IdentifierNode('z.string().uuid()'),
     varbit: new IdentifierNode('z.string()'), // Specified as "bit varying" in Adminer.
     varchar: new IdentifierNode('z.string()'), // Specified as "character varying" in Adminer.
     xml: new IdentifierNode('z.string()'),

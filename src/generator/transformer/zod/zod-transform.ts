@@ -187,12 +187,13 @@ const createDatabaseExportNode = (context: TransformContext) => {
   const tableProperties: PropertyNode[] = [];
 
   for (const table of context.metadata.tables) {
-    const identifier = getTableIdentifier(table, context);
+    const identifier = getTableIdentifier(table, context, true);
     const symbolName = context.symbols.getName(identifier);
 
     if (symbolName) {
       const value = new IdentifierNode(symbolName);
-      const tableProperty = new PropertyNode(identifier, value);
+      const actualDbName = getTableIdentifier(table, context, false);
+      const tableProperty = new PropertyNode(actualDbName, value);
       tableProperties.push(tableProperty);
     }
   }
@@ -200,7 +201,7 @@ const createDatabaseExportNode = (context: TransformContext) => {
   tableProperties.sort((a, b) => a.key.localeCompare(b.key));
 
   const body = new ObjectExpressionNode(tableProperties);
-  const argument = new InterfaceDeclarationNode('DB', body);
+  const argument = new InterfaceDeclarationNode('DBSchema', body);
   return new ExportStatementNode(argument);
 };
 
@@ -249,6 +250,7 @@ const createImportNodes = (context: TransformContext) => {
 const getTableIdentifier = (
   table: TableMetadata,
   context: TransformContext,
+  includeSchemaSuffix = false,
 ) => {
   const name =
     table.schema &&
@@ -256,8 +258,11 @@ const getTableIdentifier = (
     !context.defaultSchemas.includes(table.schema)
       ? `${table.schema}.${table.name}`
       : table.name;
-  return transformName(name, context) + "TableSchema";
+  let resultName: string =  transformName(name, context);
+  resultName += includeSchemaSuffix ? "TableSchema" : "";
+  return resultName
 };
+
 
 const transformColumn = (
   column: ColumnMetadata,
@@ -384,7 +389,7 @@ const transformTables = (context: TransformContext) => {
     }
 
     const expression = new ObjectExpressionNode(tableProperties);
-    const identifier = getTableIdentifier(table, context);
+    const identifier = getTableIdentifier(table, context, true);
     const symbolName = context.symbols.set(identifier, {
       type: SymbolType.TABLE,
     });
