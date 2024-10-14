@@ -7,6 +7,7 @@ import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
 import { LogLevel } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import type { Overrides } from '../generator/transformer/transform';
+import { DateParser, DEFAULT_DATE_PARSER } from '../introspector/dialects/postgres/date-parser';
 import {
   DEFAULT_NUMERIC_PARSER,
   NumericParser,
@@ -21,6 +22,7 @@ import { FLAGS, serializeFlags } from './flags';
 
 export type CliOptions = {
   camelCase?: boolean;
+  dateParser?: DateParser;
   dialectName?: DialectName;
   domains?: boolean;
   envFile?: string;
@@ -49,6 +51,7 @@ export class Cli {
 
   async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
+    const dateParser = options.dateParser;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
     const numericParser = options.numericParser;
@@ -81,6 +84,7 @@ export class Cli {
     }
 
     const dialectManager = new DialectManager({
+      dateParser: options.dateParser ?? DEFAULT_DATE_PARSER,
       domains: !!options.domains,
       numericParser: options.numericParser ?? DEFAULT_NUMERIC_PARSER,
       partitions: !!options.partitions,
@@ -96,6 +100,7 @@ export class Cli {
 
     await generate({
       camelCase,
+      dateParser,
       db,
       dialect,
       excludePattern,
@@ -119,6 +124,17 @@ export class Cli {
 
   #parseBoolean(input: any) {
     return !!input && input !== 'false';
+  }
+
+  #parseDateParser(input: any) {
+    switch (input) {
+      case 'string':
+        return DateParser.STRING;
+      case 'timestamp':
+        return DateParser.TIMESTAMP;
+      default:
+        return DEFAULT_DATE_PARSER;
+    }
   }
 
   #parseLogLevel(input: any) {
@@ -185,6 +201,7 @@ export class Cli {
 
     const _: string[] = argv._;
     const camelCase = this.#parseBoolean(argv['camel-case']);
+    const dateParser = this.#parseDateParser(argv['date-parser']);
     const dialectName = this.#parseString(argv.dialect) as DialectName;
     const domains = this.#parseBoolean(argv.domains);
     const envFile = this.#parseString(argv['env-file']);
@@ -242,13 +259,14 @@ export class Cli {
     if (!url) {
       throw new TypeError(
         "Parameter '--url' must be a valid connection string. Examples:\n\n" +
-          '  --url=postgres://username:password@mydomain.com/database\n' +
-          '  --url=env(DATABASE_URL)',
+        '  --url=postgres://username:password@mydomain.com/database\n' +
+        '  --url=env(DATABASE_URL)',
       );
     }
 
     return {
       camelCase,
+      dateParser,
       dialectName,
       domains,
       envFile,

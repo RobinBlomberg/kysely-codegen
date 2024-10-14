@@ -68,6 +68,7 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
     } else if (dialect instanceof PostgresIntrospectorDialect) {
       builder = builder
         .addColumn('id', 'serial')
+        .addColumn('date', 'date')
         .addColumn('user_status', sql`status`)
         .addColumn('user_status_2', sql`test.status`)
         .addColumn('array', sql`text[]`)

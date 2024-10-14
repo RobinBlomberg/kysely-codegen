@@ -22,6 +22,12 @@ export const FLAGS = [
     longName: 'camel-case',
   },
   {
+    default: 'timestamp',
+    description: 'Specify which parser to use for PostgreSQL date values.',
+    longName: 'date-parser',
+    values: ['string', 'timestamp'],
+  },
+  {
     description: 'Set the SQL dialect.',
     longName: 'dialect',
     values: VALID_DIALECTS,

@@ -3,8 +3,10 @@ import type { CreateKyselyDialectOptions } from '../../dialect';
 import { IntrospectorDialect } from '../../dialect';
 import { DEFAULT_NUMERIC_PARSER, NumericParser } from './numeric-parser';
 import { PostgresIntrospector } from './postgres-introspector';
+import { DateParser, DEFAULT_DATE_PARSER } from './date-parser';
 
 type PostgresDialectOptions = {
+  dateParser?: DateParser;
   defaultSchemas?: string[];
   domains?: boolean;
   numericParser?: NumericParser;
@@ -24,6 +26,7 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
       partitions: options?.partitions,
     });
     this.options = {
+      dateParser: options?.dateParser ?? DEFAULT_DATE_PARSER,
       defaultSchemas: options?.defaultSchemas,
       domains: options?.domains ?? true,
       numericParser: options?.numericParser ?? DEFAULT_NUMERIC_PARSER,
@@ -43,6 +46,10 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
           ? value
           : number;
       });
+    }
+
+    if (this.options.dateParser === DateParser.STRING) {
+      pg.types.setTypeParser(1082, (date) => date);
     }
 
     return new KyselyPostgresDialect({

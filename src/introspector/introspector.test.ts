@@ -2,6 +2,7 @@ import { deepStrictEqual } from 'assert';
 import { type Kysely } from 'kysely';
 import parsePostgresInterval from 'postgres-interval';
 import { describe, test } from 'vitest';
+import { DateParser } from './dialects/postgres/date-parser';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import { migrate } from '../introspector/introspector.fixtures';
 import type { IntrospectorDialect } from './dialect';
@@ -32,10 +33,12 @@ const TESTS: Test[] = [
   {
     connectionString: 'postgres://user:password@localhost:5433/database',
     dialect: new PostgresIntrospectorDialect({
+      dateParser: DateParser.STRING,
       numericParser: NumericParser.NUMBER_OR_STRING,
     }),
     inputValues: {
       false: false,
+      date: '2024-10-14',
       id: 1,
       interval1: parsePostgresInterval('1 day'),
       interval2: '24 months',
@@ -46,6 +49,7 @@ const TESTS: Test[] = [
     },
     outputValues: {
       false: false,
+      date: '2024-10-14',
       id: 1,
       interval1: { days: 1 },
       interval2: { years: 2 },
@@ -181,6 +185,12 @@ describe(Introspector.name, () => {
                       hasDefaultValue: true,
                       isAutoIncrementing: true,
                       name: 'id',
+                    }),
+                    new ColumnMetadata({
+                      dataType: 'date',
+                      dataTypeSchema: 'pg_catalog',
+                      isNullable: true,
+                      name: 'date',
                     }),
                     new ColumnMetadata({
                       dataType: 'status',

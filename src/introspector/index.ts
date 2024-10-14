@@ -7,6 +7,7 @@ export * from './dialects/mysql/mysql-db';
 export * from './dialects/mysql/mysql-dialect';
 export * from './dialects/mysql/mysql-introspector';
 export * from './dialects/mysql/mysql-parser';
+export * from './dialects/postgres/date-parser';
 export * from './dialects/postgres/numeric-parser';
 export * from './dialects/postgres/postgres-db';
 export * from './dialects/postgres/postgres-dialect';

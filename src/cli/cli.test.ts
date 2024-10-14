@@ -4,6 +4,7 @@ import { join } from 'path';
 import { describe, it } from 'vitest';
 import packageJson from '../../package.json';
 import { LogLevel } from '../generator/logger/log-level';
+import { DateParser, DEFAULT_DATE_PARSER } from '../introspector/dialects/postgres/date-parser';
 import { DEFAULT_NUMERIC_PARSER } from '../introspector/dialects/postgres/numeric-parser';
 import type { CliOptions } from './cli';
 import { Cli } from './cli';
@@ -14,6 +15,7 @@ describe(Cli.name, () => {
 
   const DEFAULT_CLI_OPTIONS: CliOptions = {
     camelCase: false,
+    dateParser: DEFAULT_DATE_PARSER,
     dialectName: undefined,
     domains: false,
     envFile: undefined,
@@ -52,6 +54,8 @@ describe(Cli.name, () => {
     };
 
     assert(['--camel-case'], { camelCase: true });
+    assert(['--date-parser=timestamp'], { dateParser: DateParser.TIMESTAMP });
+    assert(['--date-parser=string'], { dateParser: DateParser.STRING });
     assert(['--dialect=mysql'], { dialectName: 'mysql' });
     assert(['--domains'], { domains: true });
     assert(['--exclude-pattern=public._*'], { excludePattern: 'public._*' });

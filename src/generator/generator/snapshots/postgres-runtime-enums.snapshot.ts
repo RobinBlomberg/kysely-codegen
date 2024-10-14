@@ -49,6 +49,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 export interface FooBar {
   array: string[] | null;
   childDomain: number | null;
+  date: string | null;
   defaultedNullablePosInt: Generated<number | null>;
   defaultedRequiredPosInt: Generated<number>;
   /**
