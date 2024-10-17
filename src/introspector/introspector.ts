@@ -1,16 +1,18 @@
 import { Kysely, sql } from 'kysely';
-import type { DatabaseMetadata, Dialect } from '../core';
+import type { IntrospectorDialect } from './dialect';
+import type { DatabaseMetadata } from './metadata/database-metadata';
 import { TableMatcher } from './table-matcher';
 
-export type ConnectOptions = {
+type ConnectOptions = {
   connectionString: string;
-  dialect: Dialect;
+  dialect: IntrospectorDialect;
 };
 
 export type IntrospectOptions<DB> = {
   db: Kysely<DB>;
   excludePattern?: string;
   includePattern?: string;
+  partitions?: boolean;
 };
 
 /**
