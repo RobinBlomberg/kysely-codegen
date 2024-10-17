@@ -6,21 +6,8 @@
 
 - [Installation](#installation)
 - [Generating type definitions](#generating-type-definitions)
-- [CLI Arguments](#cli-arguments)
-   - [camel-case](#camel-case)
-   - [dialect](#dialect)
-   - [Include/exclude patterns](#includeexclude-patterns)
-   - [help](#help)
-   - [log-level](#log-level)
-   - [no-domains](#no-domains)
-   - [out-file](#out-file)
-   - [print](#print)
-   - [runtime-enums](#runtime-enums)
-   - [type-only-imports](#type-only-imports)
-   - [url](#url)
-   - [schema](#schema)
-   - [verify](#verify)
 - [Using the type definitions](#using-the-type-definitions)
+- [CLI arguments](#cli-arguments)
 - [Issue funding](#issue-funding)
 
 ## Installation
@@ -112,90 +99,6 @@ export interface DB {
 }
 ```
 
-## CLI Arguments
-### camel-case
-`--camel-case`
-
-Use the Kysely CamelCasePlugin for generated table column names.
-
-### dialect
-`--dialect [value]`
-
-Set the SQL dialect (values: [postgres, mysql, sqlite, mssql, libsql, bun-sqlite]).
-
-### env-file
-`--env-file [value]`
-
-Specify the path to an environment file to use.
-
-### Include/exclude patterns
-You can choose which tables should be included during code generation by providing a glob pattern to the `--include-pattern` and `--exclude-pattern` flags. We use [micromatch](https://github.com/micromatch/micromatch) under the hood which provides advanced glob support. For instance, if you only want to include your public tables:
-
-```bash
-kysely-codegen --include-pattern="public.*"
-```
-
-You can also include only certain tables within a schema:
-
-```bash
-kysely-codegen --include-pattern="public.+(user|post)"
-```
-
-Or exclude an entire class of tables:
-
-```bash
-kysely-codegen --exclude-pattern="documents.*"
-```
-### help
-`--help` or `--h`
-
-Run for more options.
-
-### log-level
-`--log-level [value]`
-
-Set the terminal log level. (values: [debug, info, warn, error, silent], default: warn)
-
-### no-domains
-`--no-domains`
-
-Skip generating types for PostgreSQL domains. (default: false)
-
-### out-file
-`--out-file [value]`
-
-Set the file build path. (default: `.\node_modules\kysely-codegen\dist\db.d.ts`)
-
-### print
-`--print`
-
-Print the generated output to the terminal.
-
-### runtime-enums
-`--runtime-enums`
-
-Generate runtime enums instead of string unions.
-
-### type-only-imports
-`--type-only-imports`
-
-Generate TypeScript 3.8+ `import type` syntax (default: true).
-
-### url
-`--url [value]`
-
-Set the database connection string URL. This may point to an environment variable. (default: env(DATABASE_URL))
-
-### schema
-`--schema [value]`
-
-Set the default schema of the database connection.
-
-### verify
-`--verify`
-
-Verify that the generated types are up-to-date. (default: false)
-
 ## Using the type definitions
 
 Import `DB` into `new Kysely<DB>`, and you're done!
@@ -214,8 +117,156 @@ const db = new Kysely<DB>({
 });
 
 const rows = await db.selectFrom('user').selectAll().execute();
-//    ^ { company_id: number | null; created_at: Date; email: string; id: number; ... }[]
+//    ^ { created_at: Date; email: string; id: number; ... }[]
 ```
+
+## CLI arguments
+
+#### --camel-case <!-- omit from toc -->
+
+Use the Kysely CamelCasePlugin for generated table column names.
+
+**Example:**
+
+```ts
+export interface User {
+  companyId: number | null;
+  createdAt: Generated<Timestamp>;
+  email: string;
+  id: Generated<number>;
+  isActive: boolean;
+  name: string;
+  updatedAt: Timestamp;
+}
+```
+
+#### --date-parser <!-- omit from toc -->
+
+Specify which parser to use for PostgreSQL date values. (values: [`string`, `timestamp`], default: `timestamp`)
+
+#### --dialect [value] <!-- omit from toc -->
+
+Set the SQL dialect. (values: [`postgres`, `mysql`, `sqlite`, `mssql`, `libsql`, `bun-sqlite`, `kysely-bun-sqlite`, `worker-bun-sqlite`])
+
+#### --env-file [value] <!-- omit from toc -->
+
+Specify the path to an environment file to use.
+
+#### --help, -h <!-- omit from toc -->
+
+Print all command line options.
+
+#### --include-pattern [value], --exclude-pattern [value] <!-- omit from toc -->
+
+You can choose which tables should be included during code generation by providing a glob pattern to the `--include-pattern` and `--exclude-pattern` flags. We use [micromatch](https://github.com/micromatch/micromatch) under the hood, which provides advanced glob support. For instance, if you only want to include your public tables:
+
+```bash
+kysely-codegen --include-pattern="public.*"
+```
+
+You can also include only certain tables within a schema:
+
+```bash
+kysely-codegen --include-pattern="public.+(user|post)"
+```
+
+Or exclude an entire class of tables:
+
+```bash
+kysely-codegen --exclude-pattern="documents.*"
+```
+
+#### --log-level [value] <!-- omit from toc -->
+
+Set the terminal log level. (values: [`debug`, `info`, `warn`, `error`, `silent`], default: `warn`)
+
+#### --no-domains <!-- omit from toc -->
+
+Skip generating types for PostgreSQL domains. (default: `false`)
+
+#### --numeric-parser <!-- omit from toc -->
+
+Specify which parser to use for PostgreSQL numeric values. (values: [`string`, `number`, `number-or-string`], default: `string`)
+
+#### --overrides <!-- omit from toc -->
+
+Specify type overrides for specific table columns in JSON format.
+
+**Example:**
+
+```bash
+kysely-codegen --overrides='{"columns":{"table_name.column_name":"{foo:\"bar\"}"}}'
+```
+
+#### --out-file [value] <!-- omit from toc -->
+
+Set the file build path. (default: `./node_modules/kysely-codegen/dist/db.d.ts`)
+
+#### --partitions <!-- omit from toc -->
+
+Include partitions of PostgreSQL tables in the generated code.
+
+#### --print <!-- omit from toc -->
+
+Print the generated output to the terminal instead of a file.
+
+#### --runtime-enums, --runtime-enums-style <!-- omit from toc -->
+
+The PostgreSQL `--runtime-enums` option generates runtime enums instead of string unions.
+
+The option `--runtime-enums-style` specifies which naming convention to use for runtime enum keys. (values: [`pascal-case`, `screaming-snake-case`], default: `pascal-case`)
+
+**Examples:**
+
+`--runtime-enums=false`
+
+```ts
+export type Status = 'CONFIRMED' | 'UNCONFIRMED';
+```
+
+`--runtime-enums`
+
+```ts
+export enum Status {
+  CONFIRMED = 'CONFIRMED',
+  UNCONFIRMED = 'UNCONFIRMED',
+}
+```
+
+`--runtime-enums --runtime-enums-style=pascal-case`
+
+```ts
+export enum Status {
+  Confirmed = 'CONFIRMED',
+  Unconfirmed = 'UNCONFIRMED',
+}
+```
+
+#### --schema [value] <!-- omit from toc -->
+
+Set the default schema(s) for the database connection.
+
+Multiple schemas can be specified:
+
+```bash
+kysely-codegen --schema=public --schema=hidden
+```
+
+#### --singular <!-- omit from toc -->
+
+Singularize generated table names, e.g. `BlogPost` instead of `BlogPosts`. We use the [pluralize](https://www.npmjs.com/package/pluralize) package for singularization.
+
+#### --type-only-imports <!-- omit from toc -->
+
+Generate code using the TypeScript 3.8+ `import type` syntax. (default: `true`)
+
+#### --url [value] <!-- omit from toc -->
+
+Set the database connection string URL. This may point to an environment variable. (default: `env(DATABASE_URL)`)
+
+#### --verify <!-- omit from toc -->
+
+Verify that the generated types are up-to-date. (default: `false`)
 
 ## Issue funding
 
