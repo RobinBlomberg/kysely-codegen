@@ -7,13 +7,13 @@ import type { ColumnType, JSONColumnType } from "kysely";
 import type { IPostgresInterval } from "postgres-interval";
 
 export enum Status {
-  Confirmed = "CONFIRMED",
-  Unconfirmed = "UNCONFIRMED",
+  CONFIRMED = "CONFIRMED",
+  UNCONFIRMED = "UNCONFIRMED",
 }
 
 export enum TestStatus {
-  AbcDef = "ABC_DEF",
-  GhiJkl = "GHI_JKL",
+  ABC_DEF = "ABC_DEF",
+  GHI_JKL = "GHI_JKL",
 }
 
 export type ArrayType<T> = ArrayTypeImpl<T> extends (infer U)[]
@@ -49,7 +49,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 export interface FooBar {
   array: string[] | null;
   childDomain: number | null;
-  date: Timestamp | null;
+  date: string | null;
   defaultedNullablePosInt: Generated<number | null>;
   defaultedRequiredPosInt: Generated<number>;
   /**

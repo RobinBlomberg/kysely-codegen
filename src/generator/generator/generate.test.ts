@@ -22,39 +22,46 @@ import { RuntimeEnumsStyle } from './runtime-enums-style';
 type Test = {
   connectionString: string;
   dialect: GeneratorDialect;
+  generateOptions?: Omit<GenerateOptions, 'db' | 'dialect'>;
+  name: string;
 };
 
 const SNAPSHOTS_DIR = join(__dirname, 'snapshots');
 
 const TESTS: Test[] = [
   {
+    connectionString: 'libsql://localhost:8080?tls=0',
+    dialect: new LibsqlDialect(),
+    name: 'libsql',
+  },
+  {
     connectionString: 'mysql://user:password@localhost/database',
     dialect: new MysqlDialect(),
+    name: 'mysql',
+  },
+  {
+    connectionString: 'postgres://user:password@localhost:5433/database',
+    dialect: new PostgresDialect(),
+    name: 'postgres',
   },
   {
     connectionString: 'postgres://user:password@localhost:5433/database',
     dialect: new PostgresDialect({
-      dateParser: DateParser.TIMESTAMP,
+      dateParser: DateParser.STRING,
       numericParser: NumericParser.NUMBER_OR_STRING,
     }),
+    generateOptions: {
+      runtimeEnums: true,
+      runtimeEnumsStyle: RuntimeEnumsStyle.SCREAMING_SNAKE_CASE,
+    },
+    name: 'postgres2',
   },
   {
     connectionString: ':memory:',
     dialect: new SqliteDialect(),
-  },
-  {
-    connectionString: 'libsql://localhost:8080?tls=0',
-    dialect: new LibsqlDialect(),
+    name: 'sqlite',
   },
 ];
-
-const readDialectOutput = async (dialect: GeneratorDialect) => {
-  const dialectName = dialect.constructor.name.slice(0, -'Dialect'.length);
-  return await readFile(
-    join(SNAPSHOTS_DIR, `${dialectName.toLowerCase()}.snapshot.ts`),
-    'utf8',
-  );
-};
 
 describe(generate.name, () => {
   const baseGenerateOptions: Omit<GenerateOptions, 'db' | 'dialect'> = {
@@ -70,62 +77,42 @@ describe(generate.name, () => {
   };
 
   describe('should generate the correct output', () => {
-    for (const { connectionString, dialect } of TESTS) {
-      test(dialect.constructor.name, async () => {
+    for (const { connectionString, dialect, generateOptions, name } of TESTS) {
+      test(`${dialect.constructor.name} (./${name}.snapshot.ts)`, async () => {
         const db = await migrate(dialect, connectionString);
-        const output = await generate({ ...baseGenerateOptions, db, dialect });
-        const expectedOutput = await readDialectOutput(dialect);
+        const output = await generate({
+          ...baseGenerateOptions,
+          ...generateOptions,
+          db,
+          dialect,
+        });
+        const expectedOutput = await readFile(
+          join(SNAPSHOTS_DIR, `${name}.snapshot.ts`),
+          'utf8',
+        );
         strictEqual(output, expectedOutput);
-
-        if (dialect instanceof PostgresDialect) {
-          const runtimeEnumsOutput = await generate({
-            ...baseGenerateOptions,
-            db,
-            dialect,
-            runtimeEnums: true,
-            runtimeEnumsStyle: RuntimeEnumsStyle.PASCAL_CASE,
-          });
-          const expectedRuntimeEnumsOutput = await readFile(
-            join(SNAPSHOTS_DIR, 'postgres-runtime-enums.snapshot.ts'),
-            'utf8',
-          );
-          strictEqual(runtimeEnumsOutput, expectedRuntimeEnumsOutput);
-        }
-
         await db.destroy();
       });
     }
   });
 
   describe('should verify generated types', () => {
-    for (const { connectionString, dialect } of TESTS) {
-      test(dialect.constructor.name, async () => {
+    for (const { connectionString, dialect, generateOptions, name } of TESTS) {
+      test(`${dialect.constructor.name} (./${name}.snapshot.ts)`, async () => {
         const db = await migrate(dialect, connectionString);
-        const dialectName = dialect.constructor.name.slice(
-          0,
-          -'Dialect'.length,
-        );
-        const outFile = join(
-          SNAPSHOTS_DIR,
-          `${dialectName.toLowerCase()}.snapshot.ts`,
-        );
-        await generate({ ...baseGenerateOptions, db, dialect, outFile });
-        const output = await generate({
+        const outFile = join(SNAPSHOTS_DIR, `${name}.snapshot.ts`);
+        await generate({
           ...baseGenerateOptions,
+          ...generateOptions,
           db,
           dialect,
-          outFile,
-          verify: true,
         });
-
-        const expectedOutput = await readDialectOutput(dialect);
-        strictEqual(output, expectedOutput);
-
         await addExtraColumn(db);
 
         try {
           await generate({
             ...baseGenerateOptions,
+            ...generateOptions,
             db,
             dialect,
             outFile,

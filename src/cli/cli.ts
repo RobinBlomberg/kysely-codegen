@@ -54,10 +54,8 @@ export class Cli {
 
   async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
-    const dateParser = options.dateParser;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
-    const numericParser = options.numericParser;
     const outFile = options.outFile;
     const overrides = options.overrides;
     const partitions = !!options.partitions;
@@ -103,13 +101,11 @@ export class Cli {
 
     await generate({
       camelCase,
-      dateParser,
       db,
       dialect,
       excludePattern,
       includePattern,
       logger,
-      numericParser,
       outFile,
       overrides,
       partitions,
