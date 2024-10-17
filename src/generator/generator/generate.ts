@@ -2,7 +2,6 @@ import { promises as fs } from 'fs';
 import type { Kysely } from 'kysely';
 import { parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
-import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
 import { transform, type Overrides } from '../transformer/transform';
@@ -17,7 +16,6 @@ export type GenerateOptions = {
   excludePattern?: string;
   includePattern?: string;
   logger?: Logger;
-  numericParser?: NumericParser;
   outFile?: string;
   overrides?: Overrides;
   partitions?: boolean;

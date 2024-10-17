@@ -32,7 +32,7 @@ export type JsonPrimitive = boolean | number | string | null;
 
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
-export type Numeric = ColumnType<number | string>;
+export type Numeric = ColumnType<string, number | string, number | string>;
 
 export type Status = "CONFIRMED" | "UNCONFIRMED";
 
@@ -43,6 +43,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 export interface FooBar {
   array: string[] | null;
   childDomain: number | null;
+  date: Timestamp | null;
   defaultedNullablePosInt: Generated<number | null>;
   defaultedRequiredPosInt: Generated<number>;
   /**

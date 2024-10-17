@@ -1,3 +1,4 @@
+import type { DateParser } from '../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import type { GeneratorDialect } from './dialect';
 import { KyselyBunSqliteDialect } from './dialects/kysely-bun-sqlite/kysely-bun-sqlite-dialect';
@@ -19,6 +20,7 @@ export type DialectName =
   | 'worker-bun-sqlite';
 
 type DialectManagerOptions = {
+  dateParser?: DateParser;
   domains?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;

@@ -8,6 +8,10 @@ import { LogLevel } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import type { Overrides } from '../generator/transformer/transform';
 import {
+  DateParser,
+  DEFAULT_DATE_PARSER,
+} from '../introspector/dialects/postgres/date-parser';
+import {
   DEFAULT_NUMERIC_PARSER,
   NumericParser,
 } from '../introspector/dialects/postgres/numeric-parser';
@@ -21,6 +25,7 @@ import { FLAGS, serializeFlags } from './flags';
 
 export type CliOptions = {
   camelCase?: boolean;
+  dateParser?: DateParser;
   dialectName?: DialectName;
   domains?: boolean;
   envFile?: string;
@@ -51,7 +56,6 @@ export class Cli {
     const camelCase = !!options.camelCase;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
-    const numericParser = options.numericParser;
     const outFile = options.outFile;
     const overrides = options.overrides;
     const partitions = !!options.partitions;
@@ -81,6 +85,7 @@ export class Cli {
     }
 
     const dialectManager = new DialectManager({
+      dateParser: options.dateParser ?? DEFAULT_DATE_PARSER,
       domains: !!options.domains,
       numericParser: options.numericParser ?? DEFAULT_NUMERIC_PARSER,
       partitions: !!options.partitions,
@@ -101,7 +106,6 @@ export class Cli {
       excludePattern,
       includePattern,
       logger,
-      numericParser,
       outFile,
       overrides,
       partitions,
@@ -119,6 +123,17 @@ export class Cli {
 
   #parseBoolean(input: any) {
     return !!input && input !== 'false';
+  }
+
+  #parseDateParser(input: any) {
+    switch (input) {
+      case 'string':
+        return DateParser.STRING;
+      case 'timestamp':
+        return DateParser.TIMESTAMP;
+      default:
+        return DEFAULT_DATE_PARSER;
+    }
   }
 
   #parseLogLevel(input: any) {
@@ -185,6 +200,7 @@ export class Cli {
 
     const _: string[] = argv._;
     const camelCase = this.#parseBoolean(argv['camel-case']);
+    const dateParser = this.#parseDateParser(argv['date-parser']);
     const dialectName = this.#parseString(argv.dialect) as DialectName;
     const domains = this.#parseBoolean(argv.domains);
     const envFile = this.#parseString(argv['env-file']);
@@ -249,6 +265,7 @@ export class Cli {
 
     return {
       camelCase,
+      dateParser,
       dialectName,
       domains,
       envFile,

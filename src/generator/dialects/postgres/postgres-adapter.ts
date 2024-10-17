@@ -1,3 +1,4 @@
+import { DateParser } from '../../../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../../../introspector/dialects/postgres/numeric-parser';
 import { Adapter } from '../../adapter';
 import { ColumnTypeNode } from '../../ast/column-type-node';
@@ -15,6 +16,7 @@ import {
 } from '../../transformer/definitions';
 
 type PostgresAdapterOptions = {
+  dateParser?: DateParser;
   numericParser?: NumericParser;
 };
 
@@ -136,6 +138,12 @@ export class PostgresAdapter extends Adapter {
 
   constructor(options?: PostgresAdapterOptions) {
     super();
+
+    if (options?.dateParser === DateParser.STRING) {
+      this.scalars.date = new IdentifierNode('string');
+    } else {
+      this.scalars.date = new IdentifierNode('Timestamp');
+    }
 
     if (options?.numericParser === NumericParser.NUMBER) {
       this.definitions.Numeric = new ColumnTypeNode(
