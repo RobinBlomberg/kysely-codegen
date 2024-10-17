@@ -2,12 +2,12 @@ import { deepStrictEqual } from 'assert';
 import { type Kysely } from 'kysely';
 import parsePostgresInterval from 'postgres-interval';
 import { describe, test } from 'vitest';
-import { DateParser } from './dialects/postgres/date-parser';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import { migrate } from '../introspector/introspector.fixtures';
 import type { IntrospectorDialect } from './dialect';
 import { LibsqlIntrospectorDialect } from './dialects/libsql/libsql-dialect';
 import { MysqlIntrospectorDialect } from './dialects/mysql/mysql-dialect';
+import { DateParser } from './dialects/postgres/date-parser';
 import { PostgresIntrospectorDialect } from './dialects/postgres/postgres-dialect';
 import { SqliteIntrospectorDialect } from './dialects/sqlite/sqlite-dialect';
 import { EnumCollection } from './enum-collection';
@@ -37,8 +37,8 @@ const TESTS: Test[] = [
       numericParser: NumericParser.NUMBER_OR_STRING,
     }),
     inputValues: {
-      false: false,
       date: '2024-10-14',
+      false: false,
       id: 1,
       interval1: parsePostgresInterval('1 day'),
       interval2: '24 months',
@@ -48,8 +48,8 @@ const TESTS: Test[] = [
       true: true,
     },
     outputValues: {
-      false: false,
       date: '2024-10-14',
+      false: false,
       id: 1,
       interval1: { days: 1 },
       interval2: { years: 2 },

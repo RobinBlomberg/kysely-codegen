@@ -4,7 +4,10 @@ import { join } from 'path';
 import { describe, it } from 'vitest';
 import packageJson from '../../package.json';
 import { LogLevel } from '../generator/logger/log-level';
-import { DateParser, DEFAULT_DATE_PARSER } from '../introspector/dialects/postgres/date-parser';
+import {
+  DateParser,
+  DEFAULT_DATE_PARSER,
+} from '../introspector/dialects/postgres/date-parser';
 import { DEFAULT_NUMERIC_PARSER } from '../introspector/dialects/postgres/numeric-parser';
 import type { CliOptions } from './cli';
 import { Cli } from './cli';

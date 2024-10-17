@@ -14,7 +14,8 @@ type PostgresDialectOptions = {
 
 export class PostgresDialect
   extends PostgresIntrospectorDialect
-  implements GeneratorDialect {
+  implements GeneratorDialect
+{
   readonly adapter: PostgresAdapter;
 
   constructor(options?: PostgresDialectOptions) {

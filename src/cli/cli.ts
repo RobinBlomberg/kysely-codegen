@@ -7,7 +7,10 @@ import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
 import { LogLevel } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import type { Overrides } from '../generator/transformer/transform';
-import { DateParser, DEFAULT_DATE_PARSER } from '../introspector/dialects/postgres/date-parser';
+import {
+  DateParser,
+  DEFAULT_DATE_PARSER,
+} from '../introspector/dialects/postgres/date-parser';
 import {
   DEFAULT_NUMERIC_PARSER,
   NumericParser,
@@ -259,8 +262,8 @@ export class Cli {
     if (!url) {
       throw new TypeError(
         "Parameter '--url' must be a valid connection string. Examples:\n\n" +
-        '  --url=postgres://username:password@mydomain.com/database\n' +
-        '  --url=env(DATABASE_URL)',
+          '  --url=postgres://username:password@mydomain.com/database\n' +
+          '  --url=env(DATABASE_URL)',
       );
     }
 

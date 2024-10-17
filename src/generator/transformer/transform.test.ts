@@ -284,10 +284,7 @@ describe(transform.name, () => {
         new InterfaceDeclarationNode(
           'Table',
           new ObjectExpressionNode([
-            new PropertyNode(
-              'date',
-              new IdentifierNode('string'),
-            ),
+            new PropertyNode('date', new IdentifierNode('string')),
           ]),
         ),
       ),
