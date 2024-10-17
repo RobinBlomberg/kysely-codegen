@@ -62,7 +62,7 @@ export class ConnectionStringParser {
       }
 
       const keyToken = expressionMatch[2]!;
-      let key;
+      let key: string | undefined;
 
       try {
         key = keyToken.includes('"') ? JSON.parse(keyToken) : keyToken;
@@ -74,13 +74,24 @@ export class ConnectionStringParser {
 
       if (typeof key !== 'string') {
         throw new TypeError(
-          `Parameter 0 of function '${name}' must be a string.`,
+          `Argument 0 of function '${name}' must be a string.`,
         );
       }
 
-      expandEnv(loadEnv({ path: options.envFile }));
+      const { error } = expandEnv(loadEnv({ path: options.envFile }));
+      const envFile = options.envFile ?? '.env';
 
-      options.logger?.info('Loaded environment variables from .env file.');
+      if (error) {
+        if (error.name === 'ENOENT') {
+          throw new ReferenceError(
+            `Environment file '${envFile}' could not be found. Use --env-file to specify a different file.`,
+          );
+        }
+
+        throw error;
+      }
+
+      options.logger?.info(`Loaded environment variables from '${envFile}'.`);
 
       const envConnectionString = process.env[key];
       if (!envConnectionString) {

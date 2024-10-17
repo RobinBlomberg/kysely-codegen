@@ -7,6 +7,7 @@ import { migrate } from '../introspector/introspector.fixtures';
 import type { IntrospectorDialect } from './dialect';
 import { LibsqlIntrospectorDialect } from './dialects/libsql/libsql-dialect';
 import { MysqlIntrospectorDialect } from './dialects/mysql/mysql-dialect';
+import { DateParser } from './dialects/postgres/date-parser';
 import { PostgresIntrospectorDialect } from './dialects/postgres/postgres-dialect';
 import { SqliteIntrospectorDialect } from './dialects/sqlite/sqlite-dialect';
 import { EnumCollection } from './enum-collection';
@@ -32,24 +33,29 @@ const TESTS: Test[] = [
   {
     connectionString: 'postgres://user:password@localhost:5433/database',
     dialect: new PostgresIntrospectorDialect({
+      dateParser: DateParser.STRING,
       numericParser: NumericParser.NUMBER_OR_STRING,
     }),
     inputValues: {
+      date: '2024-10-14',
       false: false,
       id: 1,
       interval1: parsePostgresInterval('1 day'),
       interval2: '24 months',
       numeric1: Number.MAX_SAFE_INTEGER,
       numeric2: String(Number.MAX_SAFE_INTEGER + 1),
+      timestamps: ['2024-09-17T08:05:00.000Z'],
       true: true,
     },
     outputValues: {
+      date: '2024-10-14',
       false: false,
       id: 1,
       interval1: { days: 1 },
       interval2: { years: 2 },
       numeric1: Number.MAX_SAFE_INTEGER,
       numeric2: String(Number.MAX_SAFE_INTEGER + 1),
+      timestamps: [new Date('2024-09-17T08:05:00.000Z')],
       true: true,
     },
   },
@@ -179,6 +185,12 @@ describe(Introspector.name, () => {
                       hasDefaultValue: true,
                       isAutoIncrementing: true,
                       name: 'id',
+                    }),
+                    new ColumnMetadata({
+                      dataType: 'date',
+                      dataTypeSchema: 'pg_catalog',
+                      isNullable: true,
+                      name: 'date',
                     }),
                     new ColumnMetadata({
                       dataType: 'status',

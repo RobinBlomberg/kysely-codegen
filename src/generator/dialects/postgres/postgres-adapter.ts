@@ -1,3 +1,4 @@
+import { DateParser } from '../../../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../../../introspector/dialects/postgres/numeric-parser';
 import { Adapter } from '../../adapter';
 import { ColumnTypeNode } from '../../ast/column-type-node';
@@ -15,6 +16,7 @@ import {
 } from '../../transformer/definitions';
 
 type PostgresAdapterOptions = {
+  dateParser?: DateParser;
   numericParser?: NumericParser;
 };
 
@@ -39,9 +41,19 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('number'),
         new IdentifierNode('bigint'),
       ]),
+      new UnionExpressionNode([
+        new IdentifierNode('string'),
+        new IdentifierNode('number'),
+        new IdentifierNode('bigint'),
+      ]),
     ),
     Interval: new ColumnTypeNode(
       new IdentifierNode('IPostgresInterval'),
+      new UnionExpressionNode([
+        new IdentifierNode('IPostgresInterval'),
+        new IdentifierNode('number'),
+        new IdentifierNode('string'),
+      ]),
       new UnionExpressionNode([
         new IdentifierNode('IPostgresInterval'),
         new IdentifierNode('number'),
@@ -59,6 +71,10 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('number'),
         new IdentifierNode('string'),
       ]),
+      new UnionExpressionNode([
+        new IdentifierNode('number'),
+        new IdentifierNode('string'),
+      ]),
     ),
     Point: new ObjectExpressionNode([
       new PropertyNode('x', new IdentifierNode('number')),
@@ -66,6 +82,10 @@ export class PostgresAdapter extends Adapter {
     ]),
     Timestamp: new ColumnTypeNode(
       new IdentifierNode('Date'),
+      new UnionExpressionNode([
+        new IdentifierNode('Date'),
+        new IdentifierNode('string'),
+      ]),
       new UnionExpressionNode([
         new IdentifierNode('Date'),
         new IdentifierNode('string'),
@@ -119,13 +139,31 @@ export class PostgresAdapter extends Adapter {
   constructor(options?: PostgresAdapterOptions) {
     super();
 
+    if (options?.dateParser === DateParser.STRING) {
+      this.scalars.date = new IdentifierNode('string');
+    } else {
+      this.scalars.date = new IdentifierNode('Timestamp');
+    }
+
     if (options?.numericParser === NumericParser.NUMBER) {
-      this.definitions.Numeric.args[0] = new IdentifierNode('number');
-    } else if (options?.numericParser === NumericParser.NUMBER_OR_STRING) {
-      this.definitions.Numeric.args[0] = new UnionExpressionNode([
+      this.definitions.Numeric = new ColumnTypeNode(
         new IdentifierNode('number'),
-        new IdentifierNode('string'),
-      ]);
+        new UnionExpressionNode([
+          new IdentifierNode('number'),
+          new IdentifierNode('string'),
+        ]),
+        new UnionExpressionNode([
+          new IdentifierNode('number'),
+          new IdentifierNode('string'),
+        ]),
+      );
+    } else if (options?.numericParser === NumericParser.NUMBER_OR_STRING) {
+      this.definitions.Numeric = new ColumnTypeNode(
+        new UnionExpressionNode([
+          new IdentifierNode('number'),
+          new IdentifierNode('string'),
+        ]),
+      );
     }
   }
 }
