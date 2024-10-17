@@ -1,5 +1,6 @@
 import { join } from 'path';
-import { LogLevel } from '../core';
+import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
+import { LogLevel } from '../generator/logger/log-level';
 
 export const DEFAULT_OUT_FILE = join(
   process.cwd(),
@@ -11,14 +12,16 @@ export const DEFAULT_OUT_FILE = join(
 
 export const DEFAULT_LOG_LEVEL = LogLevel.WARN;
 
+export const DEFAULT_RUNTIME_ENUMS_STYLE = RuntimeEnumsStyle.PASCAL_CASE;
+
 export const DEFAULT_URL = 'env(DATABASE_URL)';
 
 export const LOG_LEVEL_NAMES = [
-  'silent',
+  'debug',
   'info',
   'warn',
   'error',
-  'debug',
+  'silent',
 ] as const;
 
 export const VALID_DIALECTS = [
@@ -28,4 +31,6 @@ export const VALID_DIALECTS = [
   'mssql',
   'libsql',
   'bun-sqlite',
+  'kysely-bun-sqlite',
+  'worker-bun-sqlite',
 ];
