@@ -74,16 +74,18 @@ export const FLAGS = [
   },
   {
     description:
-      'Specify type overrides for specific table columns in JSON format.',
+      'Specify type overrides for specific table columns, in JSON format.',
     example: '{"columns":{"table_name.column_name":"{foo:\\"bar\\"}"}}',
     longName: 'overrides',
   },
   {
-    description: 'Include partitions of PostgreSQL tables.',
+    description:
+      'Include partitions of PostgreSQL tables in the generated code.',
     longName: 'partitions',
   },
   {
-    description: 'Print the generated output to the terminal.',
+    description:
+      'Print the generated output to the terminal instead of a file.',
     longName: 'print',
   },
   {
@@ -103,7 +105,8 @@ export const FLAGS = [
     longName: 'schema',
   },
   {
-    description: 'Singularize entities.',
+    description:
+      'Singularize generated table names, e.g. `BlogPost` instead of `BlogPosts`.',
     longName: 'singular',
   },
   {
