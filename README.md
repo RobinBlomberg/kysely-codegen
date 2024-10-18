@@ -99,6 +99,12 @@ export interface DB {
 }
 ```
 
+To specify a different output file:
+
+```sh
+kysely-codegen --out-file ./src/db/db.d.ts
+```
+
 ## Using the type definitions
 
 Import `DB` into `new Kysely<DB>`, and you're done!
@@ -116,9 +122,38 @@ const db = new Kysely<DB>({
   }),
 });
 
-const rows = await db.selectFrom('user').selectAll().execute();
+const rows = await db.selectFrom('users').selectAll().execute();
 //    ^ { created_at: Date; email: string; id: number; ... }[]
 ```
+
+If you need to use the generated types in e.g. function parameters and type definitions, you may need to use the Kysely `Insertable`, `Selectable`, `Updateable` types. Note that you don't need to explicitly annotate query return values, as it's recommended to let Kysely infer the types for you.
+
+```ts
+import { Insertable, Updateable } from 'kysely';
+import { DB } from 'kysely-codegen';
+import { db } from './db';
+
+async function insertUser(user: Insertable<User>) {
+  return await db
+    .insertInto('users')
+    .values(user)
+    .returningAll()
+    .executeTakeFirstOrThrow();
+  // ^ Selectable<User>
+}
+
+async function updateUser(user: Updateable<User>) {
+  return await db
+    .updateTable('users')
+    .set(user)
+    .where({ id: user.id })
+    .returning(['email', 'id'])
+    .executeTakeFirstOrThrow();
+  // ^ { email: string; id: number; }
+}
+```
+
+Read the [Kysely documentation](https://kysely.dev/docs/getting-started) for more information.
 
 ## CLI arguments
 
@@ -160,19 +195,19 @@ Print all command line options.
 
 You can choose which tables should be included during code generation by providing a glob pattern to the `--include-pattern` and `--exclude-pattern` flags. We use [micromatch](https://github.com/micromatch/micromatch) under the hood, which provides advanced glob support. For instance, if you only want to include your public tables:
 
-```bash
+```sh
 kysely-codegen --include-pattern="public.*"
 ```
 
 You can also include only certain tables within a schema:
 
-```bash
+```sh
 kysely-codegen --include-pattern="public.+(user|post)"
 ```
 
 Or exclude an entire class of tables:
 
-```bash
+```sh
 kysely-codegen --exclude-pattern="documents.*"
 ```
 
@@ -194,7 +229,7 @@ Specify type overrides for specific table columns in JSON format.
 
 **Example:**
 
-```bash
+```sh
 kysely-codegen --overrides='{"columns":{"table_name.column_name":"{foo:\"bar\"}"}}'
 ```
 
@@ -248,7 +283,7 @@ Set the default schema(s) for the database connection.
 
 Multiple schemas can be specified:
 
-```bash
+```sh
 kysely-codegen --schema=public --schema=hidden
 ```
 
