@@ -16,7 +16,7 @@ export type GenerateOptions = {
   excludePattern?: string;
   includePattern?: string;
   logger?: Logger;
-  outFile?: string;
+  outFile?: string | null;
   overrides?: Overrides;
   partitions?: boolean;
   print?: boolean;
@@ -41,7 +41,7 @@ export const generate = async (options: GenerateOptions) => {
     db: options.db,
     excludePattern: options.excludePattern,
     includePattern: options.includePattern,
-    partitions: !!options.partitions,
+    partitions: options.partitions,
   });
 
   options.logger?.debug();
@@ -54,12 +54,12 @@ export const generate = async (options: GenerateOptions) => {
   options.logger?.debug();
 
   const nodes = transform({
-    camelCase: !!options.camelCase,
+    camelCase: options.camelCase,
     defaultSchemas: options.schemas,
     dialect: options.dialect,
     metadata,
     overrides: options.overrides,
-    runtimeEnums: !!options.runtimeEnums,
+    runtimeEnums: options.runtimeEnums,
     runtimeEnumsStyle: options.runtimeEnumsStyle,
   });
 

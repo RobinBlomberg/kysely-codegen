@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { inspect } from 'util';
-import { LogLevel } from './log-level';
+import { LogLevel, matchesLogLevel } from './log-level';
 
 /**
  * Provides pretty console logging.
@@ -23,25 +23,25 @@ export class Logger {
   }
 
   debug(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.DEBUG) {
+    if (matchesLogLevel(this.logLevel, LogLevel.DEBUG)) {
       console.debug(...values.map((value) => this.serializeDebug(value)));
     }
   }
 
   error(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.ERROR) {
+    if (matchesLogLevel(this.logLevel, LogLevel.ERROR)) {
       console.error(...values.map((value) => this.serializeError(value)));
     }
   }
 
   info(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.INFO) {
+    if (matchesLogLevel(this.logLevel, LogLevel.INFO)) {
       console.info(...values.map((value) => this.serializeInfo(value)));
     }
   }
 
   log(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.INFO) {
+    if (matchesLogLevel(this.logLevel, LogLevel.INFO)) {
       console.log(...values);
     }
   }
@@ -67,13 +67,13 @@ export class Logger {
   }
 
   success(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.INFO) {
+    if (matchesLogLevel(this.logLevel, LogLevel.INFO)) {
       console.log(...values.map((value) => this.serializeSuccess(value)));
     }
   }
 
   warn(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.WARN) {
+    if (matchesLogLevel(this.logLevel, LogLevel.WARN)) {
       console.warn(...values.map((value) => this.serializeWarn(value)));
     }
   }

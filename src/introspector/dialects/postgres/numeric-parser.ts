@@ -1,4 +1,4 @@
-export const enum NumericParser {
+export enum NumericParser {
   NUMBER = 'number',
   NUMBER_OR_STRING = 'number-or-string',
   STRING = 'string',

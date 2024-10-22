@@ -1,6 +1,6 @@
 import { config as loadEnv } from 'dotenv';
 import { expand as expandEnv } from 'dotenv-expand';
-import type { DialectName } from './dialect-manager';
+import type { DialectName } from './dialect';
 import type { Logger } from './logger/logger';
 
 const CALL_STATEMENT_REGEXP = /^\s*([a-z]+)\s*\(\s*(.*)\s*\)\s*$/;
@@ -18,7 +18,7 @@ type ParseConnectionStringOptions = {
 
 type ParsedConnectionString = {
   connectionString: string;
-  inferredDialectName: DialectName;
+  dialectName: DialectName;
 };
 
 /**
@@ -109,12 +109,12 @@ export class ConnectionStringParser {
     const normalizedConnectionString =
       protocol === 'pg' ? `postgres${tail}` : connectionString;
 
-    const inferredDialectName =
+    const dialectName =
       options.dialectName ?? this.#inferDialectName(connectionString);
 
     return {
       connectionString: normalizedConnectionString,
-      inferredDialectName,
+      dialectName,
     };
   }
 }

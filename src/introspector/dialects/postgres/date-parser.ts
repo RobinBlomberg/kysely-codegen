@@ -1,4 +1,4 @@
-export const enum DateParser {
+export enum DateParser {
   STRING = 'string',
   TIMESTAMP = 'timestamp',
 }

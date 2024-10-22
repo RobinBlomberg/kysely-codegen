@@ -13,7 +13,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'postgres://username:password@hostname/database',
-          inferredDialectName: 'postgres',
+          dialectName: 'postgres',
         },
       );
       deepStrictEqual(
@@ -22,7 +22,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'postgresql://username:password@hostname/database',
-          inferredDialectName: 'postgres',
+          dialectName: 'postgres',
         },
       );
       deepStrictEqual(
@@ -31,7 +31,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'postgres://username:password@hostname/database',
-          inferredDialectName: 'postgres',
+          dialectName: 'postgres',
         },
       );
     });
@@ -45,7 +45,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'mysql://username:password@hostname/database',
-          inferredDialectName: 'mysql',
+          dialectName: 'mysql',
         },
       );
       deepStrictEqual(
@@ -54,7 +54,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'mysqlx://username:password@hostname/database',
-          inferredDialectName: 'mysql',
+          dialectName: 'mysql',
         },
       );
     });
@@ -68,7 +68,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'C:/Program Files/sqlite3/db',
-          inferredDialectName: 'sqlite',
+          dialectName: 'sqlite',
         },
       );
       deepStrictEqual(
@@ -77,7 +77,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: '/usr/local/bin',
-          inferredDialectName: 'sqlite',
+          dialectName: 'sqlite',
         },
       );
     });
@@ -91,7 +91,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'libsql://token@hostname:port/db',
-          inferredDialectName: 'libsql',
+          dialectName: 'libsql',
         },
       );
       deepStrictEqual(
@@ -100,7 +100,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'libsql://hostname:port/db',
-          inferredDialectName: 'libsql',
+          dialectName: 'libsql',
         },
       );
     });

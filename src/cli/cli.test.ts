@@ -1,42 +1,21 @@
 import { deepStrictEqual } from 'assert';
 import { execa } from 'execa';
 import { join } from 'path';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import packageJson from '../../package.json';
 import { LogLevel } from '../generator/logger/log-level';
-import {
-  DateParser,
-  DEFAULT_DATE_PARSER,
-} from '../introspector/dialects/postgres/date-parser';
-import { DEFAULT_NUMERIC_PARSER } from '../introspector/dialects/postgres/numeric-parser';
-import type { CliOptions } from './cli';
+import { DateParser } from '../introspector/dialects/postgres/date-parser';
+import type { CliGenerateOptions } from './cli';
 import { Cli } from './cli';
-import { DEFAULT_LOG_LEVEL, DEFAULT_OUT_FILE, DEFAULT_URL } from './constants';
+import { ConfigError } from './config-error';
+import { DEFAULT_OUT_FILE } from './constants';
 
 describe(Cli.name, () => {
   const cli = new Cli();
 
-  const DEFAULT_CLI_OPTIONS: CliOptions = {
-    camelCase: false,
-    dateParser: DEFAULT_DATE_PARSER,
-    dialectName: undefined,
-    domains: false,
-    envFile: undefined,
-    excludePattern: undefined,
-    includePattern: undefined,
-    logLevel: DEFAULT_LOG_LEVEL,
-    numericParser: DEFAULT_NUMERIC_PARSER,
+  const DEFAULT_CLI_OPTIONS: CliGenerateOptions = {
     outFile: DEFAULT_OUT_FILE,
-    overrides: undefined,
-    partitions: false,
-    print: false,
-    runtimeEnums: false,
-    runtimeEnumsStyle: undefined,
-    schemas: [],
-    singular: false,
-    typeOnlyImports: true,
-    url: DEFAULT_URL,
-    verify: false,
+    url: 'postgres://user:password@localhost:5433/database',
   };
 
   it('should be able to start the CLI', async () => {
@@ -46,8 +25,62 @@ describe(Cli.name, () => {
     deepStrictEqual(output.includes('--help, -h'), true);
   });
 
+  it('should throw an error if the config has an invalid schema', () => {
+    const assert = (
+      config: any,
+      message: string,
+      path = [Object.keys(config)[0]!],
+    ) => {
+      expect(() => cli.parseOptions([], { config })).toThrow(
+        new ConfigError({ message, path }),
+      );
+    };
+
+    assert({ camelCase: 'true' }, 'Expected boolean, received string');
+    assert(
+      { dateParser: 'timestamps' },
+      "Invalid enum value. Expected 'string' | 'timestamp', received 'timestamps'",
+    );
+    assert(
+      { dialectName: 'sqlite3' },
+      "Invalid enum value. Expected 'bun-sqlite' | 'kysely-bun-sqlite' | 'libsql' | 'mssql' | 'mysql' | 'postgres' | 'sqlite' | 'worker-bun-sqlite', received 'sqlite3'",
+    );
+    assert({ domains: 'true' }, 'Expected boolean, received string');
+    assert({ envFile: null }, 'Expected string, received null');
+    assert({ excludePattern: null }, 'Expected string, received null');
+    assert({ includePattern: null }, 'Expected string, received null');
+    assert(
+      { logLevel: 0 },
+      "Invalid enum value. Expected 'silent' | 'info' | 'warn' | 'error' | 'debug', received '0'",
+    );
+    assert(
+      { numericParser: 'numbers' },
+      "Invalid enum value. Expected 'number' | 'number-or-string' | 'string', received 'numbers'",
+    );
+    assert({ outFile: false }, 'Expected string, received boolean');
+    assert({ overrides: { columns: [] } }, 'Expected object, received array', [
+      'overrides',
+      'columns',
+    ]);
+    assert({ partitions: 'true' }, 'Expected boolean, received string');
+    assert({ print: 'true' }, 'Expected boolean, received string');
+    assert({ runtimeEnums: 'true' }, 'Expected boolean, received string');
+    assert(
+      { runtimeEnumsStyle: 'enums' },
+      "Invalid enum value. Expected 'pascal-case' | 'screaming-snake-case', received 'enums'",
+    );
+    assert({ schemas: 'public' }, 'Expected array, received string');
+    assert({ singular: 'true' }, 'Expected boolean, received string');
+    assert({ typeOnlyImports: 'true' }, 'Expected boolean, received string');
+    assert({ url: null }, 'Expected string, received null');
+    assert({ verify: 'true' }, 'Expected boolean, received string');
+  });
+
   it('should parse options correctly', () => {
-    const assert = (args: string[], expectedOptions: Partial<CliOptions>) => {
+    const assert = (
+      args: string[],
+      expectedOptions: Partial<CliGenerateOptions>,
+    ) => {
       const cliOptions = cli.parseOptions(args, { silent: true });
 
       deepStrictEqual(cliOptions, {

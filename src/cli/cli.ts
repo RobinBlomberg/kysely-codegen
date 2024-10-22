@@ -1,20 +1,15 @@
+import { cosmiconfigSync } from 'cosmiconfig';
 import minimist from 'minimist';
+import { z } from 'zod';
+import { getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';
-import type { DialectName } from '../generator/dialect-manager';
-import { DialectManager } from '../generator/dialect-manager';
 import { generate } from '../generator/generator/generate';
 import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
-import { LogLevel } from '../generator/logger/log-level';
+import { LogLevel, matchesLogLevel } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
-import type { Overrides } from '../generator/transformer/transform';
-import {
-  DateParser,
-  DEFAULT_DATE_PARSER,
-} from '../introspector/dialects/postgres/date-parser';
-import {
-  DEFAULT_NUMERIC_PARSER,
-  NumericParser,
-} from '../introspector/dialects/postgres/numeric-parser';
+import { DateParser } from '../introspector/dialects/postgres/date-parser';
+import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
+import { ConfigError } from './config-error';
 import {
   DEFAULT_LOG_LEVEL,
   DEFAULT_OUT_FILE,
@@ -23,27 +18,48 @@ import {
 } from './constants';
 import { FLAGS, serializeFlags } from './flags';
 
-export type CliOptions = {
-  camelCase?: boolean;
-  dateParser?: DateParser;
-  dialectName?: DialectName;
-  domains?: boolean;
-  envFile?: string;
-  excludePattern?: string;
-  includePattern?: string;
-  logLevel?: LogLevel;
-  numericParser?: NumericParser;
-  outFile?: string;
-  overrides?: Overrides;
-  partitions?: boolean;
-  print?: boolean;
-  runtimeEnums?: boolean;
-  runtimeEnumsStyle?: RuntimeEnumsStyle;
-  schemas?: string[];
-  singular?: boolean;
-  typeOnlyImports?: boolean;
-  url: string;
-  verify?: boolean;
+export type CliGenerateOptions = z.infer<typeof cliGenerateOptionsSchema>;
+
+const dialectNameSchema = z.enum([
+  'bun-sqlite',
+  'kysely-bun-sqlite',
+  'libsql',
+  'mssql',
+  'mysql',
+  'postgres',
+  'sqlite',
+  'worker-bun-sqlite',
+]);
+
+const cliGenerateOptionsSchema = z.object({
+  camelCase: z.boolean().optional(),
+  dateParser: z.nativeEnum(DateParser).optional(),
+  dialectName: dialectNameSchema.optional(),
+  domains: z.boolean().optional(),
+  envFile: z.string().optional(),
+  excludePattern: z.string().optional(),
+  includePattern: z.string().optional(),
+  logLevel: z.nativeEnum(LogLevel).optional(),
+  numericParser: z.nativeEnum(NumericParser).optional(),
+  outFile: z.string().optional(),
+  overrides: z
+    .object({ columns: z.record(z.string(), z.any()).optional() })
+    .optional(),
+  partitions: z.boolean().optional(),
+  print: z.boolean().optional(),
+  runtimeEnums: z.boolean().optional(),
+  runtimeEnumsStyle: z.nativeEnum(RuntimeEnumsStyle).optional(),
+  schemas: z.array(z.string()).optional(),
+  singular: z.boolean().optional(),
+  typeOnlyImports: z.boolean().optional(),
+  url: z.string().optional(),
+  verify: z.boolean().optional(),
+});
+
+const compact = <T extends Record<string, unknown>>(object: T) => {
+  return Object.fromEntries(
+    Object.entries(object).filter(([, value]) => value !== undefined),
+  ) as T;
 };
 
 /**
@@ -52,88 +68,65 @@ export type CliOptions = {
 export class Cli {
   logLevel = DEFAULT_LOG_LEVEL;
 
-  async generate(options: CliOptions) {
-    const camelCase = !!options.camelCase;
-    const excludePattern = options.excludePattern;
-    const includePattern = options.includePattern;
-    const outFile = options.outFile;
-    const overrides = options.overrides;
-    const partitions = !!options.partitions;
-    const print = !!options.print;
-    const runtimeEnums = options.runtimeEnums;
-    const runtimeEnumsStyle = options.runtimeEnumsStyle;
-    const schemas = options.schemas;
-    const singular = !!options.singular;
-    const typeOnlyImports = options.typeOnlyImports;
-    const verify = options.verify;
-
+  async generate(options: CliGenerateOptions) {
+    const connectionStringParser = new ConnectionStringParser();
     const logger = new Logger(options.logLevel);
 
-    const connectionStringParser = new ConnectionStringParser();
-    const { connectionString, inferredDialectName } =
-      connectionStringParser.parse({
-        connectionString: options.url ?? DEFAULT_URL,
-        dialectName: options.dialectName,
-        envFile: options.envFile,
-        logger,
-      });
+    const { connectionString, dialectName } = connectionStringParser.parse({
+      connectionString: options.url ?? DEFAULT_URL,
+      dialectName: options.dialectName,
+      envFile: options.envFile,
+      logger,
+    });
 
     if (options.dialectName) {
       logger.info(`Using dialect '${options.dialectName}'.`);
     } else {
-      logger.info(`No dialect specified. Assuming '${inferredDialectName}'.`);
+      logger.info(`No dialect specified. Assuming '${dialectName}'.`);
     }
 
-    const dialectManager = new DialectManager({
-      dateParser: options.dateParser ?? DEFAULT_DATE_PARSER,
-      domains: !!options.domains,
-      numericParser: options.numericParser ?? DEFAULT_NUMERIC_PARSER,
-      partitions: !!options.partitions,
+    const dialect = getDialect(dialectName, {
+      dateParser: options.dateParser,
+      domains: options.domains,
+      numericParser: options.numericParser,
+      partitions: options.partitions,
     });
-    const dialect = dialectManager.getDialect(
-      options.dialectName ?? inferredDialectName,
-    );
 
     const db = await dialect.introspector.connect({
       connectionString,
       dialect,
     });
 
-    await generate({
-      camelCase,
-      db,
-      dialect,
-      excludePattern,
-      includePattern,
-      logger,
-      outFile,
-      overrides,
-      partitions,
-      print,
-      runtimeEnums,
-      runtimeEnumsStyle,
-      schemas,
-      singular,
-      typeOnlyImports,
-      verify,
-    });
-
+    await generate({ ...options, db, dialect });
     await db.destroy();
   }
 
+  #loadConfig(config?: { configFile?: string }): unknown {
+    const explorer = cosmiconfigSync('kysely-codegen');
+    const result = config?.configFile
+      ? explorer.load(config.configFile)
+      : explorer.search();
+    return result?.config ?? {};
+  }
+
   #parseBoolean(input: any) {
+    if (input === undefined) return undefined;
     return !!input && input !== 'false';
   }
 
   #parseDateParser(input: any) {
+    if (input === undefined) return undefined;
     switch (input) {
       case 'string':
         return DateParser.STRING;
       case 'timestamp':
         return DateParser.TIMESTAMP;
-      default:
-        return DEFAULT_DATE_PARSER;
     }
+  }
+
+  #parseDialectName(input: any) {
+    const result = dialectNameSchema.safeParse(input);
+    return result.success ? result.data : undefined;
   }
 
   #parseLogLevel(input: any) {
@@ -148,12 +141,11 @@ export class Cli {
         return LogLevel.DEBUG;
       case 'warn':
         return LogLevel.WARN;
-      default:
-        return DEFAULT_LOG_LEVEL;
     }
   }
 
   #parseNumericParser(input: any) {
+    if (input === undefined) return undefined;
     switch (input) {
       case 'number':
         return NumericParser.NUMBER;
@@ -161,12 +153,11 @@ export class Cli {
         return NumericParser.NUMBER_OR_STRING;
       case 'string':
         return NumericParser.STRING;
-      default:
-        return DEFAULT_NUMERIC_PARSER;
     }
   }
 
   #parseRuntimeEnumsStyle(input: any) {
+    if (input === undefined) return undefined;
     switch (input) {
       case 'pascal-case':
         return RuntimeEnumsStyle.PASCAL_CASE;
@@ -176,11 +167,12 @@ export class Cli {
   }
 
   #parseString(input: any) {
-    return input === undefined ? undefined : String(input);
+    if (input === undefined) return undefined;
+    return String(input);
   }
 
   #parseStringArray(input: any) {
-    if (input === undefined) return [];
+    if (input === undefined) return undefined;
     if (!Array.isArray(input)) return [String(input)];
     return input.map(String);
   }
@@ -194,38 +186,16 @@ export class Cli {
     process.exit(0);
   }
 
-  parseOptions(args: string[], options?: { silent?: boolean }): CliOptions {
+  parseOptions(
+    args: string[],
+    options?: { config?: CliGenerateOptions; silent?: boolean },
+  ): CliGenerateOptions {
     const argv = minimist(args);
-    const logLevel = (this.logLevel = this.#parseLogLevel(argv['log-level']));
+    const logLevel = this.#parseLogLevel(argv['log-level']);
 
-    const _: string[] = argv._;
-    const camelCase = this.#parseBoolean(argv['camel-case']);
-    const dateParser = this.#parseDateParser(argv['date-parser']);
-    const dialectName = this.#parseString(argv.dialect) as DialectName;
-    const domains = this.#parseBoolean(argv.domains);
-    const envFile = this.#parseString(argv['env-file']);
-    const excludePattern = this.#parseString(argv['exclude-pattern']);
-    const help =
-      !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
-    const includePattern = this.#parseString(argv['include-pattern']);
-    const numericParser = this.#parseNumericParser(argv['numeric-parser']);
-    const outFile =
-      this.#parseString(argv['out-file']) ??
-      (argv.print ? undefined : DEFAULT_OUT_FILE);
-    const overrides = argv.overrides ? JSON.parse(argv.overrides) : undefined;
-    const partitions = this.#parseBoolean(argv.partitions);
-    const print = this.#parseBoolean(argv.print);
-    const runtimeEnums = this.#parseBoolean(argv['runtime-enums']);
-    const runtimeEnumsStyle = this.#parseRuntimeEnumsStyle(
-      argv['runtime-enums-style'],
-    );
-    const schemas = this.#parseStringArray(argv.schema);
-    const singular = this.#parseBoolean(argv.singular);
-    const typeOnlyImports = this.#parseBoolean(
-      argv['type-only-imports'] ?? true,
-    );
-    const url = this.#parseString(argv.url) ?? DEFAULT_URL;
-    const verify = this.#parseBoolean(argv.verify);
+    if (logLevel !== undefined) {
+      this.logLevel = logLevel;
+    }
 
     for (const key in argv) {
       if (
@@ -244,47 +214,88 @@ export class Cli {
       }
     }
 
+    const _: string[] = argv._;
+    const help =
+      !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
+
     if (help && !options?.silent) {
       this.#showHelp();
+      process.exit(1);
     }
 
-    if (dialectName && !VALID_DIALECTS.includes(dialectName)) {
+    const configFile = this.#parseString(argv['config-file']);
+    const rawConfig = options?.config ?? this.#loadConfig({ configFile });
+    const parseResult = cliGenerateOptionsSchema.safeParse(rawConfig);
+
+    if (parseResult.error) {
+      throw new ConfigError(parseResult.error.errors[0]!);
+    }
+
+    const config = compact(parseResult.data);
+
+    const cliOptions = compact({
+      camelCase: this.#parseBoolean(argv['camel-case']),
+      dateParser: this.#parseDateParser(argv['date-parser']),
+      dialectName: this.#parseDialectName(argv.dialect),
+      domains: this.#parseBoolean(argv.domains),
+      envFile: this.#parseString(argv['env-file']),
+      excludePattern: this.#parseString(argv['exclude-pattern']),
+      includePattern: this.#parseString(argv['include-pattern']),
+      logLevel,
+      numericParser: this.#parseNumericParser(argv['numeric-parser']),
+      outFile: this.#parseString(argv['out-file']),
+      overrides:
+        typeof argv.overrides === 'string'
+          ? JSON.parse(argv.overrides)
+          : undefined,
+      partitions: this.#parseBoolean(argv.partitions),
+      print: this.#parseBoolean(argv.print),
+      runtimeEnums: this.#parseBoolean(argv['runtime-enums']),
+      runtimeEnumsStyle: this.#parseRuntimeEnumsStyle(
+        argv['runtime-enums-style'],
+      ),
+      schemas: this.#parseStringArray(argv.schema),
+      singular: this.#parseBoolean(argv.singular),
+      typeOnlyImports: this.#parseBoolean(argv['type-only-imports']),
+      url: this.#parseString(argv.url),
+      verify: this.#parseBoolean(argv.verify),
+    });
+
+    const print = cliOptions.print ?? config.print;
+    const outFile =
+      cliOptions.outFile ??
+      config.outFile ??
+      (print ? undefined : DEFAULT_OUT_FILE);
+
+    const generateOptions: CliGenerateOptions = {
+      ...cliOptions,
+      ...config,
+      ...(logLevel === undefined ? {} : { logLevel }),
+      ...(outFile === undefined && !print ? {} : { outFile }),
+      url: cliOptions.url ?? config.url ?? DEFAULT_URL,
+    };
+
+    if (
+      generateOptions.dialectName &&
+      !VALID_DIALECTS.includes(generateOptions.dialectName)
+    ) {
       const dialectValues = VALID_DIALECTS.join(', ');
       throw new RangeError(
         `Parameter '--dialect' must have one of the following values: ${dialectValues}`,
       );
     }
 
-    if (!url) {
+    if (!generateOptions.url) {
       throw new TypeError(
-        "Parameter '--url' must be a valid connection string. Examples:\n\n" +
-          '  --url=postgres://username:password@mydomain.com/database\n' +
-          '  --url=env(DATABASE_URL)',
+        "Parameter '--url' must be a valid connection string.\n" +
+          `Received: ${generateOptions.url}\n\n` +
+          'Examples:\n' +
+          '  --url=postgres://username:password@example.com/database\n' +
+          '  --url=env(DATABASE_URL)\n',
       );
     }
 
-    return {
-      camelCase,
-      dateParser,
-      dialectName,
-      domains,
-      envFile,
-      excludePattern,
-      includePattern,
-      logLevel,
-      numericParser,
-      outFile,
-      overrides,
-      partitions,
-      print,
-      runtimeEnums,
-      runtimeEnumsStyle,
-      schemas,
-      singular,
-      typeOnlyImports,
-      url,
-      verify,
-    };
+    return generateOptions;
   }
 
   async run(argv: string[]) {
@@ -292,9 +303,9 @@ export class Cli {
       const options = this.parseOptions(argv);
       await this.generate(options);
     } catch (error) {
-      if (this.logLevel > LogLevel.SILENT) {
+      if (matchesLogLevel(this.logLevel, LogLevel.INFO)) {
         if (error instanceof Error) {
-          if (this.logLevel >= LogLevel.DEBUG) {
+          if (matchesLogLevel(this.logLevel, LogLevel.DEBUG)) {
             console.error();
             throw error;
           } else {

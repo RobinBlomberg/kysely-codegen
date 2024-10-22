@@ -4,7 +4,7 @@ import { PostgresIntrospectorDialect } from '../../../introspector/dialects/post
 import type { GeneratorDialect } from '../../dialect';
 import { PostgresAdapter } from './postgres-adapter';
 
-type PostgresDialectOptions = {
+export type PostgresDialectOptions = {
   dateParser?: DateParser;
   defaultSchemas?: string[];
   domains?: boolean;
