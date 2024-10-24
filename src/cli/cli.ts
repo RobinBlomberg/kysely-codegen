@@ -10,12 +10,7 @@ import { Logger } from '../generator/logger/logger';
 import { DateParser } from '../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import { ConfigError } from './config-error';
-import {
-  DEFAULT_LOG_LEVEL,
-  DEFAULT_OUT_FILE,
-  DEFAULT_URL,
-  VALID_DIALECTS,
-} from './constants';
+import { DEFAULT_LOG_LEVEL, DEFAULT_URL, VALID_DIALECTS } from './constants';
 import { FLAGS, serializeFlags } from './flags';
 
 export type CliGenerateOptions = z.infer<typeof cliGenerateOptionsSchema>;
@@ -41,7 +36,7 @@ const cliGenerateOptionsSchema = z.object({
   includePattern: z.string().optional(),
   logLevel: z.nativeEnum(LogLevel).optional(),
   numericParser: z.nativeEnum(NumericParser).optional(),
-  outFile: z.string().optional(),
+  outFile: z.string().nullable().optional(),
   overrides: z
     .object({ columns: z.record(z.string(), z.any()).optional() })
     .optional(),
@@ -97,8 +92,25 @@ export class Cli {
       dialect,
     });
 
-    await generate({ ...options, db, dialect });
+    const output = await generate({
+      camelCase: options.camelCase,
+      db,
+      dialect,
+      excludePattern: options.excludePattern,
+      includePattern: options.includePattern,
+      outFile: options.outFile,
+      overrides: options.overrides,
+      partitions: options.partitions,
+      print: options.print,
+      runtimeEnums: options.runtimeEnums,
+      runtimeEnumsStyle: options.runtimeEnumsStyle,
+      schemas: options.schemas,
+      singular: options.singular,
+      typeOnlyImports: options.typeOnlyImports,
+      verify: options.verify,
+    });
     await db.destroy();
+    return output;
   }
 
   #loadConfig(config?: { configFile?: string }): unknown {
@@ -231,7 +243,7 @@ export class Cli {
       throw new ConfigError(parseResult.error.errors[0]!);
     }
 
-    const config = compact(parseResult.data);
+    const configOptions = compact(parseResult.data);
 
     const cliOptions = compact({
       camelCase: this.#parseBoolean(argv['camel-case']),
@@ -261,18 +273,16 @@ export class Cli {
       verify: this.#parseBoolean(argv.verify),
     });
 
-    const print = cliOptions.print ?? config.print;
-    const outFile =
-      cliOptions.outFile ??
-      config.outFile ??
-      (print ? undefined : DEFAULT_OUT_FILE);
+    const print = cliOptions.print ?? configOptions.print;
+    const outFile = print
+      ? undefined
+      : (cliOptions.outFile ?? configOptions.outFile);
 
     const generateOptions: CliGenerateOptions = {
+      ...configOptions,
       ...cliOptions,
-      ...config,
       ...(logLevel === undefined ? {} : { logLevel }),
-      ...(outFile === undefined && !print ? {} : { outFile }),
-      url: cliOptions.url ?? config.url ?? DEFAULT_URL,
+      ...(outFile === undefined ? {} : { outFile }),
     };
 
     if (
@@ -285,23 +295,15 @@ export class Cli {
       );
     }
 
-    if (!generateOptions.url) {
-      throw new TypeError(
-        "Parameter '--url' must be a valid connection string.\n" +
-          `Received: ${generateOptions.url}\n\n` +
-          'Examples:\n' +
-          '  --url=postgres://username:password@example.com/database\n' +
-          '  --url=env(DATABASE_URL)\n',
-      );
-    }
-
     return generateOptions;
   }
 
-  async run(argv: string[]) {
+  async run(options?: { argv?: string[]; config?: CliGenerateOptions }) {
     try {
-      const options = this.parseOptions(argv);
-      await this.generate(options);
+      const generateOptions = this.parseOptions(options?.argv ?? [], {
+        config: options?.config,
+      });
+      return await this.generate(generateOptions);
     } catch (error) {
       if (matchesLogLevel(this.logLevel, LogLevel.INFO)) {
         if (error instanceof Error) {

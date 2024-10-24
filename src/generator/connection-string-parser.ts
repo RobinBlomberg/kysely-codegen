@@ -82,9 +82,15 @@ export class ConnectionStringParser {
       const envFile = options.envFile ?? '.env';
 
       if (error) {
-        if (error.name === 'ENOENT') {
+        if (
+          'code' in error &&
+          typeof error.code === 'string' &&
+          error.code === 'ENOENT'
+        ) {
           throw new ReferenceError(
-            `Environment file '${envFile}' could not be found. Use --env-file to specify a different file.`,
+            `Could not resolve connection string '${connectionString}'. ` +
+              `Environment file '${envFile}' could not be found. ` +
+              "Use '--env-file' to specify a different file.",
           );
         }
 

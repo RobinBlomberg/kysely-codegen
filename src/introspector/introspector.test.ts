@@ -1,7 +1,6 @@
 import { deepStrictEqual } from 'assert';
 import { type Kysely } from 'kysely';
 import parsePostgresInterval from 'postgres-interval';
-import { describe, test } from 'vitest';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import { migrate } from '../introspector/introspector.fixtures';
 import type { IntrospectorDialect } from './dialect';

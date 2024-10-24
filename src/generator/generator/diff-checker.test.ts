@@ -1,5 +1,4 @@
 import { strictEqual } from 'assert';
-import { test } from 'vitest';
 import { DiffChecker } from './diff-checker';
 
 test(DiffChecker.name, () => {

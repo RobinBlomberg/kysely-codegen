@@ -1,5 +1,4 @@
 import { deepStrictEqual } from 'assert';
-import { describe, it } from 'vitest';
 import { ConnectionStringParser } from './connection-string-parser';
 
 describe(ConnectionStringParser.name, () => {

@@ -12,6 +12,7 @@ const down = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
     await trx.schema.dropTable('foo_bar').ifExists().execute();
 
     if (dialect instanceof PostgresIntrospectorDialect) {
+      await trx.schema.dropSchema('cli-test').ifExists().cascade().execute();
       await trx.schema
         .withSchema('test')
         .dropType('status')

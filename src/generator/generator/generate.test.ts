@@ -1,7 +1,6 @@
 import { strictEqual } from 'assert';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { describe, test } from 'vitest';
 import { DateParser } from '../../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import {

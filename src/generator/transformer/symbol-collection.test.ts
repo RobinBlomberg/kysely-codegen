@@ -1,5 +1,4 @@
 import { deepStrictEqual } from 'assert';
-import { test } from 'vitest';
 import { IdentifierNode } from '../ast/identifier-node';
 import type { SymbolNode } from './symbol-collection';
 import { SymbolCollection, SymbolType } from './symbol-collection';

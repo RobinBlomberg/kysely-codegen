@@ -1,5 +1,4 @@
 import { strictEqual } from 'assert';
-import { describe, it } from 'vitest';
 import { TableMatcher } from './table-matcher';
 
 describe(TableMatcher.name, () => {

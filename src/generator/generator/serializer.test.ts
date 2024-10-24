@@ -1,5 +1,4 @@
 import { strictEqual } from 'assert';
-import { describe, it, test } from 'vitest';
 import { EnumCollection } from '../../introspector/enum-collection';
 import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
 import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';

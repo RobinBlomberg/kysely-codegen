@@ -1,4 +1,3 @@
-import { expect, test } from 'vitest';
 import { getLogLevelNumber, LogLevel, matchesLogLevel } from './log-level';
 
 test(getLogLevelNumber.name, () => {
