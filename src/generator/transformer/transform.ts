@@ -57,8 +57,7 @@ type TransformContext = {
   imports: Imports;
   metadata: DatabaseMetadata;
   overrides: Overrides | undefined;
-  runtimeEnums: boolean;
-  runtimeEnumsStyle: RuntimeEnumsStyle | undefined;
+  runtimeEnums: boolean | RuntimeEnumsStyle;
   scalars: Scalars;
   symbols: SymbolCollection;
 };
@@ -69,8 +68,7 @@ type TransformOptions = {
   dialect: GeneratorDialect;
   metadata: DatabaseMetadata;
   overrides?: Overrides;
-  runtimeEnums?: boolean;
-  runtimeEnumsStyle?: RuntimeEnumsStyle;
+  runtimeEnums?: boolean | RuntimeEnumsStyle;
 };
 
 const collectSymbol = (name: string, context: TransformContext) => {
@@ -174,8 +172,7 @@ const createContext = (options: TransformOptions): TransformContext => {
     },
     metadata: options.metadata,
     overrides: options.overrides,
-    runtimeEnums: !!options.runtimeEnums,
-    runtimeEnumsStyle: options.runtimeEnumsStyle,
+    runtimeEnums: options.runtimeEnums ?? false,
     scalars: {
       ...options.dialect.adapter.scalars,
     },
@@ -351,7 +348,7 @@ const transformColumnToArgs = (
       const symbol: SymbolNode = {
         node: new RuntimeEnumDeclarationNode(symbolId, enumValues, {
           identifierStyle:
-            context.runtimeEnumsStyle === RuntimeEnumsStyle.SCREAMING_SNAKE_CASE
+            context.runtimeEnums === RuntimeEnumsStyle.SCREAMING_SNAKE_CASE
               ? IdentifierStyle.SCREAMING_SNAKE_CASE
               : IdentifierStyle.KYSELY_PASCAL_CASE,
         }),

@@ -43,8 +43,13 @@ const cliGenerateOptionsSchema = z.object({
     .optional(),
   partitions: z.boolean().optional(),
   print: z.boolean().optional(),
-  runtimeEnums: z.boolean().optional(),
-  runtimeEnumsStyle: z.nativeEnum(RuntimeEnumsStyle).optional(),
+  runtimeEnums: z
+    .union([z.boolean(), z.nativeEnum(RuntimeEnumsStyle)], {
+      // TODO: Investigate why this error message is not shown:
+      message:
+        "Expected 'false' | 'true' | 'pascal-case' | 'screaming-snake-case'",
+    })
+    .optional(),
   singular: z.boolean().optional(),
   typeOnlyImports: z.boolean().optional(),
   url: z.string().optional(),
@@ -104,7 +109,6 @@ export class Cli {
       partitions: options.partitions,
       print: options.print,
       runtimeEnums: options.runtimeEnums,
-      runtimeEnumsStyle: options.runtimeEnumsStyle,
       singular: options.singular,
       typeOnlyImports: options.typeOnlyImports,
       verify: options.verify,
@@ -168,13 +172,15 @@ export class Cli {
     }
   }
 
-  #parseRuntimeEnumsStyle(input: any) {
+  #parseRuntimeEnums(input: any) {
     if (input === undefined) return undefined;
     switch (input) {
       case 'pascal-case':
         return RuntimeEnumsStyle.PASCAL_CASE;
       case 'screaming-snake-case':
         return RuntimeEnumsStyle.SCREAMING_SNAKE_CASE;
+      default:
+        return this.#parseBoolean(input);
     }
   }
 
@@ -269,10 +275,7 @@ export class Cli {
           : undefined,
       partitions: this.#parseBoolean(argv.partitions),
       print: this.#parseBoolean(argv.print),
-      runtimeEnums: this.#parseBoolean(argv['runtime-enums']),
-      runtimeEnumsStyle: this.#parseRuntimeEnumsStyle(
-        argv['runtime-enums-style'],
-      ),
+      runtimeEnums: this.#parseRuntimeEnums(argv['runtime-enums']),
       singular: this.#parseBoolean(argv.singular),
       typeOnlyImports: this.#parseBoolean(argv['type-only-imports']),
       url: this.#parseString(argv.url),

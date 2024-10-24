@@ -93,15 +93,10 @@ export const FLAGS = [
     longName: 'print',
   },
   {
+    default: DEFAULT_RUNTIME_ENUMS_STYLE,
     description:
       'Generate runtime enums instead of string unions for PostgreSQL enums.',
     longName: 'runtime-enums',
-  },
-  {
-    default: DEFAULT_RUNTIME_ENUMS_STYLE,
-    description:
-      'Which naming convention to use for runtime enum keys. Only works with `--runtime-enums`.',
-    longName: 'runtime-enums-style',
     values: ['pascal-case', 'screaming-snake-case'],
   },
   {

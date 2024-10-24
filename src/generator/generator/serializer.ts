@@ -26,7 +26,7 @@ const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
 type SerializerOptions = {
   camelCase?: boolean;
-  runtimeEnumsStyle?: RuntimeEnumsStyle;
+  runtimeEnums?: boolean | RuntimeEnumsStyle;
   singular?: boolean;
   typeOnlyImports?: boolean;
 };
@@ -36,13 +36,13 @@ type SerializerOptions = {
  */
 export class Serializer {
   readonly camelCase: boolean;
-  readonly runtimeEnumsStyle?: RuntimeEnumsStyle;
+  readonly runtimeEnums: boolean | RuntimeEnumsStyle;
   readonly singular: boolean;
   readonly typeOnlyImports: boolean;
 
   constructor(options: SerializerOptions = {}) {
     this.camelCase = options.camelCase ?? false;
-    this.runtimeEnumsStyle = options.runtimeEnumsStyle;
+    this.runtimeEnums = options.runtimeEnums ?? false;
     this.singular = options.singular ?? false;
     this.typeOnlyImports = options.typeOnlyImports ?? true;
   }
@@ -337,7 +337,7 @@ export class Serializer {
     for (const member of members) {
       data += '  ';
 
-      if (this.runtimeEnumsStyle === RuntimeEnumsStyle.PASCAL_CASE) {
+      if (this.runtimeEnums === RuntimeEnumsStyle.PASCAL_CASE) {
         data += toPascalCase(member[0]);
       } else {
         data += toScreamingSnakeCase(member[0]);

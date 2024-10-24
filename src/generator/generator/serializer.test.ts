@@ -227,7 +227,7 @@ describe(Serializer.name, () => {
     it('should serialize runtime enums properly in pascal case', () => {
       const enumSerializer = new Serializer({
         camelCase: true,
-        runtimeEnumsStyle: RuntimeEnumsStyle.PASCAL_CASE,
+        runtimeEnums: RuntimeEnumsStyle.PASCAL_CASE,
       });
 
       strictEqual(

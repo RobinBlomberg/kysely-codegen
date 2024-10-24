@@ -21,8 +21,7 @@ export type GenerateOptions = {
   overrides?: Overrides;
   partitions?: boolean;
   print?: boolean;
-  runtimeEnums?: boolean;
-  runtimeEnumsStyle?: RuntimeEnumsStyle;
+  runtimeEnums?: boolean | RuntimeEnumsStyle;
   serializer?: Serializer;
   singular?: boolean;
   typeOnlyImports?: boolean;
@@ -60,14 +59,13 @@ export const generate = async (options: GenerateOptions) => {
     metadata,
     overrides: options.overrides,
     runtimeEnums: options.runtimeEnums,
-    runtimeEnumsStyle: options.runtimeEnumsStyle,
   });
 
   const serializer =
     options.serializer ??
     new Serializer({
       camelCase: options.camelCase,
-      runtimeEnumsStyle: options.runtimeEnumsStyle,
+      runtimeEnums: options.runtimeEnums,
       singular: options.singular,
       typeOnlyImports: options.typeOnlyImports,
     });

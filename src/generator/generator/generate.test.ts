@@ -49,10 +49,7 @@ const TESTS: Test[] = [
       dateParser: DateParser.STRING,
       numericParser: NumericParser.NUMBER_OR_STRING,
     }),
-    generateOptions: {
-      runtimeEnums: true,
-      runtimeEnumsStyle: RuntimeEnumsStyle.SCREAMING_SNAKE_CASE,
-    },
+    generateOptions: { runtimeEnums: RuntimeEnumsStyle.SCREAMING_SNAKE_CASE },
     name: 'postgres2',
   },
   {

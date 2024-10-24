@@ -42,8 +42,7 @@ describe(transform.name, () => {
     camelCase?: boolean;
     dateParser?: DateParser;
     numericParser?: NumericParser;
-    runtimeEnums?: boolean;
-    runtimeEnumsStyle?: RuntimeEnumsStyle;
+    runtimeEnums?: boolean | RuntimeEnumsStyle;
     tables: TableMetadata[];
   }) => {
     return transform({

@@ -51,8 +51,7 @@ describe(Cli.name, () => {
         includePattern: 'cli.*',
         logLevel: LogLevel.SILENT,
         outFile: null,
-        runtimeEnums: true,
-        runtimeEnumsStyle: RuntimeEnumsStyle.PASCAL_CASE,
+        runtimeEnums: RuntimeEnumsStyle.PASCAL_CASE,
         singular: true,
         url: 'postgres://user:password@localhost:5433/database',
         typeOnlyImports: false,
@@ -185,10 +184,10 @@ describe(Cli.name, () => {
     ]);
     assert({ partitions: 'true' }, 'Expected boolean, received string');
     assert({ print: 'true' }, 'Expected boolean, received string');
-    assert({ runtimeEnums: 'true' }, 'Expected boolean, received string');
     assert(
-      { runtimeEnumsStyle: 'enums' },
-      "Invalid enum value. Expected 'pascal-case' | 'screaming-snake-case', received 'enums'",
+      { runtimeEnums: 'true' },
+      // "Expected true | false | 'pascal-case' | 'screaming-snake-case'",
+      'Invalid input',
     );
     assert({ singular: 'true' }, 'Expected boolean, received string');
     assert({ typeOnlyImports: 'true' }, 'Expected boolean, received string');

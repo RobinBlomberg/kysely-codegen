@@ -255,11 +255,9 @@ Include partitions of PostgreSQL tables in the generated code.
 
 Print the generated output to the terminal instead of a file.
 
-#### --runtime-enums, --runtime-enums-style <!-- omit from toc -->
+#### --runtime-enums <!-- omit from toc -->
 
-The PostgreSQL `--runtime-enums` option generates runtime enums instead of string unions.
-
-The option `--runtime-enums-style` specifies which naming convention to use for runtime enum keys. (values: [`pascal-case`, `screaming-snake-case`], default: `pascal-case`)
+The PostgreSQL `--runtime-enums` option generates runtime enums instead of string unions. You can optionally specify which naming convention to use for runtime enum keys. (values: [`pascal-case`, `screaming-snake-case`], default: `screaming-snake-case`)
 
 **Examples:**
 
@@ -269,7 +267,7 @@ The option `--runtime-enums-style` specifies which naming convention to use for 
 export type Status = 'CONFIRMED' | 'UNCONFIRMED';
 ```
 
-`--runtime-enums`
+`--runtime-enums` or `--runtime-enums=screaming-snake-case`
 
 ```ts
 export enum Status {
@@ -278,7 +276,7 @@ export enum Status {
 }
 ```
 
-`--runtime-enums --runtime-enums-style=pascal-case`
+`--runtime-enums=pascal-case`
 
 ```ts
 export enum Status {
