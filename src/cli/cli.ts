@@ -29,6 +29,7 @@ const dialectNameSchema = z.enum([
 const cliGenerateOptionsSchema = z.object({
   camelCase: z.boolean().optional(),
   dateParser: z.nativeEnum(DateParser).optional(),
+  defaultSchemas: z.array(z.string()).optional(),
   dialectName: dialectNameSchema.optional(),
   domains: z.boolean().optional(),
   envFile: z.string().optional(),
@@ -44,7 +45,6 @@ const cliGenerateOptionsSchema = z.object({
   print: z.boolean().optional(),
   runtimeEnums: z.boolean().optional(),
   runtimeEnumsStyle: z.nativeEnum(RuntimeEnumsStyle).optional(),
-  schemas: z.array(z.string()).optional(),
   singular: z.boolean().optional(),
   typeOnlyImports: z.boolean().optional(),
   url: z.string().optional(),
@@ -95,6 +95,7 @@ export class Cli {
     const output = await generate({
       camelCase: options.camelCase,
       db,
+      defaultSchemas: options.defaultSchemas,
       dialect,
       excludePattern: options.excludePattern,
       includePattern: options.includePattern,
@@ -104,7 +105,6 @@ export class Cli {
       print: options.print,
       runtimeEnums: options.runtimeEnums,
       runtimeEnumsStyle: options.runtimeEnumsStyle,
-      schemas: options.schemas,
       singular: options.singular,
       typeOnlyImports: options.typeOnlyImports,
       verify: options.verify,
@@ -210,6 +210,12 @@ export class Cli {
     }
 
     for (const key in argv) {
+      if (key === 'schema') {
+        throw new RangeError(
+          "The flag 'schema' has been deprecated. Use 'default-schema' instead.",
+        );
+      }
+
       if (
         key !== '_' &&
         !FLAGS.some((flag) => {
@@ -222,7 +228,7 @@ export class Cli {
           ].includes(key);
         })
       ) {
-        throw new RangeError(`Invalid flag: "${key}"`);
+        throw new RangeError(`Invalid flag: '${key}'`);
       }
     }
 
@@ -248,6 +254,7 @@ export class Cli {
     const cliOptions = compact({
       camelCase: this.#parseBoolean(argv['camel-case']),
       dateParser: this.#parseDateParser(argv['date-parser']),
+      defaultSchemas: this.#parseStringArray(argv['default-schema']),
       dialectName: this.#parseDialectName(argv.dialect),
       domains: this.#parseBoolean(argv.domains),
       envFile: this.#parseString(argv['env-file']),
@@ -266,7 +273,6 @@ export class Cli {
       runtimeEnumsStyle: this.#parseRuntimeEnumsStyle(
         argv['runtime-enums-style'],
       ),
-      schemas: this.#parseStringArray(argv.schema),
       singular: this.#parseBoolean(argv.singular),
       typeOnlyImports: this.#parseBoolean(argv['type-only-imports']),
       url: this.#parseString(argv.url),

@@ -28,6 +28,10 @@ export const FLAGS = [
     values: ['string', 'timestamp'],
   },
   {
+    description: 'Set the default schema(s) for the database connection.',
+    longName: 'default-schema',
+  },
+  {
     description: 'Set the SQL dialect.',
     longName: 'dialect',
     values: VALID_DIALECTS,
@@ -99,10 +103,6 @@ export const FLAGS = [
       'Which naming convention to use for runtime enum keys. Only works with `--runtime-enums`.',
     longName: 'runtime-enums-style',
     values: ['pascal-case', 'screaming-snake-case'],
-  },
-  {
-    description: 'Set the default schema(s) for the database connection.',
-    longName: 'schema',
   },
   {
     description:

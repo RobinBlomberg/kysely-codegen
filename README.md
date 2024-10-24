@@ -179,6 +179,16 @@ export interface User {
 
 Specify which parser to use for PostgreSQL date values. (values: [`string`, `timestamp`], default: `timestamp`)
 
+#### --default-schema [value] <!-- omit from toc -->
+
+Set the default schema(s) for the database connection.
+
+Multiple schemas can be specified:
+
+```sh
+kysely-codegen --default-schema=public --default-schema=hidden
+```
+
 #### --dialect [value] <!-- omit from toc -->
 
 Set the SQL dialect. (values: [`postgres`, `mysql`, `sqlite`, `mssql`, `libsql`, `bun-sqlite`, `kysely-bun-sqlite`, `worker-bun-sqlite`])
@@ -275,16 +285,6 @@ export enum Status {
   Confirmed = 'CONFIRMED',
   Unconfirmed = 'UNCONFIRMED',
 }
-```
-
-#### --schema [value] <!-- omit from toc -->
-
-Set the default schema(s) for the database connection.
-
-Multiple schemas can be specified:
-
-```sh
-kysely-codegen --schema=public --schema=hidden
 ```
 
 #### --singular <!-- omit from toc -->

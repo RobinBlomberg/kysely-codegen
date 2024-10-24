@@ -12,6 +12,7 @@ import { Serializer } from './serializer';
 export type GenerateOptions = {
   camelCase?: boolean;
   db: Kysely<any>;
+  defaultSchemas?: string[];
   dialect: GeneratorDialect;
   excludePattern?: string;
   includePattern?: string;
@@ -22,7 +23,6 @@ export type GenerateOptions = {
   print?: boolean;
   runtimeEnums?: boolean;
   runtimeEnumsStyle?: RuntimeEnumsStyle;
-  schemas?: string[];
   serializer?: Serializer;
   singular?: boolean;
   typeOnlyImports?: boolean;
@@ -55,7 +55,7 @@ export const generate = async (options: GenerateOptions) => {
 
   const nodes = transform({
     camelCase: options.camelCase,
-    defaultSchemas: options.schemas,
+    defaultSchemas: options.defaultSchemas,
     dialect: options.dialect,
     metadata,
     overrides: options.overrides,

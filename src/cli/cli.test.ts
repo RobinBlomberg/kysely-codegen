@@ -46,12 +46,14 @@ describe(Cli.name, () => {
       argv: ['--camel-case'],
       config: {
         camelCase: false,
+        defaultSchemas: ['cli'],
+        dialectName: 'postgres',
         includePattern: 'cli.*',
+        logLevel: LogLevel.SILENT,
         outFile: null,
         runtimeEnums: true,
         runtimeEnumsStyle: RuntimeEnumsStyle.PASCAL_CASE,
         singular: true,
-        schemas: ['cli'],
         url: 'postgres://user:password@localhost:5433/database',
         typeOnlyImports: false,
       },
@@ -90,6 +92,59 @@ describe(Cli.name, () => {
     await db.schema.dropSchema('cli').cascade().execute();
   });
 
+  it('should parse options correctly', () => {
+    const assert = (
+      args: string[],
+      expectedOptions: Partial<CliGenerateOptions>,
+    ) => {
+      const cliOptions = new Cli().parseOptions(args, { silent: true });
+
+      deepStrictEqual(cliOptions, {
+        url: 'postgres://user:password@localhost:5433/database',
+        ...expectedOptions,
+      });
+    };
+
+    assert(['--camel-case'], { camelCase: true });
+    assert(['--date-parser=timestamp'], { dateParser: DateParser.TIMESTAMP });
+    assert(['--date-parser=string'], { dateParser: DateParser.STRING });
+    assert(['--default-schema=foo'], { defaultSchemas: ['foo'] });
+    assert(['--default-schema=foo', '--default-schema=bar'], {
+      defaultSchemas: ['foo', 'bar'],
+    });
+    assert(['--dialect=mysql'], { dialectName: 'mysql' });
+    assert(['--domains'], { domains: true });
+    assert(['--exclude-pattern=public._*'], { excludePattern: 'public._*' });
+    assert(['--help'], {});
+    assert(['-h'], {});
+    assert(['--include-pattern=public._*'], { includePattern: 'public._*' });
+    assert(['--log-level=debug'], { logLevel: LogLevel.DEBUG });
+    assert(['--no-domains'], { domains: false });
+    assert(['--no-type-only-imports'], { typeOnlyImports: false });
+    assert(['--out-file=./db.ts'], { outFile: './db.ts' });
+    assert(
+      [`--overrides={"columns":{"table.override":"{ foo: \\"bar\\" }"}}`],
+      { overrides: { columns: { 'table.override': '{ foo: "bar" }' } } },
+    );
+    assert(['--print'], { print: true });
+    assert(['--singular'], { singular: true });
+    assert(['--type-only-imports'], { typeOnlyImports: true });
+    assert(['--type-only-imports=false'], { typeOnlyImports: false });
+    assert(['--type-only-imports=true'], { typeOnlyImports: true });
+    assert(['--url=postgres://u:p@s/d'], { url: 'postgres://u:p@s/d' });
+    assert(['--verify'], { verify: true });
+    assert(['--verify=false'], { verify: false });
+    assert(['--verify=true'], { verify: true });
+  });
+
+  it('should throw an error if a flag is deprecated', () => {
+    expect(() => new Cli().parseOptions(['--schema'])).toThrow(
+      new RangeError(
+        "The flag 'schema' has been deprecated. Use 'default-schema' instead.",
+      ),
+    );
+  });
+
   it('should throw an error if the config has an invalid schema', () => {
     const assert = (
       config: any,
@@ -106,6 +161,7 @@ describe(Cli.name, () => {
       { dateParser: 'timestamps' },
       "Invalid enum value. Expected 'string' | 'timestamp', received 'timestamps'",
     );
+    assert({ defaultSchemas: 'public' }, 'Expected array, received string');
     assert(
       { dialectName: 'sqlite3' },
       "Invalid enum value. Expected 'bun-sqlite' | 'kysely-bun-sqlite' | 'libsql' | 'mssql' | 'mysql' | 'postgres' | 'sqlite' | 'worker-bun-sqlite', received 'sqlite3'",
@@ -134,53 +190,9 @@ describe(Cli.name, () => {
       { runtimeEnumsStyle: 'enums' },
       "Invalid enum value. Expected 'pascal-case' | 'screaming-snake-case', received 'enums'",
     );
-    assert({ schemas: 'public' }, 'Expected array, received string');
     assert({ singular: 'true' }, 'Expected boolean, received string');
     assert({ typeOnlyImports: 'true' }, 'Expected boolean, received string');
     assert({ url: null }, 'Expected string, received null');
     assert({ verify: 'true' }, 'Expected boolean, received string');
-  });
-
-  it('should parse options correctly', () => {
-    const assert = (
-      args: string[],
-      expectedOptions: Partial<CliGenerateOptions>,
-    ) => {
-      const cliOptions = new Cli().parseOptions(args, { silent: true });
-
-      deepStrictEqual(cliOptions, {
-        url: 'postgres://user:password@localhost:5433/database',
-        ...expectedOptions,
-      });
-    };
-
-    assert(['--camel-case'], { camelCase: true });
-    assert(['--date-parser=timestamp'], { dateParser: DateParser.TIMESTAMP });
-    assert(['--date-parser=string'], { dateParser: DateParser.STRING });
-    assert(['--dialect=mysql'], { dialectName: 'mysql' });
-    assert(['--domains'], { domains: true });
-    assert(['--exclude-pattern=public._*'], { excludePattern: 'public._*' });
-    assert(['--help'], {});
-    assert(['-h'], {});
-    assert(['--include-pattern=public._*'], { includePattern: 'public._*' });
-    assert(['--log-level=debug'], { logLevel: LogLevel.DEBUG });
-    assert(['--no-domains'], { domains: false });
-    assert(['--no-type-only-imports'], { typeOnlyImports: false });
-    assert(['--out-file=./db.ts'], { outFile: './db.ts' });
-    assert(
-      [`--overrides={"columns":{"table.override":"{ foo: \\"bar\\" }"}}`],
-      { overrides: { columns: { 'table.override': '{ foo: "bar" }' } } },
-    );
-    assert(['--print'], { print: true });
-    assert(['--schema=foo'], { schemas: ['foo'] });
-    assert(['--schema=foo', '--schema=bar'], { schemas: ['foo', 'bar'] });
-    assert(['--singular'], { singular: true });
-    assert(['--type-only-imports'], { typeOnlyImports: true });
-    assert(['--type-only-imports=false'], { typeOnlyImports: false });
-    assert(['--type-only-imports=true'], { typeOnlyImports: true });
-    assert(['--url=postgres://u:p@s/d'], { url: 'postgres://u:p@s/d' });
-    assert(['--verify'], { verify: true });
-    assert(['--verify=false'], { verify: false });
-    assert(['--verify=true'], { verify: true });
   });
 });
