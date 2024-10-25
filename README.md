@@ -285,9 +285,28 @@ export enum Status {
 }
 ```
 
-#### --singular <!-- omit from toc -->
+#### --singularize <!-- omit from toc -->
 
-Singularize generated table names, e.g. `BlogPost` instead of `BlogPosts`. We use the [pluralize](https://www.npmjs.com/package/pluralize) package for singularization.
+Singularize generated type aliases, e.g. `BlogPost` instead of `BlogPosts`. We use the [pluralize](https://www.npmjs.com/package/pluralize) package for singularization.
+
+You can specify custom singularization rules in `.kysely-codegenrc.json`:
+
+```json
+{
+  "singularize": {
+    "/(bacch)(?:us|i)$/i": "$1us",
+    "beeves": "beef"
+  }
+}
+```
+
+```ts
+export interface DB {
+  bacchi: Bacchus;
+  beeves: Beef;
+  users: UserModel;
+}
+```
 
 #### --type-only-imports <!-- omit from toc -->
 

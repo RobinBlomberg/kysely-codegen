@@ -270,7 +270,7 @@ describe(Serializer.name, () => {
     it('should be able to singularize table names', () => {
       const dialect = new PostgresDialect();
       const enums = new EnumCollection();
-      const singularSerializer = new Serializer({ singular: true });
+      const singularSerializer = new Serializer({ singularize: true });
 
       const ast = transform({
         camelCase: true,

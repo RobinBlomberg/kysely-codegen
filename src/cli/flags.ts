@@ -102,7 +102,7 @@ export const FLAGS = [
   {
     description:
       'Singularize generated table names, e.g. `BlogPost` instead of `BlogPosts`.',
-    longName: 'singular',
+    longName: 'singularize',
   },
   {
     default: 'true',

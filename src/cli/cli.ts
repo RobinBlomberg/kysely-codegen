@@ -46,7 +46,9 @@ const cliGenerateOptionsSchema = z.object({
   runtimeEnums: z
     .union([z.boolean(), z.nativeEnum(RuntimeEnumsStyle)])
     .optional(),
-  singular: z.union([z.boolean(), z.record(z.string(), z.string())]).optional(),
+  singularize: z
+    .union([z.boolean(), z.record(z.string(), z.string())])
+    .optional(),
   typeOnlyImports: z.boolean().optional(),
   url: z.string().optional(),
   verify: z.boolean().optional(),
@@ -105,7 +107,7 @@ export class Cli {
       partitions: options.partitions,
       print: options.print,
       runtimeEnums: options.runtimeEnums,
-      singular: options.singular,
+      singularize: options.singularize,
       typeOnlyImports: options.typeOnlyImports,
       verify: options.verify,
     });
@@ -214,7 +216,13 @@ export class Cli {
     for (const key in argv) {
       if (key === 'schema') {
         throw new RangeError(
-          "The flag 'schema' has been deprecated. Use 'default-schema' instead.",
+          `The flag '${key}' has been deprecated. Use 'default-schema' instead.`,
+        );
+      }
+
+      if (key === 'singular') {
+        throw new RangeError(
+          `The flag '${key}' has been deprecated. Use 'singularize' instead.`,
         );
       }
 
@@ -272,7 +280,7 @@ export class Cli {
       partitions: this.#parseBoolean(argv.partitions),
       print: this.#parseBoolean(argv.print),
       runtimeEnums: this.#parseRuntimeEnums(argv['runtime-enums']),
-      singular: this.#parseBoolean(argv.singular),
+      singularize: this.#parseBoolean(argv.singularize),
       typeOnlyImports: this.#parseBoolean(argv['type-only-imports']),
       url: this.#parseString(argv.url),
       verify: this.#parseBoolean(argv.verify),

@@ -23,7 +23,7 @@ export type GenerateOptions = {
   print?: boolean;
   runtimeEnums?: boolean | RuntimeEnumsStyle;
   serializer?: Serializer;
-  singular?: boolean | Record<string, string>;
+  singularize?: boolean | Record<string, string>;
   typeOnlyImports?: boolean;
   verify?: boolean;
 };
@@ -66,7 +66,7 @@ export const generate = async (options: GenerateOptions) => {
     new Serializer({
       camelCase: options.camelCase,
       runtimeEnums: options.runtimeEnums,
-      singular: options.singular,
+      singularize: options.singularize,
       typeOnlyImports: options.typeOnlyImports,
     });
   const data = serializer.serializeFile(nodes);

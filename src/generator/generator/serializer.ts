@@ -28,7 +28,7 @@ const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 type SerializerOptions = {
   camelCase?: boolean;
   runtimeEnums?: boolean | RuntimeEnumsStyle;
-  singular?: boolean | Record<string, string>;
+  singularize?: boolean | Record<string, string>;
   typeOnlyImports?: boolean;
 };
 
@@ -38,17 +38,17 @@ type SerializerOptions = {
 export class Serializer {
   readonly camelCase: boolean;
   readonly runtimeEnums: boolean | RuntimeEnumsStyle;
-  readonly singular: boolean | Record<string, string>;
+  readonly singularize: boolean | Record<string, string>;
   readonly typeOnlyImports: boolean;
 
   constructor(options: SerializerOptions = {}) {
     this.camelCase = options.camelCase ?? false;
     this.runtimeEnums = options.runtimeEnums ?? false;
-    this.singular = options.singular ?? false;
+    this.singularize = options.singularize ?? false;
     this.typeOnlyImports = options.typeOnlyImports ?? true;
 
-    if (typeof this.singular === 'object') {
-      addSingularizationRules(this.singular);
+    if (typeof this.singularize === 'object') {
+      addSingularizationRules(this.singularize);
     }
   }
 
@@ -198,7 +198,8 @@ export class Serializer {
       return node.name;
     }
 
-    return this.singular ? singular(node.name) : node.name;
+    // TODO: Avoid singularizing `DB` and built-in types.
+    return this.singularize ? singular(node.name) : node.name;
   }
 
   serializeImportClause(node: ImportClauseNode) {
@@ -256,7 +257,8 @@ export class Serializer {
     let data = '';
 
     data += 'interface ';
-    data += this.singular ? singular(node.name) : node.name;
+    // TODO: Avoid singularizing `DB` and built-in types.
+    data += this.singularize ? singular(node.name) : node.name;
     data += ' ';
     data += this.serializeObjectExpression(node.body);
 

@@ -10,6 +10,7 @@
     "bpchar",
     "bytea",
     "codegen",
+    "codegenrc",
     "datetime",
     "datetimeoffset",
     "deunionize",

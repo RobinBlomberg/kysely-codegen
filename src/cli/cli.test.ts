@@ -52,7 +52,9 @@ describe(Cli.name, () => {
         logLevel: LogLevel.SILENT,
         outFile: null,
         runtimeEnums: RuntimeEnumsStyle.PASCAL_CASE,
-        singular: { '/(bacch)(?:us|i)$/i': '$1us' },
+        singularize: {
+          '/(bacch)(?:us|i)$/i': '$1us',
+        },
         url: 'postgres://user:password@localhost:5433/database',
         typeOnlyImports: false,
       },
@@ -126,7 +128,7 @@ describe(Cli.name, () => {
       { overrides: { columns: { 'table.override': '{ foo: "bar" }' } } },
     );
     assert(['--print'], { print: true });
-    assert(['--singular'], { singular: true });
+    assert(['--singularize'], { singularize: true });
     assert(['--type-only-imports'], { typeOnlyImports: true });
     assert(['--type-only-imports=false'], { typeOnlyImports: false });
     assert(['--type-only-imports=true'], { typeOnlyImports: true });
@@ -140,6 +142,11 @@ describe(Cli.name, () => {
     expect(() => new Cli().parseOptions(['--schema'])).toThrow(
       new RangeError(
         "The flag 'schema' has been deprecated. Use 'default-schema' instead.",
+      ),
+    );
+    expect(() => new Cli().parseOptions(['--singular'])).toThrow(
+      new RangeError(
+        "The flag 'singular' has been deprecated. Use 'singularize' instead.",
       ),
     );
   });
@@ -185,7 +192,7 @@ describe(Cli.name, () => {
     assert({ partitions: 'true' }, 'Expected boolean, received string');
     assert({ print: 'true' }, 'Expected boolean, received string');
     assert({ runtimeEnums: 'true' }, 'Invalid input');
-    assert({ singular: 'true' }, 'Invalid input');
+    assert({ singularize: 'true' }, 'Invalid input');
     assert({ typeOnlyImports: 'true' }, 'Expected boolean, received string');
     assert({ url: null }, 'Expected string, received null');
     assert({ verify: 'true' }, 'Expected boolean, received string');
