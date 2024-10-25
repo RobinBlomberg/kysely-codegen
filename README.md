@@ -111,7 +111,7 @@ Import `DB` into `new Kysely<DB>`, and you're done!
 
 ```ts
 import { Kysely, PostgresDialect } from 'kysely';
-import { DB } from 'kysely-codegen';
+import { DB } from 'kysely-codegen/dist/db'; // Change to --out-file path if set
 import { Pool } from 'pg';
 
 const db = new Kysely<DB>({
@@ -130,7 +130,7 @@ If you need to use the generated types in e.g. function parameters and type defi
 
 ```ts
 import { Insertable, Updateable } from 'kysely';
-import { DB } from 'kysely-codegen';
+import { User } from 'kysely-codegen/dist/db'; // Change to --out-file path if set
 import { db } from './db';
 
 async function insertUser(user: Insertable<User>) {
