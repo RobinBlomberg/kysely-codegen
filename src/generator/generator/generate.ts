@@ -23,7 +23,7 @@ export type GenerateOptions = {
   print?: boolean;
   runtimeEnums?: boolean | RuntimeEnumsStyle;
   serializer?: Serializer;
-  singular?: boolean;
+  singular?: boolean | Record<string, string>;
   typeOnlyImports?: boolean;
   verify?: boolean;
 };

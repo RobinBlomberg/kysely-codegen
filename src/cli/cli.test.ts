@@ -37,9 +37,9 @@ describe(Cli.name, () => {
       .asEnum(['CONFIRMED', 'UNCONFIRMED'])
       .execute();
     await db.schema
-      .createTable('cli.users')
+      .createTable('cli.bacchi')
       .addColumn('status', sql`cli.status`)
-      .addColumn('user_id', 'serial', (col) => col.primaryKey())
+      .addColumn('bacchus_id', 'serial', (col) => col.primaryKey())
       .execute();
 
     const output = await new Cli().run({
@@ -52,7 +52,7 @@ describe(Cli.name, () => {
         logLevel: LogLevel.SILENT,
         outFile: null,
         runtimeEnums: RuntimeEnumsStyle.PASCAL_CASE,
-        singular: true,
+        singular: { '/(bacch)(?:us|i)$/i': '$1us' },
         url: 'postgres://user:password@localhost:5433/database',
         typeOnlyImports: false,
       },
@@ -76,13 +76,13 @@ describe(Cli.name, () => {
           ? ColumnType<S, I | undefined, U>
           : ColumnType<T, T | undefined, T>;
 
-        export interface User {
+        export interface Bacchus {
+          bacchusId: Generated<number>;
           status: Status | null;
-          userId: Generated<number>;
         }
 
         export interface DB {
-          users: User;
+          bacchi: Bacchus;
         }
 
       `,
@@ -184,12 +184,8 @@ describe(Cli.name, () => {
     ]);
     assert({ partitions: 'true' }, 'Expected boolean, received string');
     assert({ print: 'true' }, 'Expected boolean, received string');
-    assert(
-      { runtimeEnums: 'true' },
-      // "Expected true | false | 'pascal-case' | 'screaming-snake-case'",
-      'Invalid input',
-    );
-    assert({ singular: 'true' }, 'Expected boolean, received string');
+    assert({ runtimeEnums: 'true' }, 'Invalid input');
+    assert({ singular: 'true' }, 'Invalid input');
     assert({ typeOnlyImports: 'true' }, 'Expected boolean, received string');
     assert({ url: null }, 'Expected string, received null');
     assert({ verify: 'true' }, 'Expected boolean, received string');

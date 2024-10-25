@@ -20,6 +20,7 @@ import type { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration
 import type { StatementNode } from '../ast/statement-node';
 import type { UnionExpressionNode } from '../ast/union-expression-node';
 import { toPascalCase, toScreamingSnakeCase } from '../utils/case-converter';
+import { addSingularizationRules } from './add-singularization-rules';
 import { RuntimeEnumsStyle } from './runtime-enums-style';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
@@ -27,7 +28,7 @@ const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 type SerializerOptions = {
   camelCase?: boolean;
   runtimeEnums?: boolean | RuntimeEnumsStyle;
-  singular?: boolean;
+  singular?: boolean | Record<string, string>;
   typeOnlyImports?: boolean;
 };
 
@@ -37,7 +38,7 @@ type SerializerOptions = {
 export class Serializer {
   readonly camelCase: boolean;
   readonly runtimeEnums: boolean | RuntimeEnumsStyle;
-  readonly singular: boolean;
+  readonly singular: boolean | Record<string, string>;
   readonly typeOnlyImports: boolean;
 
   constructor(options: SerializerOptions = {}) {
@@ -45,6 +46,10 @@ export class Serializer {
     this.runtimeEnums = options.runtimeEnums ?? false;
     this.singular = options.singular ?? false;
     this.typeOnlyImports = options.typeOnlyImports ?? true;
+
+    if (typeof this.singular === 'object') {
+      addSingularizationRules(this.singular);
+    }
   }
 
   serializeAliasDeclaration(node: AliasDeclarationNode) {

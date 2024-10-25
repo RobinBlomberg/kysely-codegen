@@ -44,13 +44,9 @@ const cliGenerateOptionsSchema = z.object({
   partitions: z.boolean().optional(),
   print: z.boolean().optional(),
   runtimeEnums: z
-    .union([z.boolean(), z.nativeEnum(RuntimeEnumsStyle)], {
-      // TODO: Investigate why this error message is not shown:
-      message:
-        "Expected 'false' | 'true' | 'pascal-case' | 'screaming-snake-case'",
-    })
+    .union([z.boolean(), z.nativeEnum(RuntimeEnumsStyle)])
     .optional(),
-  singular: z.boolean().optional(),
+  singular: z.union([z.boolean(), z.record(z.string(), z.string())]).optional(),
   typeOnlyImports: z.boolean().optional(),
   url: z.string().optional(),
   verify: z.boolean().optional(),
