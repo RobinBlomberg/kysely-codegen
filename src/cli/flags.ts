@@ -22,6 +22,10 @@ export const FLAGS = [
     longName: 'camel-case',
   },
   {
+    description: 'Specify the path to the configuration file to use.',
+    longName: 'config-file',
+  },
+  {
     default: 'timestamp',
     description: 'Specify which parser to use for PostgreSQL date values.',
     longName: 'date-parser',

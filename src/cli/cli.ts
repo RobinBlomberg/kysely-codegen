@@ -1,5 +1,7 @@
+import console from 'console';
 import { cosmiconfigSync } from 'cosmiconfig';
 import minimist from 'minimist';
+import { resolve } from 'path';
 import { z } from 'zod';
 import { getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';
@@ -112,16 +114,19 @@ export class Cli {
       typeOnlyImports: options.typeOnlyImports,
       verify: options.verify,
     });
+
     await db.destroy();
+
     return output;
   }
 
-  #loadConfig(config?: { configFile?: string }): unknown {
+  #loadConfig(config?: {
+    configFile?: string;
+  }): { config: unknown; filepath: string } | null {
     const explorer = cosmiconfigSync('kysely-codegen');
-    const result = config?.configFile
+    return config?.configFile
       ? explorer.load(config.configFile)
       : explorer.search();
-    return result?.config ?? {};
   }
 
   #parseBoolean(input: any) {
@@ -253,14 +258,27 @@ export class Cli {
     }
 
     const configFile = this.#parseString(argv['config-file']);
-    const rawConfig = options?.config ?? this.#loadConfig({ configFile });
-    const parseResult = cliGenerateOptionsSchema.safeParse(rawConfig);
+    const configResult = options?.config
+      ? { config: options.config, filepath: null }
+      : this.#loadConfig({ configFile });
 
-    if (parseResult.error) {
-      throw new ConfigError(parseResult.error.errors[0]!);
+    const configParseResult = configResult
+      ? cliGenerateOptionsSchema.safeParse(configResult.config)
+      : null;
+
+    if (configParseResult?.error) {
+      throw new ConfigError(configParseResult.error.errors[0]!);
     }
 
-    const configOptions = compact(parseResult.data);
+    const config = configParseResult?.data;
+    const configOptions = config
+      ? compact({
+          ...config,
+          ...(configResult?.filepath && config.outFile
+            ? { outFile: resolve(configResult.filepath, '..', config.outFile) }
+            : {}),
+        })
+      : {};
 
     const cliOptions = compact({
       camelCase: this.#parseBoolean(argv['camel-case']),

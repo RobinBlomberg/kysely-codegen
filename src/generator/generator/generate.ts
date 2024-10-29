@@ -2,7 +2,6 @@ import { promises as fs } from 'fs';
 import type { Kysely } from 'kysely';
 import { parse, relative, resolve, sep } from 'path';
 import { performance } from 'perf_hooks';
-import { DEFAULT_OUT_FILE } from '../../cli';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
 import { transform, type Overrides } from '../transformer/transform';
@@ -70,28 +69,19 @@ export const generate = async (options: GenerateOptions) => {
       singularize: options.singularize,
       typeOnlyImports: options.typeOnlyImports,
     });
-  const data = serializer.serializeFile(nodes);
+  const newOutput = serializer.serializeFile(nodes);
+  const outFile = options.outFile
+    ? resolve(process.cwd(), options.outFile)
+    : null;
 
   if (options.print) {
     console.info();
-    console.info(data);
-  } else {
-    const outFile = options.outFile
-      ? resolve(process.cwd(), options.outFile)
-      : DEFAULT_OUT_FILE;
-
+    console.info(newOutput);
+  } else if (outFile) {
     if (options.verify) {
-      let currentOutput: string;
-
-      try {
-        currentOutput = await fs.readFile(outFile, 'utf8');
-      } catch (error: unknown) {
-        options.logger?.error(error);
-        throw new Error('Failed to load existing types');
-      }
-
+      const oldOutput = await fs.readFile(outFile, 'utf8');
       const diffChecker = new DiffChecker();
-      const diff = diffChecker.diff(data, currentOutput);
+      const diff = diffChecker.diff(newOutput, oldOutput);
 
       if (diff) {
         options.logger?.error(diff);
@@ -110,7 +100,7 @@ export const generate = async (options: GenerateOptions) => {
       const outDir = parse(outFile).dir;
 
       await fs.mkdir(outDir, { recursive: true });
-      await fs.writeFile(outFile, data);
+      await fs.writeFile(outFile, newOutput);
 
       const endTime = performance.now();
       const duration = Math.round(endTime - startTime);
@@ -122,7 +112,9 @@ export const generate = async (options: GenerateOptions) => {
         `Introspected ${tableCount} table${s} and generated ${relativePath} in ${duration}ms.\n`,
       );
     }
+  } else {
+    options.logger?.success('No output file specified. Skipping file write.');
   }
 
-  return data;
+  return newOutput;
 };

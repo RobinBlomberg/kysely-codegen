@@ -12,35 +12,51 @@ import type { CliGenerateOptions } from './cli';
 import { Cli } from './cli';
 import { ConfigError } from './config-error';
 
+const BINARY_PATH = join(process.cwd(), packageJson.bin['kysely-codegen']);
+
+const down = async (db: Kysely<any>) => {
+  await db.schema.dropSchema('cli').cascade().execute();
+};
+
+const up = async () => {
+  const db = new Kysely<any>({
+    dialect: new PostgresDialect({
+      pool: new Pool({
+        connectionString: 'postgres://user:password@localhost:5433/database',
+      }),
+    }),
+  });
+
+  await db.schema.dropSchema('cli').ifExists().cascade().execute();
+  await db.schema.createSchema('cli').execute();
+  await db.schema
+    .withSchema('cli')
+    .createType('status')
+    .asEnum(['CONFIRMED', 'UNCONFIRMED'])
+    .execute();
+  await db.schema
+    .createTable('cli.bacchi')
+    .addColumn('status', sql`cli.status`)
+    .addColumn('bacchus_id', 'serial', (col) => col.primaryKey())
+    .execute();
+
+  return db;
+};
+
 describe(Cli.name, () => {
-  it('should be able to start the CLI', async () => {
+  beforeAll(async () => {
     await execa`pnpm build`;
-    const binPath = join(process.cwd(), packageJson.bin['kysely-codegen']);
-    const output = await execa`node ${binPath} --help`.then((a) => a.stdout);
+  });
+
+  it('should be able to start the CLI', async () => {
+    const output = await execa`node ${BINARY_PATH} --help`.then(
+      (r) => r.stdout,
+    );
     deepStrictEqual(output.includes('--help, -h'), true);
   });
 
-  it('should be able to start the CLI with a custom config', async () => {
-    const db = new Kysely<any>({
-      dialect: new PostgresDialect({
-        pool: new Pool({
-          connectionString: 'postgres://user:password@localhost:5433/database',
-        }),
-      }),
-    });
-
-    await db.schema.dropSchema('cli').ifExists().cascade().execute();
-    await db.schema.createSchema('cli').execute();
-    await db.schema
-      .withSchema('cli')
-      .createType('status')
-      .asEnum(['CONFIRMED', 'UNCONFIRMED'])
-      .execute();
-    await db.schema
-      .createTable('cli.bacchi')
-      .addColumn('status', sql`cli.status`)
-      .addColumn('bacchus_id', 'serial', (col) => col.primaryKey())
-      .execute();
+  it('should be able to run the CLI programmatically with a custom config object', async () => {
+    const db = await up();
 
     const output = await new Cli().run({
       argv: ['--camel-case'],
@@ -90,8 +106,29 @@ describe(Cli.name, () => {
       `,
     );
 
-    await db.schema.dropSchema('cli').cascade().execute();
+    await down(db);
   });
+
+  it('should be able to run the CLI successfully using a config file', async () => {
+    const db = await up();
+    expect(
+      () =>
+        execa`node ${BINARY_PATH} --config-file ./src/cli/test/config.cjs --out-file ./src/cli/test/success.snapshot.ts --verify`,
+    ).not.toThrow();
+    await down(db);
+  });
+
+  it.fails(
+    'should return an exit code of 1 if the generated types are not up-to-date',
+    async () => {
+      const db = await up();
+      expect(
+        () =>
+          execa`node ${BINARY_PATH} --config-file ./src/cli/test/config.cjs --out-file ./src/cli/test/failure.snapshot.ts --verify`,
+      ).to.throw();
+      await down(db);
+    },
+  );
 
   it('should parse options correctly', () => {
     const assert = (
