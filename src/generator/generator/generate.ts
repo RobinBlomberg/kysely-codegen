@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import type { Kysely } from 'kysely';
-import { join, parse, relative, sep } from 'path';
+import { parse, relative, resolve, sep } from 'path';
 import { performance } from 'perf_hooks';
 import { DEFAULT_OUT_FILE } from '../../cli';
 import type { GeneratorDialect } from '../dialect';
@@ -77,7 +77,7 @@ export const generate = async (options: GenerateOptions) => {
     console.info(data);
   } else {
     const outFile = options.outFile
-      ? join(process.cwd(), options.outFile)
+      ? resolve(process.cwd(), options.outFile)
       : DEFAULT_OUT_FILE;
 
     if (options.verify) {
