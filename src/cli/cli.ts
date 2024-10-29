@@ -326,7 +326,7 @@ export class Cli {
             throw error;
           } else {
             console.error(new Logger().serializeError(error.message));
-            process.exit(0);
+            process.exit(1);
           }
         } else {
           throw error;
