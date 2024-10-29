@@ -102,6 +102,7 @@ export class Cli {
       dialect,
       excludePattern: options.excludePattern,
       includePattern: options.includePattern,
+      logger,
       outFile: options.outFile,
       overrides: options.overrides,
       partitions: options.partitions,
