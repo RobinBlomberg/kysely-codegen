@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs';
 import type { Kysely } from 'kysely';
-import { parse, relative, sep } from 'path';
+import { join, parse, relative, sep } from 'path';
 import { performance } from 'perf_hooks';
+import { DEFAULT_OUT_FILE } from '../../cli';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
 import { transform, type Overrides } from '../transformer/transform';
@@ -71,26 +72,26 @@ export const generate = async (options: GenerateOptions) => {
     });
   const data = serializer.serializeFile(nodes);
 
-  const relativeOutDir = options.outFile
-    ? `.${sep}${relative(process.cwd(), options.outFile)}`
-    : null;
-
   if (options.print) {
     console.info();
     console.info(data);
-  } else if (relativeOutDir) {
+  } else {
+    const outFile = options.outFile
+      ? join(process.cwd(), options.outFile)
+      : DEFAULT_OUT_FILE;
+
     if (options.verify) {
-      let existingTypes: string;
+      let currentOutput: string;
 
       try {
-        existingTypes = await fs.readFile(relativeOutDir, 'utf8');
+        currentOutput = await fs.readFile(outFile, 'utf8');
       } catch (error: unknown) {
         options.logger?.error(error);
         throw new Error('Failed to load existing types');
       }
 
       const diffChecker = new DiffChecker();
-      const diff = diffChecker.diff(data, existingTypes);
+      const diff = diffChecker.diff(data, currentOutput);
 
       if (diff) {
         options.logger?.error(diff);
@@ -106,18 +107,19 @@ export const generate = async (options: GenerateOptions) => {
         `Generated types are up-to-date! (${duration}ms)`,
       );
     } else {
-      const outDir = parse(relativeOutDir).dir;
+      const outDir = parse(outFile).dir;
 
       await fs.mkdir(outDir, { recursive: true });
-      await fs.writeFile(relativeOutDir, data);
+      await fs.writeFile(outFile, data);
 
       const endTime = performance.now();
       const duration = Math.round(endTime - startTime);
       const tableCount = metadata.tables.length;
       const s = tableCount === 1 ? '' : 's';
+      const relativePath = `.${sep}${relative(process.cwd(), outFile)}`;
 
       options.logger?.success(
-        `Introspected ${tableCount} table${s} and generated ${relativeOutDir} in ${duration}ms.\n`,
+        `Introspected ${tableCount} table${s} and generated ${relativePath} in ${duration}ms.\n`,
       );
     }
   }
