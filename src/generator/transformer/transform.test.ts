@@ -1,5 +1,6 @@
 import { deepStrictEqual } from 'assert';
 import { describe, it } from 'vitest';
+import { DateParser } from '../../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import { EnumCollection } from '../../introspector/enum-collection';
 import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
@@ -34,11 +35,13 @@ describe(transform.name, () => {
 
   const transformWithDefaults = ({
     camelCase,
+    dateParser,
     numericParser,
     runtimeEnums,
     tables,
   }: {
     camelCase?: boolean;
+    dateParser?: DateParser;
     numericParser?: NumericParser;
     runtimeEnums?: boolean;
     runtimeEnumsStyle?: RuntimeEnumsStyle;
@@ -46,7 +49,7 @@ describe(transform.name, () => {
   }) => {
     return transform({
       camelCase,
-      dialect: new PostgresDialect({ numericParser }),
+      dialect: new PostgresDialect({ dateParser, numericParser }),
       metadata: new DatabaseMetadata({ enums, tables }),
       overrides: {
         columns: {
@@ -254,6 +257,42 @@ describe(transform.name, () => {
           'DB',
           new ObjectExpressionNode([
             new PropertyNode('fooBar', new IdentifierNode('FooBar')),
+          ]),
+        ),
+      ),
+    ]);
+  });
+
+  it('should be able to transform using an alternative Postgres date parser', () => {
+    const nodes = transformWithDefaults({
+      dateParser: DateParser.STRING,
+      tables: [
+        new TableMetadata({
+          columns: [
+            new ColumnMetadata({
+              dataType: 'date',
+              name: 'date',
+            }),
+          ],
+          name: 'table',
+        }),
+      ],
+    });
+
+    deepStrictEqual(nodes, [
+      new ExportStatementNode(
+        new InterfaceDeclarationNode(
+          'Table',
+          new ObjectExpressionNode([
+            new PropertyNode('date', new IdentifierNode('string')),
+          ]),
+        ),
+      ),
+      new ExportStatementNode(
+        new InterfaceDeclarationNode(
+          'DB',
+          new ObjectExpressionNode([
+            new PropertyNode('table', new IdentifierNode('Table')),
           ]),
         ),
       ),
