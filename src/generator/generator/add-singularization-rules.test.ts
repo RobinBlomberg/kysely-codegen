@@ -9,5 +9,6 @@ test(addSingularizationRules.name, () => {
 
   expect(singular('bacchus')).toStrictEqual('bacchus');
   expect(singular('bacchi')).toStrictEqual('bacchus');
+  expect(singular('beef')).toStrictEqual('beef');
   expect(singular('beeves')).toStrictEqual('beef');
 });
