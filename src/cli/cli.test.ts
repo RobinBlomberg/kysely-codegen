@@ -68,11 +68,9 @@ describe(Cli.name, () => {
         logLevel: LogLevel.SILENT,
         outFile: null,
         runtimeEnums: RuntimeEnumsStyle.PASCAL_CASE,
-        singularize: {
-          '/(bacch)(?:us|i)$/i': '$1us',
-        },
-        url: 'postgres://user:password@localhost:5433/database',
+        singularize: { '/(bacch)(?:us|i)$/i': '$1us' },
         typeOnlyImports: false,
+        url: 'postgres://user:password@localhost:5433/database',
       },
     });
 
