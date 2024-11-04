@@ -179,7 +179,7 @@ const createContext = (options: TransformOptions): TransformContext => {
     scalars: {
       ...options.dialect.adapter.scalars,
     },
-    symbols: new SymbolCollection(),
+    symbols: new SymbolCollection({generateZod: true}),
   };
 };
 
@@ -400,7 +400,6 @@ const transformTables = (context: TransformContext) => {
   }
 
   tableNodes.sort((a, b) => a.argument.name.localeCompare(b.argument.name));
-
   return tableNodes;
 };
 
