@@ -19,7 +19,13 @@ export class PostgresDialect
   readonly adapter: PostgresAdapter;
 
   constructor(options?: PostgresDialectOptions) {
-    super(options);
+    super({
+      dateParser: options?.dateParser,
+      defaultSchemas: options?.defaultSchemas,
+      domains: options?.domains,
+      numericParser: options?.numericParser,
+      partitions: options?.partitions,
+    });
 
     this.adapter = new PostgresAdapter({
       dateParser: this.options.dateParser,
