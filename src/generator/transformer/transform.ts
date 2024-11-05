@@ -21,6 +21,7 @@ import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node
 import type { TemplateNode } from '../ast/template-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
 import type { GeneratorDialect } from '../dialect';
+import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
 import { toKyselyCamelCase } from '../utils/case-converter';
 import { GLOBAL_DEFINITIONS } from './definitions';
@@ -53,6 +54,7 @@ type TransformContext = {
   defaultScalar: ExpressionNode;
   defaultSchemas: string[];
   definitions: Definitions;
+  dialect: GeneratorDialect;
   enums: EnumCollection;
   imports: Imports;
   metadata: DatabaseMetadata;
@@ -165,6 +167,7 @@ const createContext = (options: TransformOptions): TransformContext => {
       ...GLOBAL_DEFINITIONS,
       ...options.dialect.adapter.definitions,
     },
+    dialect: options.dialect,
     enums: options.metadata.enums,
     imports: {
       ...GLOBAL_IMPORTS,
@@ -270,19 +273,29 @@ const getTableIdentifier = (
   return transformName(name, context);
 };
 
-const transformColumn = (
-  column: ColumnMetadata,
-  context: TransformContext,
-  tableName: string,
-) => {
-  const columnName = `${tableName}.${column.name}`;
-  const columnOverride = context.overrides?.columns?.[columnName];
+const transformColumn = ({
+  column,
+  context,
+  table,
+}: {
+  column: ColumnMetadata;
+  context: TransformContext;
+  table: TableMetadata;
+}) => {
+  const overrides = context.overrides?.columns;
+  const isDefaultSchema =
+    !!table.schema && context.defaultSchemas.includes(table.schema);
+  const path = `${table.name}.${column.name}`;
+  const override =
+    context.dialect instanceof PostgresDialect
+      ? isDefaultSchema
+        ? (overrides?.[`${table.schema}.${path}`] ?? overrides?.[path])
+        : overrides?.[`${table.schema}.${path}`]
+      : overrides?.[path];
 
-  if (columnOverride !== undefined) {
+  if (override !== undefined) {
     const node =
-      typeof columnOverride === 'string'
-        ? new RawExpressionNode(columnOverride)
-        : columnOverride;
+      typeof override === 'string' ? new RawExpressionNode(override) : override;
 
     collectSymbols(node, context);
 
@@ -308,6 +321,7 @@ const transformColumn = (
   let node = unionize(args);
 
   const isGenerated = column.hasDefaultValue || column.isAutoIncrementing;
+
   if (isGenerated) {
     node = new GenericExpressionNode('Generated', [node]);
   }
@@ -397,7 +411,7 @@ const transformTables = (context: TransformContext) => {
 
     for (const column of table.columns) {
       const key = transformName(column.name, context);
-      const value = transformColumn(column, context, table.name);
+      const value = transformColumn({ column, context, table });
       const comment = column.comment;
       const tableProperty = new PropertyNode(key, value, comment);
       tableProperties.push(tableProperty);
