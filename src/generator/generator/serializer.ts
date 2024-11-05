@@ -1,6 +1,7 @@
 import { singular } from 'pluralize';
 import type { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import type { ArrayExpressionNode } from '../ast/array-expression-node';
+import type { EnumExpressionNode } from '../ast/enum-expression-node';
 import type { ExportStatementNode } from '../ast/export-statement-node';
 import type { ExpressionNode } from '../ast/expression-node';
 import type { ExtendsClauseNode } from '../ast/extends-clause-node';
@@ -139,6 +140,7 @@ export class Serializer {
       case NodeType.RAW_EXPRESSION:
         return this.serializeRawExpression(node);
       case NodeType.UNION_EXPRESSION:
+      case NodeType.ENUM_EXPRESSION:
         return this.serializeUnionExpression(node);
     }
   }
@@ -384,7 +386,7 @@ export class Serializer {
     return data;
   }
 
-  serializeUnionExpression(node: UnionExpressionNode) {
+  serializeUnionExpression(node: UnionExpressionNode | EnumExpressionNode) {
     let data = '';
     let i = 0;
 

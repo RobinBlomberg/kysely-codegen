@@ -146,10 +146,10 @@ const collectSymbols = (
       collectSymbols(node.expression, context);
       break;
     case NodeType.UNION_EXPRESSION:
+    case NodeType.ENUM_EXPRESSION:
       for (const arg of node.args) {
         collectSymbols(arg, context);
       }
-
       break;
   }
 };
