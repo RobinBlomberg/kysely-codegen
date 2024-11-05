@@ -4,7 +4,7 @@ import type { DialectName } from '../generator/dialect-manager';
 import { DialectManager } from '../generator/dialect-manager';
 import { generate } from '../generator/generator/generate';
 import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
-import { ZodSerializer } from '../generator/generator/zod/zodSerializer';
+import { ZodSerializer } from '../generator/generator/zod/zod-serializer';
 import { LogLevel } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import type { Overrides } from '../generator/transformer/transform';
@@ -98,12 +98,14 @@ export class Cli {
       options.dialectName ?? inferredDialectName,
     );
 
-    const serializer = generateZod ? new ZodSerializer({
-      camelCase: options.camelCase,
-      runtimeEnumsStyle: options.runtimeEnumsStyle,
-      singular: options.singular,
-      typeOnlyImports: options.typeOnlyImports,
-    }) : undefined;
+    const serializer = generateZod
+      ? new ZodSerializer({
+          camelCase: options.camelCase,
+          runtimeEnumsStyle: options.runtimeEnumsStyle,
+          singular: options.singular,
+          typeOnlyImports: options.typeOnlyImports,
+        })
+      : undefined;
 
     const db = await dialect.introspector.connect({
       connectionString,

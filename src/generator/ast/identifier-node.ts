@@ -8,6 +8,6 @@ export class IdentifierNode {
 
   constructor(name: string, rawExpressionOverride?: RawExpressionNode) {
     this.name = name;
-    this.rawExpressionOverride = rawExpressionOverride
+    this.rawExpressionOverride = rawExpressionOverride;
   }
 }

@@ -179,7 +179,7 @@ const createContext = (options: TransformOptions): TransformContext => {
     scalars: {
       ...options.dialect.adapter.scalars,
     },
-    symbols: new SymbolCollection({generateZod: true}),
+    symbols: new SymbolCollection({ generateZod: true }),
   };
 };
 
@@ -243,8 +243,8 @@ const createDefinitionNodes = (context: TransformContext) => {
 const createImportNodes = (context: TransformContext) => {
   const importNodes: ImportStatementNode[] = [];
 
-  importNodes.push(new ImportStatementNode("zod", [new ImportClauseNode("z"),]))
-  return importNodes
+  importNodes.push(new ImportStatementNode('zod', [new ImportClauseNode('z')]));
+  return importNodes;
 };
 
 const getTableIdentifier = (
@@ -258,11 +258,10 @@ const getTableIdentifier = (
     !context.defaultSchemas.includes(table.schema)
       ? `${table.schema}.${table.name}`
       : table.name;
-  let resultName: string =  transformName(name, context);
-  resultName += includeSchemaSuffix ? "TableSchema" : "";
-  return resultName
+  let resultName: string = transformName(name, context);
+  resultName += includeSchemaSuffix ? 'TableSchema' : '';
+  return resultName;
 };
-
 
 const transformColumn = (
   column: ColumnMetadata,
@@ -287,7 +286,7 @@ const transformColumn = (
 
   if (column.isArray) {
     const unionizedArgs = unionize(args);
-    args = [new ArrayExpressionNode(unionizedArgs)]
+    args = [new ArrayExpressionNode(unionizedArgs)];
   }
 
   if (column.isNullable) {
@@ -328,7 +327,7 @@ const transformColumnToArgs = (
   const enumValues = context.enums.get(dataTypeId);
 
   if (enumValues) {
-    symbolId += "Schema"
+    symbolId += 'Schema';
     if (context.runtimeEnums) {
       const symbol: SymbolNode = {
         node: new RuntimeEnumDeclarationNode(symbolId, enumValues, {

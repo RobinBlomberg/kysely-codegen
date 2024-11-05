@@ -1,7 +1,7 @@
-import type { NumericParser } from "../../../../introspector";
-import { PostgresIntrospectorDialect } from "../../../../introspector";
-import type { GeneratorDialect } from "../../../dialect";
-import { PostgresZodAdapter } from "./postgres-zod-adapter";
+import type { NumericParser } from '../../../../introspector';
+import { PostgresIntrospectorDialect } from '../../../../introspector';
+import type { GeneratorDialect } from '../../../dialect';
+import { PostgresZodAdapter } from './postgres-zod-adapter';
 
 type PostgresDialectOptions = {
   defaultSchemas?: string[];

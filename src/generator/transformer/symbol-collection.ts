@@ -3,7 +3,11 @@ import type { LiteralNode } from '../ast/literal-node';
 import type { ModuleReferenceNode } from '../ast/module-reference-node';
 import type { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node';
 import type { TemplateNode } from '../ast/template-node';
-import { toKyselyCamelCase, toKyselyPascalCase, toScreamingSnakeCase } from '../utils/case-converter';
+import {
+  toKyselyCamelCase,
+  toKyselyPascalCase,
+  toScreamingSnakeCase,
+} from '../utils/case-converter';
 import { IdentifierStyle } from './identifier-style';
 
 export type SymbolEntry = [id: string, symbol: SymbolNode];
@@ -31,7 +35,7 @@ export const enum SymbolType {
 }
 
 export class SymbolCollection {
-  readonly isGenerateZod : boolean = false;
+  readonly isGenerateZod: boolean = false;
   readonly identifierStyle: IdentifierStyle;
   readonly symbolNames: SymbolNameMap = {};
   readonly symbols: SymbolMap = {};
@@ -51,7 +55,7 @@ export class SymbolCollection {
       this.set(id, symbol);
     }
 
-    this.isGenerateZod = options?.generateZod ?? false
+    this.isGenerateZod = options?.generateZod ?? false;
   }
 
   entries() {
@@ -84,14 +88,14 @@ export class SymbolCollection {
     }
 
     const symbolNames = new Set(Object.values(this.symbolNames));
-    let caseConverter
-    if (this.isGenerateZod){
-      caseConverter = toKyselyCamelCase
+    let caseConverter;
+    if (this.isGenerateZod) {
+      caseConverter = toKyselyCamelCase;
     } else {
       caseConverter =
-      this.identifierStyle === IdentifierStyle.SCREAMING_SNAKE_CASE
-        ? toScreamingSnakeCase
-        : toKyselyPascalCase;
+        this.identifierStyle === IdentifierStyle.SCREAMING_SNAKE_CASE
+          ? toScreamingSnakeCase
+          : toKyselyPascalCase;
     }
 
     symbolName = caseConverter(id.replaceAll(/[^\w$]/g, '_'));

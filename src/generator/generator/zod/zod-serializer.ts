@@ -21,7 +21,7 @@ import type { RuntimeEnumDeclarationNode } from '../../ast/runtime-enum-declarat
 import type { StatementNode } from '../../ast/statement-node';
 import type { UnionExpressionNode } from '../../ast/union-expression-node';
 import { toPascalCase, toScreamingSnakeCase } from '../../utils/case-converter';
-import { RuntimeEnumsStyle } from '.././runtime-enums-style';
+import { RuntimeEnumsStyle } from '../runtime-enums-style';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
@@ -46,6 +46,17 @@ export class ZodSerializer {
     this.runtimeEnumsStyle = options.runtimeEnumsStyle;
     this.singular = options.singular ?? false;
     this.typeOnlyImports = options.typeOnlyImports ?? true;
+  }
+
+  zodSingular(name: string) {
+    if (name.includes('TableSchema')) {
+      // Remove suffix
+      let data = name.replace('TableSchema', '');
+      // Singularize and return with suffix
+      data = singular(data);
+      return data + 'TableSchema';
+    }
+    return singular(name);
   }
 
   serializeAliasDeclaration(node: AliasDeclarationNode) {
@@ -170,14 +181,14 @@ export class ZodSerializer {
   }
 
   serializeIdentifier(node: IdentifierNode) {
-    if (node.rawExpressionOverride){
-      return this.serializeRawExpression(node.rawExpressionOverride)
+    if (node.rawExpressionOverride) {
+      return this.serializeRawExpression(node.rawExpressionOverride);
     }
     if (node.name.length <= 1) {
       return node.name;
     }
 
-    return this.singular ? singular(node.name) : node.name;
+    return this.singular ? this.zodSingular(node.name) : node.name;
   }
 
   serializeImportClause(node: ImportClauseNode) {
@@ -231,15 +242,18 @@ export class ZodSerializer {
     let data = '';
 
     data += 'const ';
-    data += this.singular ? singular(node.name) : node.name;
-    data += ' ';
+    data += this.singular ? this.zodSingular(node.name) : node.name;
+    data += ' = ';
     data += this.serializeObjectExpression(node.body);
 
     return data;
   }
 
   serializeLiteral(node: LiteralNode) {
-    return JSON.stringify(node.value);
+    let data = 'z.literal(';
+    data += JSON.stringify(node.value);
+    data += ')';
+    return data;
   }
 
   serializeKey(key: string) {
@@ -252,9 +266,7 @@ export class ZodSerializer {
   }
 
   serializeObjectExpression(node: ObjectExpressionNode) {
-    let data = '';
-
-    data += '= z.object({';
+    let data = 'z.object({';
 
     if (node.properties.length > 0) {
       data += '\n';
@@ -300,10 +312,9 @@ export class ZodSerializer {
   }
 
   serializeRuntimeEnum(node: RuntimeEnumDeclarationNode) {
-    let data = 'z.enum( ';
-
+    let data = 'const ';
     data += node.name;
-    data += '\n';
+    data += ' = z.object({\n';
 
     const members = [...node.members].sort(([a], [b]) => {
       return a.localeCompare(b);
@@ -318,13 +329,13 @@ export class ZodSerializer {
         data += toScreamingSnakeCase(member[0]);
       }
 
-      data += ' = ';
+      data += ': ';
       data += this.serializeLiteral(member[1]);
       data += ',';
       data += '\n';
     }
 
-    data += ')';
+    data += '})';
 
     return data;
   }
@@ -345,7 +356,7 @@ export class ZodSerializer {
         case NodeType.EXPORT_STATEMENT:
           data += this.serializeExportStatement(node);
           break;
-          case NodeType.IMPORT_STATEMENT:
+        case NodeType.IMPORT_STATEMENT:
           data += this.serializeImportStatement(node);
           break;
       }
@@ -360,10 +371,15 @@ export class ZodSerializer {
 
   serializeUnionExpression(node: UnionExpressionNode) {
     // Check for .nullable
-    if (node.args[0] && node.args.length === 2 && node.args[1]?.type === NodeType.IDENTIFIER && node.args[1].name === "z.null()"){
-      let data: string =  (this.serializeExpression(node.args[0]))
-      data += ".nullable()"
-      return data
+    if (
+      node.args[0] &&
+      node.args.length === 2 &&
+      node.args[1]?.type === NodeType.IDENTIFIER &&
+      node.args[1].name === 'z.null()'
+    ) {
+      let data: string = this.serializeExpression(node.args[0]);
+      data += '.nullable()';
+      return data;
     }
     let data = 'z.union([';
     let i = 0;
@@ -389,7 +405,7 @@ export class ZodSerializer {
       data += this.serializeExpression(arg);
       i++;
     }
-    data += "])"
+    data += '])';
     return data;
   }
 
@@ -414,11 +430,15 @@ export class ZodSerializer {
       if (i >= 1) {
         data += ', ';
       }
-
-      data += this.serializeExpression(arg);
+      data += '"';
+      // For zod enums we just use the value directly
+      if (arg.type === NodeType.LITERAL) {
+        data += arg.value;
+      }
+      data += '"';
       i++;
     }
-    data += "])"
+    data += '])';
     return data;
   }
 }

@@ -55,7 +55,7 @@ export const generate = async (options: GenerateOptions) => {
 
   options.logger?.debug();
 
-  const transformFunction = options.generateZod ? zodTransform : transform
+  const transformFunction = options.generateZod ? zodTransform : transform;
 
   const nodes = transformFunction({
     camelCase: !!options.camelCase,

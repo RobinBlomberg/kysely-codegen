@@ -44,7 +44,7 @@ export class DialectManager {
         case 'postgres':
           return new PostgresZodDialect();
         default:
-          throw new Error(`Missing zod dialect for ${name}`)
+          throw new Error(`Missing zod dialect for ${name}`);
       }
     } else {
       switch (name) {

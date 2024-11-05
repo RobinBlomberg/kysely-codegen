@@ -23,6 +23,7 @@ describe(Cli.name, () => {
     domains: false,
     envFile: undefined,
     excludePattern: undefined,
+    generateZod: false,
     includePattern: undefined,
     logLevel: DEFAULT_LOG_LEVEL,
     numericParser: DEFAULT_NUMERIC_PARSER,
