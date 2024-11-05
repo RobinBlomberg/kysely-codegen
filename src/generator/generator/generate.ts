@@ -2,12 +2,27 @@ import { promises as fs } from 'fs';
 import type { Kysely } from 'kysely';
 import { parse, relative, resolve, sep } from 'path';
 import { performance } from 'perf_hooks';
+import type { DatabaseMetadata } from '../../introspector';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
 import { transform, type Overrides } from '../transformer/transform';
 import { DiffChecker } from './diff-checker';
 import type { RuntimeEnumsStyle } from './runtime-enums-style';
 import { Serializer } from './serializer';
+
+export type SerializeFromMetadataOptions = Omit<
+  GenerateOptions,
+  | 'db'
+  | 'excludePattern'
+  | 'includePattern'
+  | 'outFile'
+  | 'partitions'
+  | 'print'
+  | 'verify'
+> & {
+  metadata: DatabaseMetadata;
+  startTime?: number;
+};
 
 export type GenerateOptions = {
   camelCase?: boolean;
@@ -43,33 +58,8 @@ export const generate = async (options: GenerateOptions) => {
     partitions: options.partitions,
   });
 
-  options.logger?.debug();
-  options.logger?.debug(`Found ${metadata.tables.length} public tables:`);
+  const newOutput = serializeFromMetadata({ ...options, metadata, startTime });
 
-  for (const table of metadata.tables) {
-    options.logger?.debug(` - ${table.name}`);
-  }
-
-  options.logger?.debug();
-
-  const nodes = transform({
-    camelCase: options.camelCase,
-    defaultSchemas: options.defaultSchemas,
-    dialect: options.dialect,
-    metadata,
-    overrides: options.overrides,
-    runtimeEnums: options.runtimeEnums,
-  });
-
-  const serializer =
-    options.serializer ??
-    new Serializer({
-      camelCase: options.camelCase,
-      runtimeEnums: options.runtimeEnums,
-      singularize: options.singularize,
-      typeOnlyImports: options.typeOnlyImports,
-    });
-  const newOutput = serializer.serializeFile(nodes);
   const outFile = options.outFile
     ? resolve(process.cwd(), options.outFile)
     : null;
@@ -117,4 +107,41 @@ export const generate = async (options: GenerateOptions) => {
   }
 
   return newOutput;
+};
+
+export const serializeFromMetadata = (
+  options: SerializeFromMetadataOptions,
+) => {
+  options.logger?.debug();
+
+  const s = options.metadata.tables.length === 1 ? '' : 's';
+  options.logger?.debug(
+    `Found ${options.metadata.tables.length} public table${s}:`,
+  );
+
+  for (const table of options.metadata.tables) {
+    options.logger?.debug(` - ${table.name}`);
+  }
+
+  options.logger?.debug();
+
+  const nodes = transform({
+    camelCase: options.camelCase,
+    defaultSchemas: options.defaultSchemas,
+    dialect: options.dialect,
+    metadata: options.metadata,
+    overrides: options.overrides,
+    runtimeEnums: options.runtimeEnums,
+  });
+
+  const serializer =
+    options.serializer ??
+    new Serializer({
+      camelCase: options.camelCase,
+      runtimeEnums: options.runtimeEnums,
+      singularize: options.singularize,
+      typeOnlyImports: options.typeOnlyImports,
+    });
+
+  return serializer.serializeFile(nodes);
 };

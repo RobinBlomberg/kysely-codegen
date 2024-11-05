@@ -1,12 +1,17 @@
 import { strictEqual } from 'assert';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
+import { dedent } from 'ts-dedent';
+import type { DatabaseMetadataOptions } from '../../introspector';
+import { DatabaseMetadata } from '../../introspector';
 import { DateParser } from '../../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import {
   addExtraColumn,
   migrate,
 } from '../../introspector/introspector.fixtures';
+import { ArrayExpressionNode } from '../ast/array-expression-node';
+import { IdentifierNode } from '../ast/identifier-node';
 import { JsonColumnTypeNode } from '../ast/json-column-type-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
 import type { GeneratorDialect } from '../dialect';
@@ -14,9 +19,11 @@ import { LibsqlDialect } from '../dialects/libsql/libsql-dialect';
 import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { SqliteDialect } from '../dialects/sqlite/sqlite-dialect';
-import type { GenerateOptions } from './generate';
-import { generate } from './generate';
+import { Logger } from '../logger/logger';
+import type { GenerateOptions, SerializeFromMetadataOptions } from './generate';
+import { generate, serializeFromMetadata } from './generate';
 import { RuntimeEnumsStyle } from './runtime-enums-style';
+import { Serializer } from './serializer';
 
 type Test = {
   connectionString: string;
@@ -128,5 +135,200 @@ describe(generate.name, () => {
         await db.destroy();
       });
     }
+  });
+});
+
+describe(serializeFromMetadata.name, () => {
+  const serialize = (
+    options: Omit<
+      SerializeFromMetadataOptions,
+      'dialect' | 'metadata' | 'serializer'
+    > & {
+      dialect?: GeneratorDialect;
+      metadata: DatabaseMetadataOptions;
+    },
+  ) => {
+    return serializeFromMetadata({
+      serializer: new Serializer({ skipAutogenerationFileComment: true }),
+      ...options,
+      dialect: options.dialect ?? new PostgresDialect(),
+      metadata: new DatabaseMetadata(options.metadata),
+    }).trimEnd();
+  };
+
+  test('camelCase', () => {
+    expect(
+      serialize({
+        camelCase: true,
+        metadata: {
+          tables: [
+            {
+              columns: [{ dataType: 'int4', name: 'baz_qux' }],
+              name: 'foo_bar',
+            },
+          ],
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        export interface FooBar {
+          bazQux: number;
+        }
+
+        export interface DB {
+          fooBar: FooBar;
+        }
+      `,
+    );
+  });
+
+  test('defaultSchemas', () => {
+    expect(
+      serialize({
+        defaultSchemas: ['hidden', 'private'],
+        metadata: {
+          tables: [
+            {
+              columns: [{ dataType: 'int4', name: 'id' }],
+              name: 'posts',
+              schema: 'hidden',
+            },
+            {
+              columns: [{ dataType: 'int4', name: 'id' }],
+              name: 'users',
+              schema: 'public',
+            },
+            {
+              columns: [{ dataType: 'int4', name: 'id' }],
+              name: 'comments',
+              schema: 'private',
+            },
+          ],
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        export interface Comments {
+          id: number;
+        }
+
+        export interface Posts {
+          id: number;
+        }
+
+        export interface PublicUsers {
+          id: number;
+        }
+
+        export interface DB {
+          comments: Comments;
+          posts: Posts;
+          "public.users": PublicUsers;
+        }
+      `,
+    );
+  });
+
+  test('dialect', () => {
+    expect(
+      serialize({
+        dialect: new PostgresDialect({
+          dateParser: DateParser.STRING,
+          numericParser: NumericParser.NUMBER,
+        }),
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'date', name: 'date' },
+                { dataType: 'numeric', name: 'numeric' },
+              ],
+              name: 'table',
+            },
+          ],
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { ColumnType } from "kysely";
+
+        export type Numeric = ColumnType<number, number | string, number | string>;
+
+        export interface Table {
+          date: string;
+          numeric: Numeric;
+        }
+
+        export interface DB {
+          table: Table;
+        }
+      `,
+    );
+  });
+
+  test('logger', () => {
+    class ArrayLogger extends Logger {
+      readonly messages: string[] = [];
+
+      debug(message = '') {
+        this.messages.push(message);
+      }
+    }
+
+    const logger = new ArrayLogger();
+
+    serialize({
+      logger,
+      metadata: { tables: [{ columns: [], name: 'table' }] },
+    });
+
+    expect(logger.messages).toStrictEqual([
+      '',
+      'Found 1 public table:',
+      ' - table',
+      '',
+    ]);
+  });
+
+  test('overrides', () => {
+    expect(
+      serialize({
+        metadata: {
+          tables: [
+            {
+              columns: [{ dataType: 'jsonb', name: 'author' }],
+              name: 'posts',
+              schema: 'hidden',
+            },
+            {
+              columns: [{ dataType: 'json', isArray: true, name: 'posts' }],
+              name: 'users',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'hidden.posts.author': new IdentifierNode('User'),
+            'users.posts': new ArrayExpressionNode(new IdentifierNode('Post')),
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        export interface HiddenPosts {
+          author: User;
+        }
+
+        export interface Users {
+          posts: Post[];
+        }
+
+        export interface DB {
+          "hidden.posts": HiddenPosts;
+          users: Users;
+        }
+      `,
+    );
   });
 });
