@@ -136,8 +136,6 @@ export class PostgresAdapter extends Adapter {
 
     if (options?.dateParser === DateParser.STRING) {
       this.scalars.date = new IdentifierNode('string');
-    } else {
-      this.scalars.date = new IdentifierNode('Timestamp');
     }
 
     if (options?.numericParser === NumericParser.NUMBER) {
