@@ -41,19 +41,9 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('number'),
         new IdentifierNode('bigint'),
       ]),
-      new UnionExpressionNode([
-        new IdentifierNode('string'),
-        new IdentifierNode('number'),
-        new IdentifierNode('bigint'),
-      ]),
     ),
     Interval: new ColumnTypeNode(
       new IdentifierNode('IPostgresInterval'),
-      new UnionExpressionNode([
-        new IdentifierNode('IPostgresInterval'),
-        new IdentifierNode('number'),
-        new IdentifierNode('string'),
-      ]),
       new UnionExpressionNode([
         new IdentifierNode('IPostgresInterval'),
         new IdentifierNode('number'),
