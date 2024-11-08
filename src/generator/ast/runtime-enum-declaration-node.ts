@@ -1,7 +1,7 @@
 import type { IdentifierStyle } from '../transformer/identifier-style';
 import type { SymbolEntry } from '../transformer/symbol-collection';
 import { SymbolCollection, SymbolType } from '../transformer/symbol-collection';
-import { EnumIdentifierNode, type IdentifierNode } from './identifier-node';
+import { IdentifierNode } from './identifier-node';
 import { LiteralNode } from './literal-node';
 import { NodeType } from './node-type';
 
@@ -18,7 +18,7 @@ export class RuntimeEnumDeclarationNode {
     options?: { identifierStyle?: IdentifierStyle },
   ) {
     this.members = [];
-    this.id = new EnumIdentifierNode(name);
+    this.id = new IdentifierNode(name);
 
     const symbolCollection = new SymbolCollection({
       entries: literals.map(

@@ -8,12 +8,7 @@ import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
 import type { ExpressionNode } from '../ast/expression-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
-import {
-  DatabaseIdentifierNode,
-  EnumIdentifierNode,
-  PrimitiveIdentifierNode,
-  TableIdentifierNode,
-} from '../ast/identifier-node';
+import { IdentifierNode, TableIdentifierNode } from '../ast/identifier-node';
 import { ImportClauseNode } from '../ast/import-clause-node';
 import { ImportStatementNode } from '../ast/import-statement-node';
 import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
@@ -163,8 +158,7 @@ const createContext = (options: TransformOptions): TransformContext => {
   return {
     camelCase: !!options.camelCase,
     defaultScalar:
-      options.dialect.adapter.defaultScalar ??
-      new PrimitiveIdentifierNode('unknown'),
+      options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
     defaultSchemas:
       options.defaultSchemas && options.defaultSchemas.length > 0
         ? options.defaultSchemas
@@ -206,10 +200,7 @@ const createDatabaseExportNode = (context: TransformContext) => {
   tableProperties.sort((a, b) => a.key.localeCompare(b.key));
 
   const body = new ObjectExpressionNode(tableProperties);
-  const argument = new InterfaceDeclarationNode(
-    new DatabaseIdentifierNode('DB'),
-    body,
-  );
+  const argument = new InterfaceDeclarationNode(new IdentifierNode('DB'), body);
   return new ExportStatementNode(argument);
 };
 
@@ -324,7 +315,7 @@ const transformColumn = ({
   }
 
   if (column.isNullable) {
-    args.push(new PrimitiveIdentifierNode('null'));
+    args.push(new IdentifierNode('null'));
   }
 
   let node = unionize(args);
@@ -378,7 +369,7 @@ const transformColumnToArgs = (
         type: SymbolType.RUNTIME_ENUM_DEFINITION,
       };
       symbol.node.id.name = context.symbols.set(symbolId, symbol);
-      const node = new EnumIdentifierNode(symbol.node.id.name);
+      const node = new IdentifierNode(symbol.node.id.name);
       return [node];
     }
 
@@ -386,14 +377,14 @@ const transformColumnToArgs = (
       node: unionize(transformEnum(enumValues)),
       type: SymbolType.DEFINITION,
     });
-    const node = new EnumIdentifierNode(symbolName);
+    const node = new IdentifierNode(symbolName);
     return [node];
   }
 
   const symbolName = context.symbols.getName(symbolId);
 
   if (symbolName) {
-    const node = new PrimitiveIdentifierNode(symbolName ?? 'unknown');
+    const node = new IdentifierNode(symbolName ?? 'unknown');
     return [node];
   }
 
@@ -450,7 +441,7 @@ const transformTables = (context: TransformContext) => {
 const unionize = (args: ExpressionNode[]) => {
   switch (args.length) {
     case 0:
-      return new PrimitiveIdentifierNode('never');
+      return new IdentifierNode('never');
     case 1:
       return args[0]!;
     default:

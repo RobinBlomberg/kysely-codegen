@@ -4,10 +4,7 @@ import type { ExportStatementNode } from '../ast/export-statement-node';
 import type { ExpressionNode } from '../ast/expression-node';
 import type { ExtendsClauseNode } from '../ast/extends-clause-node';
 import type { GenericExpressionNode } from '../ast/generic-expression-node';
-import {
-  IdentifierNodeKind,
-  type IdentifierNode,
-} from '../ast/identifier-node';
+import { type IdentifierNode } from '../ast/identifier-node';
 import type { ImportClauseNode } from '../ast/import-clause-node';
 import type { ImportStatementNode } from '../ast/import-statement-node';
 import type { InferClauseNode } from '../ast/infer-clause-node';
@@ -202,7 +199,7 @@ export class Serializer {
   }
 
   serializeIdentifier(node: IdentifierNode) {
-    return this.singularize && node.kind === IdentifierNodeKind.TABLE
+    return this.singularize && node.isTableIdentifier
       ? toPascalCase(this.singularize(node.name))
       : node.name;
   }

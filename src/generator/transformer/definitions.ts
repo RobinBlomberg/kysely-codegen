@@ -3,10 +3,7 @@ import { ColumnTypeNode } from '../ast/column-type-node';
 import type { DefinitionNode } from '../ast/definition-node';
 import { ExtendsClauseNode } from '../ast/extends-clause-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
-import {
-  AliasIdentifierNode,
-  PrimitiveIdentifierNode,
-} from '../ast/identifier-node';
+import { IdentifierNode } from '../ast/identifier-node';
 import { InferClauseNode } from '../ast/infer-clause-node';
 import { MappedTypeNode } from '../ast/mapped-type-node';
 import { TemplateNode } from '../ast/template-node';
@@ -19,14 +16,10 @@ export const GLOBAL_DEFINITIONS = {
   ArrayType: new TemplateNode(
     ['T'],
     new ExtendsClauseNode(
-      new GenericExpressionNode('ArrayTypeImpl', [
-        new AliasIdentifierNode('T'),
-      ]),
+      new GenericExpressionNode('ArrayTypeImpl', [new IdentifierNode('T')]),
       new ArrayExpressionNode(new InferClauseNode('U')),
-      new ArrayExpressionNode(new AliasIdentifierNode('U')),
-      new GenericExpressionNode('ArrayTypeImpl', [
-        new AliasIdentifierNode('T'),
-      ]),
+      new ArrayExpressionNode(new IdentifierNode('U')),
+      new GenericExpressionNode('ArrayTypeImpl', [new IdentifierNode('T')]),
     ),
   ),
   /**
@@ -35,71 +28,69 @@ export const GLOBAL_DEFINITIONS = {
   ArrayTypeImpl: new TemplateNode(
     ['T'],
     new ExtendsClauseNode(
-      new AliasIdentifierNode('T'),
+      new IdentifierNode('T'),
       new ColumnTypeNode(
         new InferClauseNode('S'),
         new InferClauseNode('I'),
         new InferClauseNode('U'),
       ),
       new ColumnTypeNode(
-        new ArrayExpressionNode(new AliasIdentifierNode('S')),
-        new ArrayExpressionNode(new AliasIdentifierNode('I')),
-        new ArrayExpressionNode(new AliasIdentifierNode('U')),
+        new ArrayExpressionNode(new IdentifierNode('S')),
+        new ArrayExpressionNode(new IdentifierNode('I')),
+        new ArrayExpressionNode(new IdentifierNode('U')),
       ),
-      new ArrayExpressionNode(new AliasIdentifierNode('T')),
+      new ArrayExpressionNode(new IdentifierNode('T')),
     ),
   ),
   Generated: new TemplateNode(
     ['T'],
     new ExtendsClauseNode(
-      new AliasIdentifierNode('T'),
+      new IdentifierNode('T'),
       new ColumnTypeNode(
         new InferClauseNode('S'),
         new InferClauseNode('I'),
         new InferClauseNode('U'),
       ),
       new ColumnTypeNode(
-        new AliasIdentifierNode('S'),
+        new IdentifierNode('S'),
         new UnionExpressionNode([
-          new AliasIdentifierNode('I'),
-          new PrimitiveIdentifierNode('undefined'),
+          new IdentifierNode('I'),
+          new IdentifierNode('undefined'),
         ]),
-        new AliasIdentifierNode('U'),
+        new IdentifierNode('U'),
       ),
       new ColumnTypeNode(
-        new AliasIdentifierNode('T'),
+        new IdentifierNode('T'),
         new UnionExpressionNode([
-          new AliasIdentifierNode('T'),
-          new PrimitiveIdentifierNode('undefined'),
+          new IdentifierNode('T'),
+          new IdentifierNode('undefined'),
         ]),
-        new AliasIdentifierNode('T'),
+        new IdentifierNode('T'),
       ),
     ),
   ),
 };
 
 export const JSON_ARRAY_DEFINITION: DefinitionNode = new ArrayExpressionNode(
-  new AliasIdentifierNode('JsonValue'),
+  new IdentifierNode('JsonValue'),
 );
 
 export const JSON_OBJECT_DEFINITION: DefinitionNode = new MappedTypeNode(
-  new AliasIdentifierNode('JsonValue'),
+  new IdentifierNode('JsonValue'),
 );
 
 export const JSON_PRIMITIVE_DEFINITION: DefinitionNode =
   new UnionExpressionNode([
-    new PrimitiveIdentifierNode('boolean'),
-    new PrimitiveIdentifierNode('null'),
-    new PrimitiveIdentifierNode('number'),
-    new PrimitiveIdentifierNode('string'),
+    new IdentifierNode('boolean'),
+    new IdentifierNode('null'),
+    new IdentifierNode('number'),
+    new IdentifierNode('string'),
   ]);
 
 export const JSON_VALUE_DEFINITION: DefinitionNode = new UnionExpressionNode([
-  new AliasIdentifierNode('JsonArray'),
-  new AliasIdentifierNode('JsonObject'),
-  new AliasIdentifierNode('JsonPrimitive'),
+  new IdentifierNode('JsonArray'),
+  new IdentifierNode('JsonObject'),
+  new IdentifierNode('JsonPrimitive'),
 ]);
 
-export const JSON_DEFINITION: DefinitionNode = new PrimitiveIdentifierNode(
-  'JsonValue',
-);
+export const JSON_DEFINITION: DefinitionNode = new IdentifierNode('JsonValue');

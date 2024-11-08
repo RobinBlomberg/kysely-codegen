@@ -8,12 +8,7 @@ import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
 import { ExtendsClauseNode } from '../ast/extends-clause-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
-import {
-  AliasIdentifierNode,
-  DatabaseIdentifierNode,
-  PrimitiveIdentifierNode,
-  TableIdentifierNode,
-} from '../ast/identifier-node';
+import { IdentifierNode, TableIdentifierNode } from '../ast/identifier-node';
 import { ImportClauseNode } from '../ast/import-clause-node';
 import { ImportStatementNode } from '../ast/import-statement-node';
 import { InferClauseNode } from '../ast/infer-clause-node';
@@ -48,8 +43,8 @@ describe(Serializer.name, () => {
           new TemplateNode(
             ['A', 'B'],
             new UnionExpressionNode([
-              new AliasIdentifierNode('A'),
-              new AliasIdentifierNode('B'),
+              new IdentifierNode('A'),
+              new IdentifierNode('B'),
             ]),
           ),
         ),
@@ -61,7 +56,7 @@ describe(Serializer.name, () => {
   test(Serializer.prototype.serializeArrayExpression.name, () => {
     strictEqual(
       serializer.serializeArrayExpression(
-        new ArrayExpressionNode(new AliasIdentifierNode('Json')),
+        new ArrayExpressionNode(new IdentifierNode('Json')),
       ),
       'Json[]',
     );
@@ -82,10 +77,10 @@ describe(Serializer.name, () => {
     strictEqual(
       serializer.serializeExtendsClause(
         new ExtendsClauseNode(
-          new AliasIdentifierNode('A'),
-          new AliasIdentifierNode('B'),
-          new AliasIdentifierNode('A'),
-          new AliasIdentifierNode('C'),
+          new IdentifierNode('A'),
+          new IdentifierNode('B'),
+          new IdentifierNode('A'),
+          new IdentifierNode('C'),
         ),
       ),
       'A extends B\n  ? A\n  : C',
@@ -96,8 +91,8 @@ describe(Serializer.name, () => {
     strictEqual(
       serializer.serializeGenericExpression(
         new GenericExpressionNode('MyType', [
-          new AliasIdentifierNode('A'),
-          new AliasIdentifierNode('B'),
+          new IdentifierNode('A'),
+          new IdentifierNode('B'),
         ]),
       ),
       'MyType<A, B>',
@@ -107,11 +102,11 @@ describe(Serializer.name, () => {
   describe(Serializer.prototype.serializeIdentifier.name, () => {
     test('non-singularized', () => {
       strictEqual(
-        serializer.serializeIdentifier(new DatabaseIdentifierNode('DB')),
+        serializer.serializeIdentifier(new IdentifierNode('DB')),
         'DB',
       );
       strictEqual(
-        serializer.serializeIdentifier(new AliasIdentifierNode('MyIdentifier')),
+        serializer.serializeIdentifier(new IdentifierNode('MyIdentifier')),
         'MyIdentifier',
       );
     });
@@ -119,7 +114,7 @@ describe(Serializer.name, () => {
     test('singularized table identifiers', () => {
       strictEqual(
         new Serializer({ singularize: true }).serializeIdentifier(
-          new AliasIdentifierNode('Users'),
+          new IdentifierNode('Users'),
         ),
         'Users',
       );
@@ -189,7 +184,7 @@ describe(Serializer.name, () => {
   test(Serializer.prototype.serializeMappedType.name, () => {
     strictEqual(
       serializer.serializeMappedType(
-        new MappedTypeNode(new AliasIdentifierNode('Json')),
+        new MappedTypeNode(new IdentifierNode('Json')),
       ),
       '{\n  [x: string]: Json | undefined;\n}',
     );
@@ -203,8 +198,8 @@ describe(Serializer.name, () => {
     strictEqual(
       serializer.serializeObjectExpression(
         new ObjectExpressionNode([
-          new PropertyNode('bar baz', new AliasIdentifierNode('BarBaz')),
-          new PropertyNode('foo', new AliasIdentifierNode('Foo')),
+          new PropertyNode('bar baz', new IdentifierNode('BarBaz')),
+          new PropertyNode('foo', new IdentifierNode('Foo')),
         ]),
       ),
       '{\n  "bar baz": BarBaz;\n  foo: Foo;\n}',
@@ -216,17 +211,14 @@ describe(Serializer.name, () => {
       strictEqual(
         serializer.serializeObjectExpression(
           new ObjectExpressionNode([
-            new PropertyNode('zip', new AliasIdentifierNode('Num7')),
-            new PropertyNode('avocado field', new AliasIdentifierNode('Num3')),
-            new PropertyNode('brachiosaurus', new AliasIdentifierNode('Num4')),
-            new PropertyNode('Zoo_field', new AliasIdentifierNode('Num1')),
-            new PropertyNode('jc_33', new AliasIdentifierNode('Num5')),
-            new PropertyNode('HelloField', new AliasIdentifierNode('Num0')),
-            new PropertyNode(
-              'typescript_LANG',
-              new AliasIdentifierNode('Num6'),
-            ),
-            new PropertyNode('_TEST', new AliasIdentifierNode('Num2')),
+            new PropertyNode('zip', new IdentifierNode('Num7')),
+            new PropertyNode('avocado field', new IdentifierNode('Num3')),
+            new PropertyNode('brachiosaurus', new IdentifierNode('Num4')),
+            new PropertyNode('Zoo_field', new IdentifierNode('Num1')),
+            new PropertyNode('jc_33', new IdentifierNode('Num5')),
+            new PropertyNode('HelloField', new IdentifierNode('Num0')),
+            new PropertyNode('typescript_LANG', new IdentifierNode('Num6')),
+            new PropertyNode('_TEST', new IdentifierNode('Num2')),
           ]),
         ),
         `{
@@ -246,13 +238,13 @@ describe(Serializer.name, () => {
   test(Serializer.prototype.serializeProperty.name, () => {
     strictEqual(
       serializer.serializeProperty(
-        new PropertyNode('foo', new AliasIdentifierNode('Foo')),
+        new PropertyNode('foo', new IdentifierNode('Foo')),
       ),
       'foo: Foo;\n',
     );
     strictEqual(
       serializer.serializeProperty(
-        new PropertyNode('bar baz', new AliasIdentifierNode('BarBaz')),
+        new PropertyNode('bar baz', new IdentifierNode('BarBaz')),
       ),
       '"bar baz": BarBaz;\n',
     );
@@ -450,15 +442,15 @@ describe(Serializer.name, () => {
       strictEqual(
         serializer.serializeUnionExpression(
           new UnionExpressionNode([
-            new PrimitiveIdentifierNode('z_TYPE'),
-            new PrimitiveIdentifierNode('undefined'),
-            new AliasIdentifierNode('Aa_Type'),
-            new AliasIdentifierNode('AA3Type'),
-            new AliasIdentifierNode('Z_TYPE'),
-            new AliasIdentifierNode('HType'),
-            new PrimitiveIdentifierNode('null'),
-            new AliasIdentifierNode('AA_Type'),
-            new AliasIdentifierNode('Aa3Type'),
+            new IdentifierNode('z_TYPE'),
+            new IdentifierNode('undefined'),
+            new IdentifierNode('Aa_Type'),
+            new IdentifierNode('AA3Type'),
+            new IdentifierNode('Z_TYPE'),
+            new IdentifierNode('HType'),
+            new IdentifierNode('null'),
+            new IdentifierNode('AA_Type'),
+            new IdentifierNode('Aa3Type'),
           ]),
         ),
         'AA3Type | AA_Type | Aa3Type | Aa_Type | HType | Z_TYPE | z_TYPE | null | undefined',
