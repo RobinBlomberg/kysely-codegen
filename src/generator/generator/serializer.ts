@@ -1,11 +1,13 @@
-import { singular } from 'pluralize';
 import type { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import type { ArrayExpressionNode } from '../ast/array-expression-node';
 import type { ExportStatementNode } from '../ast/export-statement-node';
 import type { ExpressionNode } from '../ast/expression-node';
 import type { ExtendsClauseNode } from '../ast/extends-clause-node';
 import type { GenericExpressionNode } from '../ast/generic-expression-node';
-import type { IdentifierNode } from '../ast/identifier-node';
+import {
+  IdentifierNodeKind,
+  type IdentifierNode,
+} from '../ast/identifier-node';
 import type { ImportClauseNode } from '../ast/import-clause-node';
 import type { ImportStatementNode } from '../ast/import-statement-node';
 import type { InferClauseNode } from '../ast/infer-clause-node';
@@ -20,8 +22,8 @@ import type { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration
 import type { StatementNode } from '../ast/statement-node';
 import type { UnionExpressionNode } from '../ast/union-expression-node';
 import { toPascalCase, toScreamingSnakeCase } from '../utils/case-converter';
-import { addSingularizationRules } from './add-singularization-rules';
 import { RuntimeEnumsStyle } from './runtime-enums-style';
+import { createSingularizer } from './singularizer';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
@@ -39,20 +41,19 @@ type SerializerOptions = {
 export class Serializer {
   readonly camelCase: boolean;
   readonly runtimeEnums: boolean | RuntimeEnumsStyle;
-  readonly singularize: boolean | Record<string, string>;
+  readonly singularize: ((word: string) => string) | undefined;
   readonly skipAutogenerationFileComment: boolean;
   readonly typeOnlyImports: boolean;
 
   constructor(options: SerializerOptions = {}) {
     this.camelCase = options.camelCase ?? false;
     this.runtimeEnums = options.runtimeEnums ?? false;
-    this.singularize = options.singularize ?? false;
     this.skipAutogenerationFileComment =
       options.skipAutogenerationFileComment ?? false;
     this.typeOnlyImports = options.typeOnlyImports ?? true;
 
-    if (typeof this.singularize === 'object') {
-      addSingularizationRules(this.singularize);
+    if (options.singularize) {
+      this.singularize = createSingularizer(options.singularize);
     }
   }
 
@@ -62,7 +63,7 @@ export class Serializer {
     let data = '';
 
     data += 'type ';
-    data += node.name;
+    data += node.id.name;
 
     if (node.body.type === NodeType.TEMPLATE) {
       data += '<';
@@ -201,12 +202,9 @@ export class Serializer {
   }
 
   serializeIdentifier(node: IdentifierNode) {
-    if (node.name.length <= 1) {
-      return node.name;
-    }
-
-    // TODO: Avoid singularizing `DB` and built-in types.
-    return this.singularize ? singular(node.name) : node.name;
+    return this.singularize && node.kind === IdentifierNodeKind.TABLE
+      ? toPascalCase(this.singularize(node.name))
+      : node.name;
   }
 
   serializeImportClause(node: ImportClauseNode) {
@@ -264,8 +262,7 @@ export class Serializer {
     let data = '';
 
     data += 'interface ';
-    // TODO: Avoid singularizing `DB` and built-in types.
-    data += this.singularize ? singular(node.name) : node.name;
+    data += this.serializeIdentifier(node.id);
     data += ' ';
     data += this.serializeObjectExpression(node.body);
 
@@ -341,7 +338,7 @@ export class Serializer {
   serializeRuntimeEnum(node: RuntimeEnumDeclarationNode) {
     let data = 'enum ';
 
-    data += node.name;
+    data += node.id.name;
     data += ' {\n';
 
     const members = [...node.members].sort(([a], [b]) => {

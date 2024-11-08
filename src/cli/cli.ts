@@ -7,17 +7,21 @@ import { getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';
 import { generate } from '../generator/generator/generate';
 import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
-import { LogLevel, matchesLogLevel } from '../generator/logger/log-level';
+import {
+  DEFAULT_LOG_LEVEL,
+  LogLevel,
+  matchesLogLevel,
+} from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import { DateParser } from '../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import { ConfigError } from './config-error';
-import { DEFAULT_LOG_LEVEL, DEFAULT_URL, VALID_DIALECTS } from './constants';
+import { DEFAULT_URL, VALID_DIALECTS } from './constants';
 import { FLAGS, serializeFlags } from './flags';
 
 export type CliGenerateOptions = z.infer<typeof cliGenerateOptionsSchema>;
 
-const dialectNameSchema = z.enum([
+const dialectSchema = z.enum([
   'bun-sqlite',
   'kysely-bun-sqlite',
   'libsql',
@@ -32,11 +36,11 @@ const cliGenerateOptionsSchema = z.object({
   camelCase: z.boolean().optional(),
   dateParser: z.nativeEnum(DateParser).optional(),
   defaultSchemas: z.array(z.string()).optional(),
-  dialectName: dialectNameSchema.optional(),
+  dialect: dialectSchema.optional(),
   domains: z.boolean().optional(),
   envFile: z.string().optional(),
-  excludePattern: z.string().optional(),
-  includePattern: z.string().optional(),
+  excludePattern: z.string().nullable().optional(),
+  includePattern: z.string().nullable().optional(),
   logLevel: z.nativeEnum(LogLevel).optional(),
   numericParser: z.nativeEnum(NumericParser).optional(),
   outFile: z.string().nullable().optional(),
@@ -72,15 +76,16 @@ export class Cli {
     const connectionStringParser = new ConnectionStringParser();
     const logger = new Logger(options.logLevel);
 
-    const { connectionString, dialectName } = connectionStringParser.parse({
-      connectionString: options.url ?? DEFAULT_URL,
-      dialectName: options.dialectName,
-      envFile: options.envFile,
-      logger,
-    });
+    const { connectionString, dialect: dialectName } =
+      connectionStringParser.parse({
+        connectionString: options.url ?? DEFAULT_URL,
+        dialect: options.dialect,
+        envFile: options.envFile,
+        logger,
+      });
 
-    if (options.dialectName) {
-      logger.info(`Using dialect '${options.dialectName}'.`);
+    if (options.dialect) {
+      logger.info(`Using dialect '${options.dialect}'.`);
     } else {
       logger.info(`No dialect specified. Assuming '${dialectName}'.`);
     }
@@ -145,7 +150,7 @@ export class Cli {
   }
 
   #parseDialectName(input: any) {
-    const result = dialectNameSchema.safeParse(input);
+    const result = dialectSchema.safeParse(input);
     return result.success ? result.data : undefined;
   }
 
@@ -284,7 +289,7 @@ export class Cli {
       camelCase: this.#parseBoolean(argv['camel-case']),
       dateParser: this.#parseDateParser(argv['date-parser']),
       defaultSchemas: this.#parseStringArray(argv['default-schema']),
-      dialectName: this.#parseDialectName(argv.dialect),
+      dialect: this.#parseDialectName(argv.dialect),
       domains: this.#parseBoolean(argv.domains),
       envFile: this.#parseString(argv['env-file']),
       excludePattern: this.#parseString(argv['exclude-pattern']),
@@ -318,8 +323,8 @@ export class Cli {
     };
 
     if (
-      generateOptions.dialectName &&
-      !VALID_DIALECTS.includes(generateOptions.dialectName)
+      generateOptions.dialect &&
+      !VALID_DIALECTS.includes(generateOptions.dialect)
     ) {
       const dialectValues = VALID_DIALECTS.join(', ');
       throw new RangeError(

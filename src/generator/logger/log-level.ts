@@ -6,6 +6,8 @@ export enum LogLevel {
   DEBUG = 'debug',
 }
 
+export const DEFAULT_LOG_LEVEL = LogLevel.WARN;
+
 export const getLogLevelNumber = (logLevel: LogLevel) => {
   return [
     LogLevel.SILENT,

@@ -1,12 +1,12 @@
 import { deepStrictEqual } from 'assert';
-import { IdentifierNode } from '../ast/identifier-node';
+import { AliasIdentifierNode } from '../ast/identifier-node';
 import type { SymbolNode } from './symbol-collection';
 import { SymbolCollection, SymbolType } from './symbol-collection';
 
 test(SymbolCollection.name, () => {
   const symbols = new SymbolCollection();
   const symbol: SymbolNode = {
-    node: new IdentifierNode('FooBar'),
+    node: new AliasIdentifierNode('FooBar'),
     type: SymbolType.DEFINITION,
   };
 

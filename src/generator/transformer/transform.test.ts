@@ -9,7 +9,13 @@ import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
-import { IdentifierNode } from '../ast/identifier-node';
+import {
+  AliasIdentifierNode,
+  DatabaseIdentifierNode,
+  EnumIdentifierNode,
+  PrimitiveIdentifierNode,
+  TableIdentifierNode,
+} from '../ast/identifier-node';
 import { ImportClauseNode } from '../ast/import-clause-node';
 import { ImportStatementNode } from '../ast/import-statement-node';
 import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
@@ -52,7 +58,7 @@ describe(transform.name, () => {
       overrides: {
         columns: {
           'table.expression_override': new GenericExpressionNode('Generated', [
-            new IdentifierNode('boolean'),
+            new PrimitiveIdentifierNode('boolean'),
           ]),
           'table.json_override': new JsonColumnTypeNode(
             new RawExpressionNode('{ foo: "bar" }'),
@@ -155,59 +161,59 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'NotPublicOtherTable',
+          new TableIdentifierNode('NotPublicOtherTable'),
           new ObjectExpressionNode([
-            new PropertyNode('id', new IdentifierNode('string')),
+            new PropertyNode('id', new PrimitiveIdentifierNode('string')),
           ]),
         ),
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'Table',
+          new TableIdentifierNode('Table'),
           new ObjectExpressionNode([
             new PropertyNode(
               'expression_override',
               new GenericExpressionNode('Generated', [
-                new IdentifierNode('boolean'),
+                new PrimitiveIdentifierNode('boolean'),
               ]),
             ),
             new PropertyNode(
               'interval',
               new GenericExpressionNode('Generated', [
-                new IdentifierNode('Interval'),
+                new AliasIdentifierNode('Interval'),
               ]),
             ),
             new PropertyNode(
               'intervals',
               new GenericExpressionNode('ArrayType', [
-                new IdentifierNode('Interval'),
+                new AliasIdentifierNode('Interval'),
               ]),
             ),
             new PropertyNode(
               'json_override',
               new JsonColumnTypeNode(new RawExpressionNode('{ foo: "bar" }')),
             ),
-            new PropertyNode('mood', new IdentifierNode('Mood')),
+            new PropertyNode('mood', new EnumIdentifierNode('Mood')),
             new PropertyNode(
               'raw_override',
               new RawExpressionNode('{ test: string }'),
             ),
             new PropertyNode(
               'texts',
-              new ArrayExpressionNode(new IdentifierNode('string')),
+              new ArrayExpressionNode(new PrimitiveIdentifierNode('string')),
             ),
           ]),
         ),
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new DatabaseIdentifierNode('DB'),
           new ObjectExpressionNode([
             new PropertyNode(
               'not_public.other_table',
-              new IdentifierNode('NotPublicOtherTable'),
+              new TableIdentifierNode('NotPublicOtherTable'),
             ),
-            new PropertyNode('table', new IdentifierNode('Table')),
+            new PropertyNode('table', new TableIdentifierNode('Table')),
           ]),
         ),
       ),
@@ -239,12 +245,12 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'FooBar',
+          new TableIdentifierNode('FooBar'),
           new ObjectExpressionNode([
             new PropertyNode(
               'bazQux',
               new GenericExpressionNode('Generated', [
-                new IdentifierNode('string'),
+                new PrimitiveIdentifierNode('string'),
               ]),
             ),
           ]),
@@ -252,9 +258,9 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new DatabaseIdentifierNode('DB'),
           new ObjectExpressionNode([
-            new PropertyNode('fooBar', new IdentifierNode('FooBar')),
+            new PropertyNode('fooBar', new TableIdentifierNode('FooBar')),
           ]),
         ),
       ),
@@ -280,17 +286,17 @@ describe(transform.name, () => {
     deepStrictEqual(nodes, [
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'Table',
+          new TableIdentifierNode('Table'),
           new ObjectExpressionNode([
-            new PropertyNode('date', new IdentifierNode('string')),
+            new PropertyNode('date', new PrimitiveIdentifierNode('string')),
           ]),
         ),
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new DatabaseIdentifierNode('DB'),
           new ObjectExpressionNode([
-            new PropertyNode('table', new IdentifierNode('Table')),
+            new PropertyNode('table', new TableIdentifierNode('Table')),
           ]),
         ),
       ),
@@ -366,13 +372,13 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'Table',
+          new TableIdentifierNode('Table'),
           new ObjectExpressionNode([
-            new PropertyNode('column1', new IdentifierNode('Mood')),
+            new PropertyNode('column1', new EnumIdentifierNode('Mood')),
             new PropertyNode(
               'column2',
               new GenericExpressionNode('Generated', [
-                new IdentifierNode('Mood2'),
+                new EnumIdentifierNode('Mood2'),
               ]),
             ),
           ]),
@@ -380,9 +386,9 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new DatabaseIdentifierNode('DB'),
           new ObjectExpressionNode([
-            new PropertyNode('table', new IdentifierNode('Table')),
+            new PropertyNode('table', new TableIdentifierNode('Table')),
           ]),
         ),
       ),
@@ -425,13 +431,13 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'Table',
+          new TableIdentifierNode('Table'),
           new ObjectExpressionNode([
-            new PropertyNode('column1', new IdentifierNode('Mood')),
+            new PropertyNode('column1', new EnumIdentifierNode('Mood')),
             new PropertyNode(
               'column2',
               new GenericExpressionNode('Generated', [
-                new IdentifierNode('Mood2'),
+                new EnumIdentifierNode('Mood2'),
               ]),
             ),
           ]),
@@ -439,9 +445,9 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new DatabaseIdentifierNode('DB'),
           new ObjectExpressionNode([
-            new PropertyNode('table', new IdentifierNode('Table')),
+            new PropertyNode('table', new TableIdentifierNode('Table')),
           ]),
         ),
       ),

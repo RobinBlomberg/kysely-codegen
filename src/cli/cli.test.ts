@@ -63,7 +63,7 @@ describe(Cli.name, () => {
       config: {
         camelCase: false,
         defaultSchemas: ['cli'],
-        dialectName: 'postgres',
+        dialect: 'postgres',
         includePattern: 'cli.*',
         logLevel: LogLevel.SILENT,
         outFile: null,
@@ -148,7 +148,7 @@ describe(Cli.name, () => {
     assert(['--default-schema=foo', '--default-schema=bar'], {
       defaultSchemas: ['foo', 'bar'],
     });
-    assert(['--dialect=mysql'], { dialectName: 'mysql' });
+    assert(['--dialect=mysql'], { dialect: 'mysql' });
     assert(['--domains'], { domains: true });
     assert(['--exclude-pattern=public._*'], { excludePattern: 'public._*' });
     assert(['--help'], {});
@@ -204,13 +204,13 @@ describe(Cli.name, () => {
     );
     assert({ defaultSchemas: 'public' }, 'Expected array, received string');
     assert(
-      { dialectName: 'sqlite3' },
+      { dialect: 'sqlite3' },
       "Invalid enum value. Expected 'bun-sqlite' | 'kysely-bun-sqlite' | 'libsql' | 'mssql' | 'mysql' | 'postgres' | 'sqlite' | 'worker-bun-sqlite', received 'sqlite3'",
     );
     assert({ domains: 'true' }, 'Expected boolean, received string');
     assert({ envFile: null }, 'Expected string, received null');
-    assert({ excludePattern: null }, 'Expected string, received null');
-    assert({ includePattern: null }, 'Expected string, received null');
+    assert({ excludePattern: false }, 'Expected string, received boolean');
+    assert({ includePattern: false }, 'Expected string, received boolean');
     assert(
       { logLevel: 0 },
       "Invalid enum value. Expected 'silent' | 'info' | 'warn' | 'error' | 'debug', received '0'",

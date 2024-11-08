@@ -11,7 +11,7 @@ import {
   migrate,
 } from '../../introspector/introspector.fixtures';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
-import { IdentifierNode } from '../ast/identifier-node';
+import { TableIdentifierNode } from '../ast/identifier-node';
 import { JsonColumnTypeNode } from '../ast/json-column-type-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
 import type { GeneratorDialect } from '../dialect';
@@ -23,7 +23,6 @@ import { Logger } from '../logger/logger';
 import type { GenerateOptions, SerializeFromMetadataOptions } from './generate';
 import { generate, serializeFromMetadata } from './generate';
 import { RuntimeEnumsStyle } from './runtime-enums-style';
-import { Serializer } from './serializer';
 
 type Test = {
   connectionString: string;
@@ -149,10 +148,10 @@ describe(serializeFromMetadata.name, () => {
     },
   ) => {
     return serializeFromMetadata({
-      serializer: new Serializer({ skipAutogenerationFileComment: true }),
       ...options,
       dialect: options.dialect ?? new PostgresDialect(),
       metadata: new DatabaseMetadata(options.metadata),
+      skipAutogenerationFileComment: true,
     }).trimEnd();
   };
 
@@ -301,7 +300,10 @@ describe(serializeFromMetadata.name, () => {
               schema: 'hidden',
             },
             {
-              columns: [{ dataType: 'json', isArray: true, name: 'posts' }],
+              columns: [
+                { dataType: 'json', isArray: true, name: 'posts' },
+                { dataType: 'json', name: 'settings' },
+              ],
               name: 'users',
               schema: 'public',
             },
@@ -309,8 +311,11 @@ describe(serializeFromMetadata.name, () => {
         },
         overrides: {
           columns: {
-            'hidden.posts.author': new IdentifierNode('User'),
-            'users.posts': new ArrayExpressionNode(new IdentifierNode('Post')),
+            'hidden.posts.author': new TableIdentifierNode('User'),
+            'public.users.settings': '{ theme: "dark" }',
+            'users.posts': new ArrayExpressionNode(
+              new TableIdentifierNode('Post'),
+            ),
           },
         },
       }),
@@ -322,11 +327,31 @@ describe(serializeFromMetadata.name, () => {
 
         export interface Users {
           posts: Post[];
+          settings: { theme: "dark" };
         }
 
         export interface DB {
           "hidden.posts": HiddenPosts;
           users: Users;
+        }
+      `,
+    );
+  });
+
+  test('singularize', () => {
+    expect(
+      serialize({
+        metadata: {
+          tables: [{ columns: [], name: 'users', schema: 'public' }],
+        },
+        singularize: { '/^(.*?)s?$/': '$1_model' },
+      }),
+    ).toStrictEqual(
+      dedent`
+        export interface UserModel {}
+
+        export interface DB {
+          users: UserModel;
         }
       `,
     );

@@ -133,6 +133,14 @@
     ],
     "ignorePatterns": "**/*.snapshot.ts",
     "rules": {
+      "@typescript-eslint/consistent-type-imports": [
+        1,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
       "unicorn/prefer-node-protocol": 0
     }
   },

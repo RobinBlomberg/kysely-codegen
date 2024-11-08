@@ -11,14 +11,14 @@ const DIALECT_PARTS_REGEXP = /([^:]*)(.*)/;
  */
 type ParseConnectionStringOptions = {
   connectionString: string;
-  dialectName?: DialectName;
+  dialect?: DialectName;
   envFile?: string;
   logger?: Logger;
 };
 
 type ParsedConnectionString = {
   connectionString: string;
-  dialectName: DialectName;
+  dialect: DialectName;
 };
 
 /**
@@ -114,13 +114,11 @@ export class ConnectionStringParser {
     const tail = parts[2]!;
     const normalizedConnectionString =
       protocol === 'pg' ? `postgres${tail}` : connectionString;
-
-    const dialectName =
-      options.dialectName ?? this.#inferDialectName(connectionString);
+    const dialect = options.dialect ?? this.#inferDialectName(connectionString);
 
     return {
       connectionString: normalizedConnectionString,
-      dialectName,
+      dialect,
     };
   }
 }

@@ -1,7 +1,7 @@
 module.exports = {
   camelCase: true,
   defaultSchemas: ['cli'],
-  dialectName: 'postgres',
+  dialect: 'postgres',
   includePattern: 'cli.*',
   logLevel: 'error',
   outFile: './output.snapshot.ts',

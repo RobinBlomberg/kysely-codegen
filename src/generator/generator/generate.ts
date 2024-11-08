@@ -10,6 +10,26 @@ import { DiffChecker } from './diff-checker';
 import type { RuntimeEnumsStyle } from './runtime-enums-style';
 import { Serializer } from './serializer';
 
+export type GenerateOptions = {
+  camelCase?: boolean;
+  db: Kysely<any>;
+  defaultSchemas?: string[];
+  dialect: GeneratorDialect;
+  excludePattern?: string | null;
+  includePattern?: string | null;
+  logger?: Logger;
+  outFile?: string | null;
+  overrides?: Overrides;
+  partitions?: boolean;
+  print?: boolean;
+  runtimeEnums?: boolean | RuntimeEnumsStyle;
+  serializer?: Serializer;
+  singularize?: boolean | Record<string, string>;
+  skipAutogenerationFileComment?: boolean;
+  typeOnlyImports?: boolean;
+  verify?: boolean;
+};
+
 export type SerializeFromMetadataOptions = Omit<
   GenerateOptions,
   | 'db'
@@ -22,25 +42,6 @@ export type SerializeFromMetadataOptions = Omit<
 > & {
   metadata: DatabaseMetadata;
   startTime?: number;
-};
-
-export type GenerateOptions = {
-  camelCase?: boolean;
-  db: Kysely<any>;
-  defaultSchemas?: string[];
-  dialect: GeneratorDialect;
-  excludePattern?: string;
-  includePattern?: string;
-  logger?: Logger;
-  outFile?: string | null;
-  overrides?: Overrides;
-  partitions?: boolean;
-  print?: boolean;
-  runtimeEnums?: boolean | RuntimeEnumsStyle;
-  serializer?: Serializer;
-  singularize?: boolean | Record<string, string>;
-  typeOnlyImports?: boolean;
-  verify?: boolean;
 };
 
 /**
@@ -140,6 +141,7 @@ export const serializeFromMetadata = (
       camelCase: options.camelCase,
       runtimeEnums: options.runtimeEnums,
       singularize: options.singularize,
+      skipAutogenerationFileComment: options.skipAutogenerationFileComment,
       typeOnlyImports: options.typeOnlyImports,
     });
 

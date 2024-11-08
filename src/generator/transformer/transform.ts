@@ -8,7 +8,12 @@ import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
 import type { ExpressionNode } from '../ast/expression-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
-import { IdentifierNode } from '../ast/identifier-node';
+import {
+  DatabaseIdentifierNode,
+  EnumIdentifierNode,
+  PrimitiveIdentifierNode,
+  TableIdentifierNode,
+} from '../ast/identifier-node';
 import { ImportClauseNode } from '../ast/import-clause-node';
 import { ImportStatementNode } from '../ast/import-statement-node';
 import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
@@ -158,7 +163,8 @@ const createContext = (options: TransformOptions): TransformContext => {
   return {
     camelCase: !!options.camelCase,
     defaultScalar:
-      options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
+      options.dialect.adapter.defaultScalar ??
+      new PrimitiveIdentifierNode('unknown'),
     defaultSchemas:
       options.defaultSchemas && options.defaultSchemas.length > 0
         ? options.defaultSchemas
@@ -191,7 +197,7 @@ const createDatabaseExportNode = (context: TransformContext) => {
     const symbolName = context.symbols.getName(identifier);
 
     if (symbolName) {
-      const value = new IdentifierNode(symbolName);
+      const value = new TableIdentifierNode(symbolName);
       const tableProperty = new PropertyNode(identifier, value);
       tableProperties.push(tableProperty);
     }
@@ -200,7 +206,10 @@ const createDatabaseExportNode = (context: TransformContext) => {
   tableProperties.sort((a, b) => a.key.localeCompare(b.key));
 
   const body = new ObjectExpressionNode(tableProperties);
-  const argument = new InterfaceDeclarationNode('DB', body);
+  const argument = new InterfaceDeclarationNode(
+    new DatabaseIdentifierNode('DB'),
+    body,
+  );
   return new ExportStatementNode(argument);
 };
 
@@ -217,7 +226,7 @@ const createRuntimeEnumDefinitionNodes = (context: TransformContext) => {
   }
 
   return exportStatements.sort((a, b) => {
-    return a.argument.name.localeCompare(b.argument.name);
+    return a.argument.id.name.localeCompare(b.argument.id.name);
   });
 };
 
@@ -235,7 +244,7 @@ const createDefinitionNodes = (context: TransformContext) => {
   }
 
   return definitionNodes.sort((a, b) =>
-    a.argument.name.localeCompare(b.argument.name),
+    a.argument.id.name.localeCompare(b.argument.id.name),
   );
 };
 
@@ -315,7 +324,7 @@ const transformColumn = ({
   }
 
   if (column.isNullable) {
-    args.push(new IdentifierNode('null'));
+    args.push(new PrimitiveIdentifierNode('null'));
   }
 
   let node = unionize(args);
@@ -368,8 +377,8 @@ const transformColumnToArgs = (
         }),
         type: SymbolType.RUNTIME_ENUM_DEFINITION,
       };
-      symbol.node.name = context.symbols.set(symbolId, symbol);
-      const node = new IdentifierNode(symbol.node.name);
+      symbol.node.id.name = context.symbols.set(symbolId, symbol);
+      const node = new EnumIdentifierNode(symbol.node.id.name);
       return [node];
     }
 
@@ -377,14 +386,14 @@ const transformColumnToArgs = (
       node: unionize(transformEnum(enumValues)),
       type: SymbolType.DEFINITION,
     });
-    const node = new IdentifierNode(symbolName);
+    const node = new EnumIdentifierNode(symbolName);
     return [node];
   }
 
   const symbolName = context.symbols.getName(symbolId);
 
   if (symbolName) {
-    const node = new IdentifierNode(symbolName ?? 'unknown');
+    const node = new PrimitiveIdentifierNode(symbolName ?? 'unknown');
     return [node];
   }
 
@@ -423,12 +432,17 @@ const transformTables = (context: TransformContext) => {
       type: SymbolType.TABLE,
     });
     const tableNode = new ExportStatementNode(
-      new InterfaceDeclarationNode(symbolName, expression),
+      new InterfaceDeclarationNode(
+        new TableIdentifierNode(symbolName),
+        expression,
+      ),
     );
     tableNodes.push(tableNode);
   }
 
-  tableNodes.sort((a, b) => a.argument.name.localeCompare(b.argument.name));
+  tableNodes.sort((a, b) =>
+    a.argument.id.name.localeCompare(b.argument.id.name),
+  );
 
   return tableNodes;
 };
@@ -436,7 +450,7 @@ const transformTables = (context: TransformContext) => {
 const unionize = (args: ExpressionNode[]) => {
   switch (args.length) {
     case 0:
-      return new IdentifierNode('never');
+      return new PrimitiveIdentifierNode('never');
     case 1:
       return args[0]!;
     default:
