@@ -24,7 +24,7 @@ import { PostgresAdapter } from '../dialects/postgres/postgres-adapter';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import type { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
 import { GLOBAL_DEFINITIONS } from './definitions';
-import { transform } from './transform';
+import { transform } from './transformer';
 
 describe(transform.name, () => {
   const enums = new EnumCollection({

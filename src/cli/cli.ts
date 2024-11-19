@@ -1,64 +1,22 @@
-import console from 'console';
 import { cosmiconfigSync } from 'cosmiconfig';
 import minimist from 'minimist';
 import { resolve } from 'path';
-import { z } from 'zod';
 import { getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';
 import { generate } from '../generator/generator/generate';
 import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
 import {
   DEFAULT_LOG_LEVEL,
-  LogLevel,
-  matchesLogLevel,
+  matchLogLevel,
 } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import { DateParser } from '../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
+import type { Config } from './config';
+import { configSchema, dialectSchema } from './config';
 import { ConfigError } from './config-error';
 import { DEFAULT_URL, VALID_DIALECTS } from './constants';
 import { FLAGS, serializeFlags } from './flags';
-
-export type CliGenerateOptions = z.infer<typeof cliGenerateOptionsSchema>;
-
-const dialectSchema = z.enum([
-  'bun-sqlite',
-  'kysely-bun-sqlite',
-  'libsql',
-  'mssql',
-  'mysql',
-  'postgres',
-  'sqlite',
-  'worker-bun-sqlite',
-]);
-
-const cliGenerateOptionsSchema = z.object({
-  camelCase: z.boolean().optional(),
-  dateParser: z.nativeEnum(DateParser).optional(),
-  defaultSchemas: z.array(z.string()).optional(),
-  dialect: dialectSchema.optional(),
-  domains: z.boolean().optional(),
-  envFile: z.string().optional(),
-  excludePattern: z.string().nullable().optional(),
-  includePattern: z.string().nullable().optional(),
-  logLevel: z.nativeEnum(LogLevel).optional(),
-  numericParser: z.nativeEnum(NumericParser).optional(),
-  outFile: z.string().nullable().optional(),
-  overrides: z
-    .object({ columns: z.record(z.string(), z.any()).optional() })
-    .optional(),
-  partitions: z.boolean().optional(),
-  print: z.boolean().optional(),
-  runtimeEnums: z
-    .union([z.boolean(), z.nativeEnum(RuntimeEnumsStyle)])
-    .optional(),
-  singularize: z
-    .union([z.boolean(), z.record(z.string(), z.string())])
-    .optional(),
-  typeOnlyImports: z.boolean().optional(),
-  url: z.string().optional(),
-  verify: z.boolean().optional(),
-});
 
 const compact = <T extends Record<string, unknown>>(object: T) => {
   return Object.fromEntries(
@@ -72,9 +30,13 @@ const compact = <T extends Record<string, unknown>>(object: T) => {
 export class Cli {
   logLevel = DEFAULT_LOG_LEVEL;
 
-  async generate(options: CliGenerateOptions) {
+  async generate(options: Config) {
     const connectionStringParser = new ConnectionStringParser();
-    const logger = new Logger(options.logLevel);
+    const logger = options.logger ?? new Logger(options.logLevel);
+
+    logger.debug('Options:');
+    logger.debug(options);
+    logger.debug();
 
     const { connectionString, dialect: dialectName } =
       connectionStringParser.parse({
@@ -115,6 +77,7 @@ export class Cli {
       partitions: options.partitions,
       print: options.print,
       runtimeEnums: options.runtimeEnums,
+      serializer: options.serializer,
       singularize: options.singularize,
       typeOnlyImports: options.typeOnlyImports,
       verify: options.verify,
@@ -152,21 +115,6 @@ export class Cli {
   #parseDialectName(input: any) {
     const result = dialectSchema.safeParse(input);
     return result.success ? result.data : undefined;
-  }
-
-  #parseLogLevel(input: any) {
-    switch (input) {
-      case 'silent':
-        return LogLevel.SILENT;
-      case 'info':
-        return LogLevel.INFO;
-      case 'error':
-        return LogLevel.ERROR;
-      case 'debug':
-        return LogLevel.DEBUG;
-      case 'warn':
-        return LogLevel.WARN;
-    }
   }
 
   #parseNumericParser(input: any) {
@@ -215,10 +163,10 @@ export class Cli {
 
   parseOptions(
     args: string[],
-    options?: { config?: CliGenerateOptions; silent?: boolean },
-  ): CliGenerateOptions {
+    options?: { config?: Config; silent?: boolean },
+  ): Config {
     const argv = minimist(args);
-    const logLevel = this.#parseLogLevel(argv['log-level']);
+    const logLevel = argv['log-level'];
 
     if (logLevel !== undefined) {
       this.logLevel = logLevel;
@@ -268,7 +216,7 @@ export class Cli {
       : this.#loadConfig({ configFile });
 
     const configParseResult = configResult
-      ? cliGenerateOptionsSchema.safeParse(configResult.config)
+      ? configSchema.safeParse(configResult.config)
       : null;
 
     if (configParseResult?.error) {
@@ -285,7 +233,7 @@ export class Cli {
         })
       : {};
 
-    const cliOptions = compact({
+    const cliOptions: Config = compact({
       camelCase: this.#parseBoolean(argv['camel-case']),
       dateParser: this.#parseDateParser(argv['date-parser']),
       defaultSchemas: this.#parseStringArray(argv['default-schema']),
@@ -315,7 +263,7 @@ export class Cli {
       ? undefined
       : (cliOptions.outFile ?? configOptions.outFile);
 
-    const generateOptions: CliGenerateOptions = {
+    const generateOptions: Config = {
       ...configOptions,
       ...cliOptions,
       ...(logLevel === undefined ? {} : { logLevel }),
@@ -335,20 +283,20 @@ export class Cli {
     return generateOptions;
   }
 
-  async run(options?: { argv?: string[]; config?: CliGenerateOptions }) {
+  async run(options?: { argv?: string[]; config?: Config }) {
     try {
       const generateOptions = this.parseOptions(options?.argv ?? [], {
         config: options?.config,
       });
       return await this.generate(generateOptions);
     } catch (error) {
-      if (matchesLogLevel(this.logLevel, LogLevel.INFO)) {
+      if (matchLogLevel(this.logLevel).isSupersetOf('error')) {
         if (error instanceof Error) {
-          if (matchesLogLevel(this.logLevel, LogLevel.DEBUG)) {
+          if (matchLogLevel(this.logLevel).isSupersetOf('debug')) {
             console.error();
             throw error;
           } else {
-            console.error(new Logger().serializeError(error.message));
+            new Logger().error(error.message);
             process.exit(1);
           }
         } else {

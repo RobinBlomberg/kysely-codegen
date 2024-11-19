@@ -22,14 +22,14 @@ import { TemplateNode } from '../ast/template-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
 import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
-import { transform } from '../transformer/transform';
+import { transform } from '../transformer/transformer';
 import { RuntimeEnumsStyle } from './runtime-enums-style';
-import { Serializer } from './serializer';
+import { TypeScriptSerializer } from './serializer';
 
-describe(Serializer.name, () => {
-  const serializer = new Serializer();
+describe(TypeScriptSerializer.name, () => {
+  const serializer = new TypeScriptSerializer();
 
-  test(Serializer.prototype.serializeAliasDeclaration.name, () => {
+  test(TypeScriptSerializer.prototype.serializeAliasDeclaration.name, () => {
     strictEqual(
       serializer.serializeAliasDeclaration(
         new AliasDeclarationNode('MyType', new LiteralNode('foo')),
@@ -53,7 +53,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test(Serializer.prototype.serializeArrayExpression.name, () => {
+  test(TypeScriptSerializer.prototype.serializeArrayExpression.name, () => {
     strictEqual(
       serializer.serializeArrayExpression(
         new ArrayExpressionNode(new IdentifierNode('Json')),
@@ -62,7 +62,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test(Serializer.prototype.serializeExportStatement.name, () => {
+  test(TypeScriptSerializer.prototype.serializeExportStatement.name, () => {
     strictEqual(
       serializer.serializeExportStatement(
         new ExportStatementNode(
@@ -73,7 +73,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test(Serializer.prototype.serializeExtendsClause.name, () => {
+  test(TypeScriptSerializer.prototype.serializeExtendsClause.name, () => {
     strictEqual(
       serializer.serializeExtendsClause(
         new ExtendsClauseNode(
@@ -87,7 +87,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test(Serializer.prototype.serializeGenericExpression.name, () => {
+  test(TypeScriptSerializer.prototype.serializeGenericExpression.name, () => {
     strictEqual(
       serializer.serializeGenericExpression(
         new GenericExpressionNode('MyType', [
@@ -99,7 +99,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  describe(Serializer.prototype.serializeIdentifier.name, () => {
+  describe(TypeScriptSerializer.prototype.serializeIdentifier.name, () => {
     test('non-singularized', () => {
       strictEqual(
         serializer.serializeIdentifier(new IdentifierNode('DB')),
@@ -113,19 +113,19 @@ describe(Serializer.name, () => {
 
     test('singularized table identifiers', () => {
       strictEqual(
-        new Serializer({ singularize: true }).serializeIdentifier(
+        new TypeScriptSerializer({ singularize: true }).serializeIdentifier(
           new IdentifierNode('Users'),
         ),
         'Users',
       );
       strictEqual(
-        new Serializer({ singularize: true }).serializeIdentifier(
+        new TypeScriptSerializer({ singularize: true }).serializeIdentifier(
           new TableIdentifierNode('Users'),
         ),
         'User',
       );
       strictEqual(
-        new Serializer({
+        new TypeScriptSerializer({
           singularize: { '/^(.*?)s?$/': '$1_model' },
         }).serializeIdentifier(new TableIdentifierNode('Users')),
         'UserModel',
@@ -133,7 +133,7 @@ describe(Serializer.name, () => {
     });
   });
 
-  test(Serializer.prototype.serializeImportClause.name, () => {
+  test(TypeScriptSerializer.prototype.serializeImportClause.name, () => {
     strictEqual(
       serializer.serializeImportClause(new ImportClauseNode('ColumnType')),
       'ColumnType',
@@ -144,7 +144,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test(Serializer.prototype.serializeImportStatement.name, () => {
+  test(TypeScriptSerializer.prototype.serializeImportStatement.name, () => {
     strictEqual(
       serializer.serializeImportStatement(
         new ImportStatementNode('kysely', [
@@ -156,32 +156,35 @@ describe(Serializer.name, () => {
     );
   });
 
-  test(Serializer.prototype.serializeInferClause.name, () => {
+  test(TypeScriptSerializer.prototype.serializeInferClause.name, () => {
     strictEqual(
       serializer.serializeInferClause(new InferClauseNode('A')),
       'infer A',
     );
   });
 
-  test(Serializer.prototype.serializeInterfaceDeclaration.name, () => {
-    strictEqual(
-      serializer.serializeInterfaceDeclaration(
-        new InterfaceDeclarationNode(
-          new TableIdentifierNode('MyInterface'),
-          new ObjectExpressionNode([
-            new PropertyNode('foo', new LiteralNode('bar')),
-          ]),
+  test(
+    TypeScriptSerializer.prototype.serializeInterfaceDeclaration.name,
+    () => {
+      strictEqual(
+        serializer.serializeInterfaceDeclaration(
+          new InterfaceDeclarationNode(
+            new TableIdentifierNode('MyInterface'),
+            new ObjectExpressionNode([
+              new PropertyNode('foo', new LiteralNode('bar')),
+            ]),
+          ),
         ),
-      ),
-      'interface MyInterface {\n  foo: "bar";\n}',
-    );
-  });
+        'interface MyInterface {\n  foo: "bar";\n}',
+      );
+    },
+  );
 
-  test(Serializer.prototype.serializeLiteral.name, () => {
+  test(TypeScriptSerializer.prototype.serializeLiteral.name, () => {
     strictEqual(serializer.serializeLiteral(new LiteralNode('foo')), '"foo"');
   });
 
-  test(Serializer.prototype.serializeMappedType.name, () => {
+  test(TypeScriptSerializer.prototype.serializeMappedType.name, () => {
     strictEqual(
       serializer.serializeMappedType(
         new MappedTypeNode(new IdentifierNode('Json')),
@@ -190,7 +193,7 @@ describe(Serializer.name, () => {
     );
   });
 
-  test(Serializer.prototype.serializeObjectExpression.name, () => {
+  test(TypeScriptSerializer.prototype.serializeObjectExpression.name, () => {
     strictEqual(
       serializer.serializeObjectExpression(new ObjectExpressionNode([])),
       '{}',
@@ -206,22 +209,24 @@ describe(Serializer.name, () => {
     );
   });
 
-  describe(Serializer.prototype.serializeObjectExpression.name, () => {
-    it('should order fields properly', () => {
-      strictEqual(
-        serializer.serializeObjectExpression(
-          new ObjectExpressionNode([
-            new PropertyNode('zip', new IdentifierNode('Num7')),
-            new PropertyNode('avocado field', new IdentifierNode('Num3')),
-            new PropertyNode('brachiosaurus', new IdentifierNode('Num4')),
-            new PropertyNode('Zoo_field', new IdentifierNode('Num1')),
-            new PropertyNode('jc_33', new IdentifierNode('Num5')),
-            new PropertyNode('HelloField', new IdentifierNode('Num0')),
-            new PropertyNode('typescript_LANG', new IdentifierNode('Num6')),
-            new PropertyNode('_TEST', new IdentifierNode('Num2')),
-          ]),
-        ),
-        `{
+  describe(
+    TypeScriptSerializer.prototype.serializeObjectExpression.name,
+    () => {
+      it('should order fields properly', () => {
+        strictEqual(
+          serializer.serializeObjectExpression(
+            new ObjectExpressionNode([
+              new PropertyNode('zip', new IdentifierNode('Num7')),
+              new PropertyNode('avocado field', new IdentifierNode('Num3')),
+              new PropertyNode('brachiosaurus', new IdentifierNode('Num4')),
+              new PropertyNode('Zoo_field', new IdentifierNode('Num1')),
+              new PropertyNode('jc_33', new IdentifierNode('Num5')),
+              new PropertyNode('HelloField', new IdentifierNode('Num0')),
+              new PropertyNode('typescript_LANG', new IdentifierNode('Num6')),
+              new PropertyNode('_TEST', new IdentifierNode('Num2')),
+            ]),
+          ),
+          `{
   _TEST: Num2;
   "avocado field": Num3;
   brachiosaurus: Num4;
@@ -231,11 +236,12 @@ describe(Serializer.name, () => {
   zip: Num7;
   Zoo_field: Num1;
 }`,
-      );
-    });
-  });
+        );
+      });
+    },
+  );
 
-  test(Serializer.prototype.serializeProperty.name, () => {
+  test(TypeScriptSerializer.prototype.serializeProperty.name, () => {
     strictEqual(
       serializer.serializeProperty(
         new PropertyNode('foo', new IdentifierNode('Foo')),
@@ -250,10 +256,9 @@ describe(Serializer.name, () => {
     );
   });
 
-  describe(Serializer.prototype.serializeRuntimeEnum.name, () => {
+  describe(TypeScriptSerializer.prototype.serializeRuntimeEnum.name, () => {
     it('should serialize runtime enums properly in pascal case', () => {
-      const enumSerializer = new Serializer({
-        camelCase: true,
+      const enumSerializer = new TypeScriptSerializer({
         runtimeEnums: RuntimeEnumsStyle.PASCAL_CASE,
       });
 
@@ -274,7 +279,7 @@ describe(Serializer.name, () => {
     });
 
     it('should serialize runtime enums properly in screaming snake case', () => {
-      const enumSerializer = new Serializer({ camelCase: true });
+      const enumSerializer = new TypeScriptSerializer();
 
       strictEqual(
         enumSerializer.serializeRuntimeEnum(
@@ -293,11 +298,13 @@ describe(Serializer.name, () => {
     });
   });
 
-  describe(Serializer.prototype.serializeStatements.name, () => {
+  describe(TypeScriptSerializer.prototype.serializeStatements.name, () => {
     it('should be able to singularize table names', () => {
       const dialect = new PostgresDialect();
       const enums = new EnumCollection();
-      const singularSerializer = new Serializer({ singularize: true });
+      const singularSerializer = new TypeScriptSerializer({
+        singularize: true,
+      });
 
       const ast = transform({
         camelCase: true,
@@ -437,7 +444,7 @@ describe(Serializer.name, () => {
     });
   });
 
-  describe(Serializer.prototype.serializeUnionExpression.name, () => {
+  describe(TypeScriptSerializer.prototype.serializeUnionExpression.name, () => {
     it('should serialize union constituents properly with the correct ordering', () => {
       strictEqual(
         serializer.serializeUnionExpression(

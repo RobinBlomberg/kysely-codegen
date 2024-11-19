@@ -46,5 +46,5 @@ export * from './transformer/definitions';
 export * from './transformer/identifier-style';
 export * from './transformer/imports';
 export * from './transformer/symbol-collection';
-export * from './transformer/transform';
+export * from './transformer/transformer';
 export * from './utils/case-converter';

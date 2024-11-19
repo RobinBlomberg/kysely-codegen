@@ -6,7 +6,7 @@
 import { ColumnType } from "kysely";
 
 export enum Status {
-  Confirmed = "CONFIRMED",
+  Confirmed = "INVALID",
   Unconfirmed = "UNCONFIRMED",
 }
 

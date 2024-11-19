@@ -64,7 +64,7 @@ type TransformContext = {
   symbols: SymbolCollection;
 };
 
-type TransformOptions = {
+export type TransformOptions = {
   camelCase?: boolean;
   defaultSchemas?: string[];
   dialect: GeneratorDialect;

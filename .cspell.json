@@ -1,10 +1,7 @@
 {
-  "enableFiletypes": [
-    "dockercompose"
-  ],
+  "enableFiletypes": ["dockercompose"],
   "words": [
     "Adminer",
-    "Autogeneration",
     "bacch",
     "bacchi",
     "Blomberg",

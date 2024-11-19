@@ -35,6 +35,8 @@ const down = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
 const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
   assert(dialect instanceof IntrospectorDialect);
 
+  await down(db, dialect);
+
   await db.transaction().execute(async (trx) => {
     if (dialect instanceof PostgresIntrospectorDialect) {
       await trx.schema.createSchema('test').ifNotExists().execute();
