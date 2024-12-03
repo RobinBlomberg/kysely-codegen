@@ -90,9 +90,7 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
         .addColumn('numeric2', sql`numeric`);
     } else {
       builder = builder
-        .addColumn('id', 'integer', (col) =>
-          col.autoIncrement().notNull().primaryKey(),
-        )
+        .addColumn('id', 'integer', (col) => col.notNull().primaryKey())
         .addColumn('user_status', 'text');
     }
 
