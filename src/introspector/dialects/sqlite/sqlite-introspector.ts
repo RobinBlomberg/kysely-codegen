@@ -33,12 +33,13 @@ export class SqliteIntrospector extends Introspector<any> {
           await sql<TableInfo>`PRAGMA table_info(${sql.id(t.name)})`.execute(
             db,
           );
-        const pkCol = rows.find(
+        const pkCols = rows.filter(
           (r) => r.type.toLowerCase() === 'integer' && r.pk > 0,
         );
-        if (!pkCol) {
+        if (!pkCols[0] || pkCols.length > 1) {
           return t;
         }
+        const pkCol = pkCols[0];
         return {
           ...t,
           columns: t.columns.map((t) => {
