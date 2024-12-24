@@ -142,11 +142,11 @@ async function insertUser(user: Insertable<User>) {
   // ^ Selectable<User>
 }
 
-async function updateUser(user: Updateable<User>) {
+async function updateUser(id: number, user: Updateable<User>) {
   return await db
     .updateTable('users')
     .set(user)
-    .where({ id: user.id })
+    .where('id', '=', id)
     .returning(['email', 'id'])
     .executeTakeFirstOrThrow();
   // ^ { email: string; id: number; }
