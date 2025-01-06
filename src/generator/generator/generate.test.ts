@@ -40,6 +40,13 @@ const TESTS: Test[] = [
     name: 'mysql',
   },
   {
+    connectionString: 'mysql://user:password@localhost/database',
+    dialect: new MysqlDialect({
+      dateParser: DateParser.STRING,
+    }),
+    name: 'mysql2',
+  },
+  {
     connectionString: 'postgres://user:password@localhost:5433/database',
     dialect: new PostgresDialect(),
     name: 'postgres',

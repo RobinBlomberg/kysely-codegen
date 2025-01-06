@@ -45,7 +45,7 @@ export class DialectManager {
       case 'mssql':
         return new MssqlDialect();
       case 'mysql':
-        return new MysqlDialect();
+        return new MysqlDialect(this.#options);
       case 'postgres':
         return new PostgresDialect(this.#options);
       case 'bun-sqlite': // Legacy.
