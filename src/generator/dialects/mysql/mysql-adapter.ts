@@ -1,3 +1,4 @@
+import { DateParser } from '../../../introspector';
 import { Adapter } from '../../adapter';
 import { ArrayExpressionNode } from '../../ast/array-expression-node';
 import { ColumnTypeNode } from '../../ast/column-type-node';
@@ -12,7 +13,24 @@ import {
   JSON_VALUE_DEFINITION,
 } from '../../transformer/definitions';
 
+export type MysqlAdapterOptions = {
+  dateParser?: DateParser;
+};
+
 export class MysqlAdapter extends Adapter {
+  constructor(options?: MysqlAdapterOptions) {
+    super();
+
+    if (options?.dateParser === DateParser.STRING) {
+      this.scalars.date = new IdentifierNode('string');
+      this.scalars.datetime = new IdentifierNode('string');
+      this.scalars.timestamp = new IdentifierNode('string');
+    } else {
+      this.scalars.date = new IdentifierNode('Date');
+      this.scalars.datetime = new IdentifierNode('Date'),
+      this.scalars.timestamp = new IdentifierNode('Date');
+    }
+  }
   override readonly definitions = {
     Decimal: new ColumnTypeNode(
       new IdentifierNode('string'),
