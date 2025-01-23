@@ -34,14 +34,7 @@ export class PostgresAdapter extends Adapter {
       new PropertyNode('y', new IdentifierNode('number')),
       new PropertyNode('radius', new IdentifierNode('number')),
     ]),
-    Int8: new ColumnTypeNode(
-      new IdentifierNode('string'),
-      new UnionExpressionNode([
-        new IdentifierNode('string'),
-        new IdentifierNode('number'),
-        new IdentifierNode('bigint'),
-      ]),
-    ),
+    Int8: new ColumnTypeNode(new IdentifierNode('number')),
     Interval: new ColumnTypeNode(
       new IdentifierNode('IPostgresInterval'),
       new UnionExpressionNode([
