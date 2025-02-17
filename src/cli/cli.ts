@@ -299,12 +299,12 @@ export class Cli {
             throw error;
           } else {
             console.error(new Logger().serializeError(error.message));
-            process.exit(0);
           }
         } else {
           throw error;
         }
       }
+      process.exit(1);
     }
   }
 }
