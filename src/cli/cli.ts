@@ -5,10 +5,7 @@ import { getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';
 import { generate } from '../generator/generator/generate';
 import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
-import {
-  DEFAULT_LOG_LEVEL,
-  matchLogLevel,
-} from '../generator/logger/log-level';
+import { DEFAULT_LOG_LEVEL } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import { DateParser } from '../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
@@ -284,25 +281,9 @@ export class Cli {
   }
 
   async run(options?: { argv?: string[]; config?: Config }) {
-    try {
-      const generateOptions = this.parseOptions(options?.argv ?? [], {
-        config: options?.config,
-      });
-      return await this.generate(generateOptions);
-    } catch (error) {
-      if (matchLogLevel({ actual: this.logLevel, expected: 'error' })) {
-        if (error instanceof Error) {
-          if (matchLogLevel({ actual: this.logLevel, expected: 'debug' })) {
-            console.error();
-            throw error;
-          }
-
-          new Logger().error(error.message);
-          process.exit(1);
-        }
-
-        throw error;
-      }
-    }
+    const generateOptions = this.parseOptions(options?.argv ?? [], {
+      config: options?.config,
+    });
+    return await this.generate(generateOptions);
   }
 }

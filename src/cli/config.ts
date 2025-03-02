@@ -20,7 +20,12 @@ import {
   RuntimeEnumsStyle,
   UnionExpressionNode,
 } from '../generator';
-import { DatabaseMetadata, DateParser, NumericParser } from '../introspector';
+import {
+  DatabaseMetadata,
+  DateParser,
+  IntrospectorDialect,
+  NumericParser,
+} from '../introspector';
 
 export type Config = {
   camelCase?: boolean;
@@ -72,6 +77,10 @@ const expressionNodeSchema = z.union([
   z.string(),
 ]);
 
+const overridesSchema = z
+  .object({ columns: z.record(z.string(), expressionNodeSchema).optional() })
+  .optional();
+
 export const configSchema = z.object({
   camelCase: z.boolean().optional(),
   dateParser: z.nativeEnum(DateParser).optional(),
@@ -85,9 +94,7 @@ export const configSchema = z.object({
   logLevel: z.enum(LOG_LEVELS).optional(),
   numericParser: z.nativeEnum(NumericParser).optional(),
   outFile: z.string().nullable().optional(),
-  overrides: z
-    .object({ columns: z.record(z.string(), expressionNodeSchema).optional() })
-    .optional(),
+  overrides: overridesSchema.optional(),
   partitions: z.boolean().optional(),
   print: z.boolean().optional(),
   runtimeEnums: z
@@ -96,7 +103,17 @@ export const configSchema = z.object({
   serializer: z
     .object({
       serializeFile: z.function(
-        z.tuple([z.instanceof(DatabaseMetadata)]),
+        z.tuple([
+          z.instanceof(DatabaseMetadata),
+          z.instanceof(IntrospectorDialect),
+          z
+            .object({
+              camelCase: z.boolean().optional(),
+              defaultSchemas: z.string().array().optional(),
+              overrides: overridesSchema.optional(),
+            })
+            .optional(),
+        ]),
         z.string(),
       ),
     })

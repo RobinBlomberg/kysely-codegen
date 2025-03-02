@@ -1,6 +1,6 @@
 import { deepStrictEqual } from 'assert';
 import type { Config } from 'cosmiconfig';
-import { execa } from 'execa';
+import { execa, ExecaError } from 'execa';
 import fs from 'fs/promises';
 import { Kysely, PostgresDialect, sql } from 'kysely';
 import { join } from 'path';
@@ -24,7 +24,7 @@ const OUTPUT = dedent`
   import { ColumnType } from "kysely";
 
   export enum Status {
-    Confirmed = "INVALID",
+    Confirmed = "CONFIRMED",
     Unconfirmed = "UNCONFIRMED",
   }
 
@@ -189,11 +189,7 @@ describe(Cli.name, () => {
   it('should be able to run the CLI successfully using a config file', async () => {
     const db = await up();
     await fs.writeFile(OUTPUT_PATH, OUTPUT);
-
-    expect(async () => {
-      await execa`node ${BINARY_PATH} --config-file ./src/cli/test/config.cjs --out-file ${OUTPUT_PATH} --verify`;
-    }).not.toThrow();
-
+    await execa`node ${BINARY_PATH} --config-file ./src/cli/test/config.cjs --out-file ${OUTPUT_PATH} --verify`;
     await down(db);
   });
 
@@ -201,12 +197,23 @@ describe(Cli.name, () => {
     const db = await up();
     const incorrectOutput = OUTPUT.replace('"CONFIRMED"', '"INVALID"');
     await fs.writeFile(OUTPUT_PATH, incorrectOutput);
+    let error: ExecaError | undefined;
 
-    expect(async () => {
+    try {
       await execa`node ${BINARY_PATH} --config-file ./src/cli/test/config.cjs --out-file ${OUTPUT_PATH} --verify`;
-    }).toThrow();
+    } catch (caughtError) {
+      if (caughtError instanceof ExecaError) {
+        error = caughtError;
+      }
+    }
+
+    expect(error?.exitCode).toBe(1);
+    expect(error?.stderr).toContain(
+      "Generated types are not up-to-date! Use '--log-level=error' option to view the diff.",
+    );
 
     await down(db);
+    await fs.writeFile(OUTPUT_PATH, OUTPUT);
   });
 
   it('should parse options correctly', () => {
