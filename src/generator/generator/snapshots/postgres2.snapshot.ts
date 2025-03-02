@@ -46,12 +46,17 @@ export type Numeric = ColumnType<number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface Enum {
+  name: string;
+}
+
 export interface FooBar {
   array: string[] | null;
   childDomain: number | null;
   date: string | null;
   defaultedNullablePosInt: Generated<number | null>;
   defaultedRequiredPosInt: Generated<number>;
+  enum: string;
   /**
    * This is a comment on a column.
    *
@@ -79,6 +84,7 @@ export interface PartitionedTable {
 }
 
 export interface DB {
+  enum: Enum;
   fooBar: FooBar;
   partitionedTable: PartitionedTable;
 }

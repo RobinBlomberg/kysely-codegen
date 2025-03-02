@@ -12,18 +12,18 @@ import { DatabaseMetadata } from '../../metadata/database-metadata';
 import type { TableMetadata } from '../../metadata/table-metadata';
 import type { PostgresDB } from './postgres-db';
 
-type PostgresDomainInspector = {
+export type PostgresDomainInspector = {
   rootType: string;
   typeName: string;
   typeSchema: string;
 };
 
-type TableReference = {
+export type TableReference = {
   schema?: string;
   name: string;
 };
 
-type PostgresIntrospectorOptions = {
+export type PostgresIntrospectorOptions = {
   defaultSchemas?: string[];
   domains?: boolean;
   partitions?: boolean;
@@ -45,7 +45,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     };
   }
 
-  #createDatabaseMetadata({
+  createDatabaseMetadata({
     domains,
     enums,
     partitions,
@@ -59,7 +59,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     const tables = rawTables
       .map((table): TableMetadata => {
         const columns = table.columns.map((column): ColumnMetadata => {
-          const dataType = this.#getRootType(column, domains);
+          const dataType = this.getRootType(column, domains);
           const enumValues = enums.get(
             `${column.dataTypeSchema ?? this.options.defaultSchemas}.${dataType}`,
           );
@@ -99,7 +99,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     return new DatabaseMetadata({ enums, tables });
   }
 
-  #getRootType(
+  getRootType(
     column: KyselyColumnMetaData,
     domains: PostgresDomainInspector[],
   ) {
@@ -112,7 +112,19 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     return foundDomain?.rootType ?? column.dataType;
   }
 
-  async #introspectDomains(db: Kysely<PostgresDB>) {
+  async introspect(options: IntrospectOptions<PostgresDB>) {
+    const tables = await this.getTables(options);
+
+    const [domains, enums, partitions] = await Promise.all([
+      this.introspectDomains(options.db),
+      this.introspectEnums(options.db),
+      this.introspectPartitions(options.db),
+    ]);
+
+    return this.createDatabaseMetadata({ enums, domains, partitions, tables });
+  }
+
+  async introspectDomains(db: Kysely<PostgresDB>) {
     if (!this.options.domains) {
       return [];
     }
@@ -144,7 +156,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     return result.rows;
   }
 
-  async #introspectEnums(db: Kysely<PostgresDB>) {
+  async introspectEnums(db: Kysely<PostgresDB>) {
     const enums = new EnumCollection();
 
     const rows = await db
@@ -170,7 +182,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     return enums;
   }
 
-  async #introspectPartitions(db: Kysely<PostgresDB>) {
+  async introspectPartitions(db: Kysely<PostgresDB>) {
     const result = await sql<TableReference>`
       select pg_namespace.nspname as schema, pg_class.relname as name
       from pg_inherits
@@ -179,22 +191,5 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     `.execute(db);
 
     return result.rows;
-  }
-
-  async introspect(options: IntrospectOptions<PostgresDB>) {
-    const tables = await this.getTables(options);
-
-    const [domains, enums, partitions] = await Promise.all([
-      this.#introspectDomains(options.db),
-      this.#introspectEnums(options.db),
-      this.#introspectPartitions(options.db),
-    ]);
-
-    return this.#createDatabaseMetadata({
-      enums,
-      domains,
-      partitions,
-      tables,
-    });
   }
 }

@@ -8,8 +8,8 @@ export type DatabaseMetadataOptions = {
 };
 
 export class DatabaseMetadata {
-  readonly enums: EnumCollection;
-  readonly tables: TableMetadata[];
+  enums: EnumCollection;
+  tables: TableMetadata[];
 
   constructor({ enums, tables }: DatabaseMetadataOptions) {
     this.enums = enums ?? new EnumCollection();

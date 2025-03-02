@@ -153,6 +153,10 @@ describe(Cli.name, () => {
           bacchus_id: int4
         }
 
+        table enum {
+          name: text
+        }
+
         table foo_bar {
           false: bool
           true: bool
@@ -174,7 +178,7 @@ describe(Cli.name, () => {
           json_typed: json
           numeric1: numeric
           numeric2: numeric
-          user_name: varchar
+          enum: text
         }
 
         table partitioned_table {

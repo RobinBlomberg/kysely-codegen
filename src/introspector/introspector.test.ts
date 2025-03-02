@@ -37,6 +37,7 @@ const TESTS: Test[] = [
     }),
     inputValues: {
       date: '2024-10-14',
+      enum: 'foo',
       false: false,
       id: 1,
       interval1: parsePostgresInterval('1 day'),
@@ -48,6 +49,7 @@ const TESTS: Test[] = [
     },
     outputValues: {
       date: '2024-10-14',
+      enum: 'foo',
       false: false,
       id: 1,
       interval1: { days: 1 },
@@ -99,251 +101,265 @@ const testValues = async (
 };
 
 describe(Introspector.name, () => {
-  describe('should return the correct metadata', () => {
+  it('should return the correct metadata for each dialect', async () => {
     for (const {
       connectionString,
       dialect,
       inputValues,
       outputValues,
     } of TESTS) {
-      test(dialect.constructor.name, async () => {
-        const db = await migrate(dialect, connectionString);
-        await testValues(db, inputValues, outputValues);
-        const metadata = await dialect.introspector.introspect({ db });
+      const db = await migrate(dialect, connectionString);
+      await testValues(db, inputValues, outputValues);
+      const metadata = await dialect.introspector.introspect({ db });
 
-        if (dialect instanceof MysqlIntrospectorDialect) {
-          deepStrictEqual(
-            metadata,
-            new DatabaseMetadata({
-              tables: [
-                new TableMetadata({
-                  columns: [
-                    new ColumnMetadata({
-                      dataType: 'tinyint',
-                      name: 'false',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'tinyint',
-                      name: 'true',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'text',
-                      isNullable: true,
-                      name: 'overridden',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'bigint',
-                      isAutoIncrementing: true,
-                      name: 'id',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'enum',
-                      enumValues: ['CONFIRMED', 'UNCONFIRMED'],
-                      isNullable: true,
-                      name: 'user_status',
-                    }),
-                  ],
-                  name: 'foo_bar',
-                  schema: 'database',
-                }),
-              ],
-            }),
-          );
-        } else if (dialect instanceof PostgresIntrospectorDialect) {
-          deepStrictEqual(
-            metadata,
-            new DatabaseMetadata({
-              enums: new EnumCollection({
-                'public.status': ['CONFIRMED', 'UNCONFIRMED'],
-                'test.status': ['ABC_DEF', 'GHI_JKL'],
+      if (dialect instanceof MysqlIntrospectorDialect) {
+        deepStrictEqual(
+          metadata,
+          new DatabaseMetadata({
+            tables: [
+              new TableMetadata({
+                columns: [
+                  new ColumnMetadata({
+                    dataType: 'tinyint',
+                    name: 'false',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'tinyint',
+                    name: 'true',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'text',
+                    isNullable: true,
+                    name: 'overridden',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'bigint',
+                    isAutoIncrementing: true,
+                    name: 'id',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'enum',
+                    enumValues: ['CONFIRMED', 'UNCONFIRMED'],
+                    isNullable: true,
+                    name: 'user_status',
+                  }),
+                ],
+                name: 'foo_bar',
+                schema: 'database',
               }),
-              tables: [
-                new TableMetadata({
-                  columns: [
-                    new ColumnMetadata({
-                      comment:
-                        "This is a comment on a column.\r\n\r\nIt's nice, isn't it?",
-                      dataType: 'bool',
-                      dataTypeSchema: 'pg_catalog',
-                      name: 'false',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'bool',
-                      dataTypeSchema: 'pg_catalog',
-                      name: 'true',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'text',
-                      dataTypeSchema: 'pg_catalog',
-                      isNullable: true,
-                      name: 'overridden',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'int4',
-                      dataTypeSchema: 'pg_catalog',
-                      hasDefaultValue: true,
-                      isAutoIncrementing: true,
-                      name: 'id',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'date',
-                      dataTypeSchema: 'pg_catalog',
-                      isNullable: true,
-                      name: 'date',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'status',
-                      dataTypeSchema: 'public',
-                      enumValues: ['CONFIRMED', 'UNCONFIRMED'],
-                      isNullable: true,
-                      name: 'user_status',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'status',
-                      dataTypeSchema: 'test',
-                      enumValues: ['ABC_DEF', 'GHI_JKL'],
-                      isNullable: true,
-                      name: 'user_status_2',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'text',
-                      dataTypeSchema: 'pg_catalog',
-                      isArray: true,
-                      isNullable: true,
-                      name: 'array',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'int4',
-                      dataTypeSchema: 'public',
-                      isNullable: true,
-                      name: 'nullable_pos_int',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'int4',
-                      dataTypeSchema: 'public',
-                      hasDefaultValue: true,
-                      isNullable: true,
-                      name: 'defaulted_nullable_pos_int',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'int4',
-                      dataTypeSchema: 'public',
-                      hasDefaultValue: true,
-                      name: 'defaulted_required_pos_int',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'int4',
-                      dataTypeSchema: 'public',
-                      isNullable: true,
-                      name: 'child_domain',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'bool',
-                      dataTypeSchema: 'test',
-                      isNullable: true,
-                      name: 'test_domain_is_bool',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'timestamptz',
-                      dataTypeSchema: 'pg_catalog',
-                      isArray: true,
-                      isNullable: true,
-                      name: 'timestamps',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'interval',
-                      dataTypeSchema: 'pg_catalog',
-                      isNullable: true,
-                      name: 'interval1',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'interval',
-                      dataTypeSchema: 'pg_catalog',
-                      isNullable: true,
-                      name: 'interval2',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'json',
-                      dataTypeSchema: 'pg_catalog',
-                      isNullable: true,
-                      name: 'json',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'json',
-                      dataTypeSchema: 'pg_catalog',
-                      isNullable: true,
-                      name: 'json_typed',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'numeric',
-                      dataTypeSchema: 'pg_catalog',
-                      isNullable: true,
-                      name: 'numeric1',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'numeric',
-                      dataTypeSchema: 'pg_catalog',
-                      isNullable: true,
-                      name: 'numeric2',
-                    }),
-                  ],
-                  name: 'foo_bar',
-                  schema: 'public',
-                }),
-                new TableMetadata({
-                  columns: [
-                    new ColumnMetadata({
-                      dataType: 'int4',
-                      dataTypeSchema: 'pg_catalog',
-                      hasDefaultValue: true,
-                      isAutoIncrementing: true,
-                      name: 'id',
-                    }),
-                  ],
-                  name: 'partitioned_table',
-                  schema: 'public',
-                }),
-              ],
+            ],
+          }),
+        );
+      } else if (dialect instanceof PostgresIntrospectorDialect) {
+        deepStrictEqual(
+          metadata,
+          new DatabaseMetadata({
+            enums: new EnumCollection({
+              'public.status': ['CONFIRMED', 'UNCONFIRMED'],
+              'test.status': ['ABC_DEF', 'GHI_JKL'],
             }),
-          );
-        } else if (dialect instanceof SqliteIntrospectorDialect) {
-          deepStrictEqual(
-            metadata,
-            new DatabaseMetadata({
-              tables: [
-                new TableMetadata({
-                  columns: [
-                    new ColumnMetadata({
-                      dataType: 'boolean',
-                      name: 'false',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'boolean',
-                      name: 'true',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'TEXT',
-                      isNullable: true,
-                      name: 'overridden',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'INTEGER',
-                      isAutoIncrementing: true,
-                      name: 'id',
-                    }),
-                    new ColumnMetadata({
-                      dataType: 'TEXT',
-                      isNullable: true,
-                      name: 'user_status',
-                    }),
-                  ],
-                  name: 'foo_bar',
-                }),
-              ],
-            }),
-          );
-        }
-      });
+            tables: [
+              new TableMetadata({
+                columns: [
+                  new ColumnMetadata({
+                    dataType: 'text',
+                    dataTypeSchema: 'pg_catalog',
+                    name: 'name',
+                  }),
+                ],
+                name: 'enum',
+                schema: 'public',
+              }),
+              new TableMetadata({
+                columns: [
+                  new ColumnMetadata({
+                    comment:
+                      "This is a comment on a column.\r\n\r\nIt's nice, isn't it?",
+                    dataType: 'bool',
+                    dataTypeSchema: 'pg_catalog',
+                    name: 'false',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'bool',
+                    dataTypeSchema: 'pg_catalog',
+                    name: 'true',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'text',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'overridden',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'int4',
+                    dataTypeSchema: 'pg_catalog',
+                    hasDefaultValue: true,
+                    isAutoIncrementing: true,
+                    name: 'id',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'date',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'date',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'status',
+                    dataTypeSchema: 'public',
+                    enumValues: ['CONFIRMED', 'UNCONFIRMED'],
+                    isNullable: true,
+                    name: 'user_status',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'status',
+                    dataTypeSchema: 'test',
+                    enumValues: ['ABC_DEF', 'GHI_JKL'],
+                    isNullable: true,
+                    name: 'user_status_2',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'text',
+                    dataTypeSchema: 'pg_catalog',
+                    isArray: true,
+                    isNullable: true,
+                    name: 'array',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'int4',
+                    dataTypeSchema: 'public',
+                    isNullable: true,
+                    name: 'nullable_pos_int',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'int4',
+                    dataTypeSchema: 'public',
+                    hasDefaultValue: true,
+                    isNullable: true,
+                    name: 'defaulted_nullable_pos_int',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'int4',
+                    dataTypeSchema: 'public',
+                    hasDefaultValue: true,
+                    name: 'defaulted_required_pos_int',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'int4',
+                    dataTypeSchema: 'public',
+                    isNullable: true,
+                    name: 'child_domain',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'bool',
+                    dataTypeSchema: 'test',
+                    isNullable: true,
+                    name: 'test_domain_is_bool',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'timestamptz',
+                    dataTypeSchema: 'pg_catalog',
+                    isArray: true,
+                    isNullable: true,
+                    name: 'timestamps',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'interval',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'interval1',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'interval',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'interval2',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'json',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'json',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'json',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'json_typed',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'numeric',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'numeric1',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'numeric',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'numeric2',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'text',
+                    dataTypeSchema: 'pg_catalog',
+                    name: 'enum',
+                  }),
+                ],
+                name: 'foo_bar',
+                schema: 'public',
+              }),
+              new TableMetadata({
+                columns: [
+                  new ColumnMetadata({
+                    dataType: 'int4',
+                    dataTypeSchema: 'pg_catalog',
+                    hasDefaultValue: true,
+                    isAutoIncrementing: true,
+                    name: 'id',
+                  }),
+                ],
+                name: 'partitioned_table',
+                schema: 'public',
+              }),
+            ],
+          }),
+        );
+      } else if (dialect instanceof SqliteIntrospectorDialect) {
+        deepStrictEqual(
+          metadata,
+          new DatabaseMetadata({
+            tables: [
+              new TableMetadata({
+                columns: [
+                  new ColumnMetadata({
+                    dataType: 'boolean',
+                    name: 'false',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'boolean',
+                    name: 'true',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'TEXT',
+                    isNullable: true,
+                    name: 'overridden',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'INTEGER',
+                    isAutoIncrementing: true,
+                    name: 'id',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'TEXT',
+                    isNullable: true,
+                    name: 'user_status',
+                  }),
+                ],
+                name: 'foo_bar',
+              }),
+            ],
+          }),
+        );
+      }
     }
   });
 });
