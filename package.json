@@ -141,6 +141,12 @@
           "prefer": "type-imports"
         }
       ],
+      "unicorn/no-typeof-undefined": [
+        1,
+        {
+          "checkGlobalVariables": false
+        }
+      ],
       "unicorn/prefer-node-protocol": 0
     }
   },
