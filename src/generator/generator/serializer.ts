@@ -40,14 +40,12 @@ type TypeScriptSerializerOptions = {
   typeOnlyImports?: boolean;
 };
 
-export class Serializer {
-  serializeFile(
+export abstract class Serializer {
+  abstract serializeFile(
     metadata: DatabaseMetadata,
     dialect: GeneratorDialect,
     options?: SerializeFileOptions,
-  ): string {
-    throw new Error("Serializer must implement method 'serializeFile'.");
-  }
+  ): string;
 }
 
 export class TypeScriptSerializer implements Serializer {
