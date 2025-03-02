@@ -20,6 +20,7 @@ import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { SqliteDialect } from '../dialects/sqlite/sqlite-dialect';
 import { Logger } from '../logger/logger';
+import { toKyselyCamelCase } from '../utils/case-converter';
 import type { GenerateOptions, SerializeFromMetadataOptions } from './generate';
 import { generate, serializeFromMetadata } from './generate';
 import { RuntimeEnumsStyle } from './runtime-enums-style';
@@ -139,10 +140,7 @@ describe(generate.name, () => {
 
 describe(serializeFromMetadata.name, () => {
   const serialize = (
-    options: Omit<
-      SerializeFromMetadataOptions,
-      'dialect' | 'metadata' | 'serializer'
-    > & {
+    options: Omit<SerializeFromMetadataOptions, 'dialect' | 'metadata'> & {
       dialect?: GeneratorDialect;
       metadata: DatabaseMetadataOptions;
     },
@@ -334,6 +332,61 @@ describe(serializeFromMetadata.name, () => {
           "hidden.posts": HiddenPosts;
           users: Users;
         }
+      `,
+    );
+  });
+
+  test('serializer', () => {
+    expect(
+      serialize({
+        metadata: {
+          tables: [
+            {
+              columns: [{ dataType: 'int4', name: 'baz_qux' }],
+              name: 'users',
+              schema: 'public',
+            },
+          ],
+        },
+        serializer: {
+          serializeFile: (metadata) => {
+            let output = 'import { z } from "zod";\n\n';
+
+            for (const table of metadata.tables) {
+              output += 'export const ';
+              output += toKyselyCamelCase(table.name);
+              output += 'Schema = z.object({\n';
+
+              for (const column of table.columns) {
+                output += '  ';
+                output += column.name;
+                output += ': ';
+
+                switch (column.dataType) {
+                  case 'int4':
+                    output += 'z.number().int()';
+                    break;
+                  default:
+                    output += 'z.unknown()';
+                }
+
+                output += ',\n';
+              }
+
+              output += '});\n\n';
+            }
+
+            return output;
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import { z } from "zod";
+
+        export const usersSchema = z.object({
+          baz_qux: z.number().int(),
+        });
       `,
     );
   });
