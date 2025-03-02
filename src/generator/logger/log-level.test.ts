@@ -11,12 +11,28 @@ test(getLogLevelNumber.name, () => {
 });
 
 test(matchLogLevel.name, () => {
-  expect(matchLogLevel('error').isSupersetOf('error')).toStrictEqual(true);
-  expect(matchLogLevel('error').isSupersetOf('warn')).toStrictEqual(false);
-  expect(matchLogLevel('warn').isSupersetOf('error')).toStrictEqual(true);
-  expect(matchLogLevel('warn').isSupersetOf('warn')).toStrictEqual(true);
-  expect(matchLogLevel('warn').isSupersetOf('info')).toStrictEqual(false);
-  expect(matchLogLevel('debug').isSupersetOf('error')).toStrictEqual(true);
-  expect(matchLogLevel('debug').isSupersetOf('info')).toStrictEqual(true);
-  expect(matchLogLevel('debug').isSupersetOf('debug')).toStrictEqual(true);
+  expect(matchLogLevel({ actual: 'error', expected: 'error' })).toStrictEqual(
+    true,
+  );
+  expect(matchLogLevel({ actual: 'error', expected: 'warn' })).toStrictEqual(
+    false,
+  );
+  expect(matchLogLevel({ actual: 'warn', expected: 'error' })).toStrictEqual(
+    true,
+  );
+  expect(matchLogLevel({ actual: 'warn', expected: 'warn' })).toStrictEqual(
+    true,
+  );
+  expect(matchLogLevel({ actual: 'warn', expected: 'info' })).toStrictEqual(
+    false,
+  );
+  expect(matchLogLevel({ actual: 'debug', expected: 'error' })).toStrictEqual(
+    true,
+  );
+  expect(matchLogLevel({ actual: 'debug', expected: 'info' })).toStrictEqual(
+    true,
+  );
+  expect(matchLogLevel({ actual: 'debug', expected: 'debug' })).toStrictEqual(
+    true,
+  );
 });

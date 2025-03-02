@@ -8,12 +8,12 @@ export const getLogLevelNumber = (logLevel: LogLevel) => {
   return ['silent', 'error', 'warn', 'info', 'debug'].indexOf(logLevel);
 };
 
-export const matchLogLevel = (actualLogLevel: LogLevel) => {
-  return {
-    isSupersetOf: (logLevelToMatch: LogLevel) => {
-      return (
-        getLogLevelNumber(actualLogLevel) >= getLogLevelNumber(logLevelToMatch)
-      );
-    },
-  };
+export const matchLogLevel = ({
+  actual,
+  expected,
+}: {
+  actual: LogLevel;
+  expected: LogLevel;
+}) => {
+  return getLogLevelNumber(actual) >= getLogLevelNumber(expected);
 };

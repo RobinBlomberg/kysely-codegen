@@ -28,7 +28,7 @@ export class Logger {
   }
 
   #shouldLog(messageLogLevel: LogLevel) {
-    return matchLogLevel(this.logLevel).isSupersetOf(messageLogLevel);
+    return matchLogLevel({ actual: this.logLevel, expected: messageLogLevel });
   }
 
   debug(...values: unknown[]) {
