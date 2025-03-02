@@ -146,6 +146,8 @@
   },
   "knip": {
     "ignore": [
+      "src/cli/test/config-with-custom-serializer.ts",
+      "src/cli/test/config.cjs",
       "src/db.ts",
       "**/*.snapshot.ts"
     ],
