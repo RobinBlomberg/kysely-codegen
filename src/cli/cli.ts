@@ -214,13 +214,13 @@ export class Cli {
     const configResult = options?.config
       ? { config: options.config, filepath: null }
       : this.#loadConfig({ configFile });
-
     const configParseResult = configResult
       ? configSchema.safeParse(configResult.config)
       : null;
+    const configError = configParseResult?.error?.errors[0];
 
-    if (configParseResult?.error) {
-      throw new ConfigError(configParseResult.error.errors[0]!);
+    if (configError) {
+      throw new ConfigError(configError);
     }
 
     const config = configParseResult?.data;
@@ -290,18 +290,18 @@ export class Cli {
       });
       return await this.generate(generateOptions);
     } catch (error) {
-      if (matchLogLevel(this.logLevel).isSupersetOf('error')) {
+      if (matchLogLevel({ actual: this.logLevel, expected: 'error' })) {
         if (error instanceof Error) {
-          if (matchLogLevel(this.logLevel).isSupersetOf('debug')) {
+          if (matchLogLevel({ actual: this.logLevel, expected: 'debug' })) {
             console.error();
             throw error;
-          } else {
-            new Logger().error(error.message);
-            process.exit(1);
           }
-        } else {
-          throw error;
+
+          new Logger().error(error.message);
+          process.exit(1);
         }
+
+        throw error;
       }
     }
   }
