@@ -12,7 +12,6 @@ import type { InferClauseNode } from '../ast/infer-clause-node';
 import type { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
 import type { LiteralNode } from '../ast/literal-node';
 import type { MappedTypeNode } from '../ast/mapped-type-node';
-import { NodeType } from '../ast/node-type';
 import type { ObjectExpressionNode } from '../ast/object-expression-node';
 import type { PropertyNode } from '../ast/property-node';
 import type { RawExpressionNode } from '../ast/raw-expression-node';
@@ -67,13 +66,13 @@ export class TypeScriptSerializer implements Serializer {
 
   serializeAliasDeclaration(node: AliasDeclarationNode) {
     const expression =
-      node.body.type === NodeType.TEMPLATE ? node.body.expression : node.body;
+      node.body.type === 'Template' ? node.body.expression : node.body;
     let data = '';
 
     data += 'type ';
     data += node.id.name;
 
-    if (node.body.type === NodeType.TEMPLATE) {
+    if (node.body.type === 'Template') {
       data += '<';
 
       for (let i = 0; i < node.body.params.length; i++) {
@@ -96,9 +95,8 @@ export class TypeScriptSerializer implements Serializer {
 
   serializeArrayExpression(node: ArrayExpressionNode) {
     const shouldParenthesize =
-      node.values.type === NodeType.INFER_CLAUSE ||
-      (node.values.type === NodeType.UNION_EXPRESSION &&
-        node.values.args.length >= 2);
+      node.values.type === 'InferClause' ||
+      (node.values.type === 'UnionExpression' && node.values.args.length >= 2);
     let data = '';
 
     if (shouldParenthesize) {
@@ -122,13 +120,13 @@ export class TypeScriptSerializer implements Serializer {
     data += 'export ';
 
     switch (node.argument.type) {
-      case NodeType.ALIAS_DECLARATION:
+      case 'AliasDeclaration':
         data += this.serializeAliasDeclaration(node.argument);
         break;
-      case NodeType.INTERFACE_DECLARATION:
+      case 'InterfaceDeclaration':
         data += this.serializeInterfaceDeclaration(node.argument);
         break;
-      case NodeType.RUNTIME_ENUM_DECLARATION:
+      case 'RuntimeEnumDeclaration':
         data += this.serializeRuntimeEnum(node.argument);
         break;
     }
@@ -138,25 +136,25 @@ export class TypeScriptSerializer implements Serializer {
 
   serializeExpression(node: ExpressionNode) {
     switch (node.type) {
-      case NodeType.ARRAY_EXPRESSION:
+      case 'ArrayExpression':
         return this.serializeArrayExpression(node);
-      case NodeType.EXTENDS_CLAUSE:
+      case 'ExtendsClause':
         return this.serializeExtendsClause(node);
-      case NodeType.GENERIC_EXPRESSION:
+      case 'GenericExpression':
         return this.serializeGenericExpression(node);
-      case NodeType.IDENTIFIER:
+      case 'Identifier':
         return this.serializeIdentifier(node);
-      case NodeType.INFER_CLAUSE:
+      case 'InferClause':
         return this.serializeInferClause(node);
-      case NodeType.LITERAL:
+      case 'Literal':
         return this.serializeLiteral(node);
-      case NodeType.MAPPED_TYPE:
+      case 'MappedType':
         return this.serializeMappedType(node);
-      case NodeType.OBJECT_EXPRESSION:
+      case 'ObjectExpression':
         return this.serializeObjectExpression(node);
-      case NodeType.RAW_EXPRESSION:
+      case 'RawExpression':
         return this.serializeRawExpression(node);
-      case NodeType.UNION_EXPRESSION:
+      case 'UnionExpression':
         return this.serializeUnionExpression(node);
     }
   }
@@ -394,16 +392,16 @@ export class TypeScriptSerializer implements Serializer {
       if (i >= 1) {
         data += '\n';
 
-        if (node.type !== NodeType.IMPORT_STATEMENT) {
+        if (node.type !== 'ImportStatement') {
           data += '\n';
         }
       }
 
       switch (node.type) {
-        case NodeType.EXPORT_STATEMENT:
+        case 'ExportStatement':
           data += this.serializeExportStatement(node);
           break;
-        case NodeType.IMPORT_STATEMENT:
+        case 'ImportStatement':
           data += this.serializeImportStatement(node);
           break;
       }
@@ -421,7 +419,7 @@ export class TypeScriptSerializer implements Serializer {
     let i = 0;
 
     const sortedArgs = [...node.args].sort((a, b) => {
-      if (a.type !== NodeType.IDENTIFIER || b.type !== NodeType.IDENTIFIER) {
+      if (a.type !== 'Identifier' || b.type !== 'Identifier') {
         return 0;
       }
       if (a.name === undefined || a.name === 'undefined') return 1;

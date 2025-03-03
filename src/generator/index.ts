@@ -16,7 +16,6 @@ export * from './ast/json-column-type-node';
 export * from './ast/literal-node';
 export * from './ast/mapped-type-node';
 export * from './ast/module-reference-node';
-export * from './ast/node-type';
 export * from './ast/object-expression-node';
 export * from './ast/property-node';
 export * from './ast/raw-expression-node';

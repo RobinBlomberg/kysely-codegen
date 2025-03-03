@@ -1,9 +1,7 @@
-import { NodeType } from './node-type';
-
 export class IdentifierNode {
   readonly isTableIdentifier: boolean;
   name: string;
-  readonly type = NodeType.IDENTIFIER;
+  readonly type = 'Identifier';
 
   constructor(name: string, options?: { isTableIdentifier?: boolean }) {
     this.isTableIdentifier = !!options?.isTableIdentifier;

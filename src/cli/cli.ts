@@ -7,8 +7,8 @@ import { ConnectionStringParser } from '../generator/connection-string-parser';
 import { generate } from '../generator/generator/generate';
 import { DEFAULT_LOG_LEVEL } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
-import { DateParser } from '../introspector/dialects/postgres/date-parser';
-import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
+import type { DateParser } from '../introspector/dialects/postgres/date-parser';
+import type { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import type { Config, DialectName } from './config';
 import { configSchema, dialectNameSchema } from './config';
 import { ConfigError } from './config-error';
@@ -103,9 +103,8 @@ export class Cli {
     if (input === undefined) return undefined;
     switch (input) {
       case 'string':
-        return DateParser.STRING;
       case 'timestamp':
-        return DateParser.TIMESTAMP;
+        return input;
     }
   }
 
@@ -118,11 +117,9 @@ export class Cli {
     if (input === undefined) return undefined;
     switch (input) {
       case 'number':
-        return NumericParser.NUMBER;
       case 'number-or-string':
-        return NumericParser.NUMBER_OR_STRING;
       case 'string':
-        return NumericParser.STRING;
+        return input;
     }
   }
 

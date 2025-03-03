@@ -1,10 +1,9 @@
 import type { ExpressionNode } from './expression-node';
-import { NodeType } from './node-type';
 
 export class TemplateNode {
   readonly expression: ExpressionNode;
   readonly params: string[];
-  readonly type = NodeType.TEMPLATE;
+  readonly type = 'Template';
 
   constructor(params: string[], expression: ExpressionNode) {
     this.params = params;

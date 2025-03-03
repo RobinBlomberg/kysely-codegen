@@ -7,7 +7,6 @@ import { join } from 'path';
 import { Pool } from 'pg';
 import { dedent } from 'ts-dedent';
 import packageJson from '../../package.json';
-import { DateParser } from '../introspector/dialects/postgres/date-parser';
 import { Cli } from './cli';
 import { ConfigError } from './config-error';
 
@@ -230,8 +229,8 @@ describe(Cli.name, () => {
     };
 
     assert(['--camel-case'], { camelCase: true });
-    assert(['--date-parser=timestamp'], { dateParser: DateParser.TIMESTAMP });
-    assert(['--date-parser=string'], { dateParser: DateParser.STRING });
+    assert(['--date-parser=timestamp'], { dateParser: 'timestamp' });
+    assert(['--date-parser=string'], { dateParser: 'string' });
     assert(['--default-schema=foo'], { defaultSchemas: ['foo'] });
     assert(['--default-schema=foo', '--default-schema=bar'], {
       defaultSchemas: ['foo', 'bar'],

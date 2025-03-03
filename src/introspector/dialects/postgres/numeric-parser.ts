@@ -1,7 +1,3 @@
-export enum NumericParser {
-  NUMBER = 'number',
-  NUMBER_OR_STRING = 'number-or-string',
-  STRING = 'string',
-}
+export type NumericParser = 'number' | 'number-or-string' | 'string';
 
-export const DEFAULT_NUMERIC_PARSER = NumericParser.STRING;
+export const DEFAULT_NUMERIC_PARSER: NumericParser = 'string';

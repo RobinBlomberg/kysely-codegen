@@ -7,7 +7,7 @@ import {
   toKyselyPascalCase,
   toScreamingSnakeCase,
 } from '../utils/case-converter';
-import { IdentifierStyle } from './identifier-style';
+import type { IdentifierStyle } from './identifier-style';
 
 export type SymbolEntry = [id: string, symbol: SymbolNode];
 
@@ -16,22 +16,18 @@ type SymbolMap = Record<string, SymbolNode | undefined>;
 type SymbolNameMap = Record<string, string | undefined>;
 
 export type SymbolNode =
-  | { node: ExpressionNode | TemplateNode; type: SymbolType.DEFINITION }
-  | { node: ModuleReferenceNode; type: SymbolType.MODULE_REFERENCE }
-  | {
-      node: RuntimeEnumDeclarationNode;
-      type: SymbolType.RUNTIME_ENUM_DEFINITION;
-    }
-  | { node: LiteralNode<string>; type: SymbolType.RUNTIME_ENUM_MEMBER }
-  | { type: SymbolType.TABLE };
+  | { node: ExpressionNode | TemplateNode; type: 'Definition' }
+  | { node: ModuleReferenceNode; type: 'ModuleReference' }
+  | { node: RuntimeEnumDeclarationNode; type: 'RuntimeEnumDefinition' }
+  | { node: LiteralNode<string>; type: 'RuntimeEnumMember' }
+  | { type: 'Table' };
 
-export const enum SymbolType {
-  DEFINITION = 'Definition',
-  MODULE_REFERENCE = 'ModuleReference',
-  RUNTIME_ENUM_DEFINITION = 'RuntimeEnumDefinition',
-  RUNTIME_ENUM_MEMBER = 'RuntimeEnumMember',
-  TABLE = 'Table',
-}
+export type SymbolType =
+  | 'Definition'
+  | 'ModuleReference'
+  | 'RuntimeEnumDefinition'
+  | 'RuntimeEnumMember'
+  | 'Table';
 
 export class SymbolCollection {
   readonly identifierStyle: IdentifierStyle;
@@ -42,8 +38,7 @@ export class SymbolCollection {
     entries?: SymbolEntry[];
     identifierStyle?: IdentifierStyle;
   }) {
-    this.identifierStyle =
-      options?.identifierStyle ?? IdentifierStyle.KYSELY_PASCAL_CASE;
+    this.identifierStyle = options?.identifierStyle ?? 'kysely-pascal-case';
 
     const entries =
       options?.entries?.sort(([a], [b]) => a.localeCompare(b)) ?? [];
@@ -84,7 +79,7 @@ export class SymbolCollection {
 
     const symbolNames = new Set(Object.values(this.symbolNames));
     const caseConverter =
-      this.identifierStyle === IdentifierStyle.SCREAMING_SNAKE_CASE
+      this.identifierStyle === 'screaming-snake-case'
         ? toScreamingSnakeCase
         : toKyselyPascalCase;
     symbolName = caseConverter(id.replaceAll(/[^\w$]/g, '_'));

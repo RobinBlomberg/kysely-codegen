@@ -1,12 +1,10 @@
 import { deepStrictEqual } from 'assert';
 import { type Kysely } from 'kysely';
 import parsePostgresInterval from 'postgres-interval';
-import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import { migrate } from '../introspector/introspector.fixtures';
 import type { IntrospectorDialect } from './dialect';
 import { LibsqlIntrospectorDialect } from './dialects/libsql/libsql-dialect';
 import { MysqlIntrospectorDialect } from './dialects/mysql/mysql-dialect';
-import { DateParser } from './dialects/postgres/date-parser';
 import { PostgresIntrospectorDialect } from './dialects/postgres/postgres-dialect';
 import { SqliteIntrospectorDialect } from './dialects/sqlite/sqlite-dialect';
 import { EnumCollection } from './enum-collection';
@@ -32,8 +30,8 @@ const TESTS: Test[] = [
   {
     connectionString: 'postgres://user:password@localhost:5433/database',
     dialect: new PostgresIntrospectorDialect({
-      dateParser: DateParser.STRING,
-      numericParser: NumericParser.NUMBER_OR_STRING,
+      dateParser: 'string',
+      numericParser: 'number-or-string',
     }),
     inputValues: {
       date: '2024-10-14',

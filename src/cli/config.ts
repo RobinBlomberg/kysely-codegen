@@ -19,12 +19,8 @@ import {
   RawExpressionNode,
   UnionExpressionNode,
 } from '../generator';
-import {
-  DatabaseMetadata,
-  DateParser,
-  IntrospectorDialect,
-  NumericParser,
-} from '../introspector';
+import type { DateParser, NumericParser } from '../introspector';
+import { DatabaseMetadata, IntrospectorDialect } from '../introspector';
 
 export type Config = {
   camelCase?: boolean;
@@ -84,7 +80,9 @@ const overridesSchema = z
 
 export const configSchema = z.object({
   camelCase: z.boolean().optional(),
-  dateParser: z.nativeEnum(DateParser).optional(),
+  dateParser: z
+    .enum<DateParser, ['string', 'timestamp']>(['string', 'timestamp'])
+    .optional(),
   defaultSchemas: z.array(z.string()).optional(),
   dialect: dialectNameSchema.optional(),
   domains: z.boolean().optional(),
@@ -93,7 +91,12 @@ export const configSchema = z.object({
   includePattern: z.string().nullable().optional(),
   logger: z.instanceof(Logger).optional(),
   logLevel: z.enum(LOG_LEVELS).optional(),
-  numericParser: z.nativeEnum(NumericParser).optional(),
+  numericParser: z
+    .enum<
+      NumericParser,
+      ['number', 'number-or-string', 'string']
+    >(['number', 'number-or-string', 'string'])
+    .optional(),
   outFile: z.string().nullable().optional(),
   overrides: overridesSchema.optional(),
   partitions: z.boolean().optional(),

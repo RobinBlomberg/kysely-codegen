@@ -8,8 +8,6 @@ import type {
   IntrospectOptions,
 } from '../../introspector';
 import { DatabaseMetadata, PostgresIntrospector } from '../../introspector';
-import { DateParser } from '../../introspector/dialects/postgres/date-parser';
-import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import {
   addExtraColumn,
   migrate,
@@ -57,8 +55,8 @@ const TESTS: Test[] = [
   {
     connectionString: 'postgres://user:password@localhost:5433/database',
     dialect: new PostgresDialect({
-      dateParser: DateParser.STRING,
-      numericParser: NumericParser.NUMBER_OR_STRING,
+      dateParser: 'string',
+      numericParser: 'number-or-string',
     }),
     generateOptions: { runtimeEnums: 'screaming-snake-case' },
     name: 'postgres2',
@@ -360,8 +358,8 @@ describe(serializeFromMetadata.name, () => {
       expect(
         serialize({
           dialect: new PostgresDialect({
-            dateParser: DateParser.STRING,
-            numericParser: NumericParser.NUMBER,
+            dateParser: 'string',
+            numericParser: 'number',
           }),
           metadata: {
             tables: [

@@ -1,6 +1,6 @@
 import { deepStrictEqual } from 'assert';
-import { DateParser } from '../../introspector/dialects/postgres/date-parser';
-import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
+import type { DateParser } from '../../introspector/dialects/postgres/date-parser';
+import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import { EnumCollection } from '../../introspector/enum-collection';
 import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
 import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
@@ -263,7 +263,7 @@ describe(transform.name, () => {
 
   it('should be able to transform using an alternative Postgres date parser', () => {
     const nodes = transformWithDefaults({
-      dateParser: DateParser.STRING,
+      dateParser: 'string',
       tables: [
         new TableMetadata({
           columns: [
@@ -299,7 +299,7 @@ describe(transform.name, () => {
 
   it('should be able to transform using an alternative Postgres numeric parser', () => {
     const nodes = transformWithDefaults({
-      numericParser: NumericParser.NUMBER,
+      numericParser: 'number',
       tables: [
         new TableMetadata({
           columns: [
