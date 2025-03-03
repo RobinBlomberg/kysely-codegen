@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import type {
-  DialectName,
   LogLevel,
   Overrides,
+  RuntimeEnumsStyle,
   Serializer,
 } from '../generator';
 import {
@@ -17,7 +17,6 @@ import {
   MappedTypeNode,
   ObjectExpressionNode,
   RawExpressionNode,
-  RuntimeEnumsStyle,
   UnionExpressionNode,
 } from '../generator';
 import {
@@ -52,7 +51,9 @@ export type Config = {
   verify?: boolean;
 };
 
-export const dialectSchema = z.enum([
+export type DialectName = z.infer<typeof dialectNameSchema>;
+
+export const dialectNameSchema = z.enum([
   'bun-sqlite',
   'kysely-bun-sqlite',
   'libsql',
@@ -85,7 +86,7 @@ export const configSchema = z.object({
   camelCase: z.boolean().optional(),
   dateParser: z.nativeEnum(DateParser).optional(),
   defaultSchemas: z.array(z.string()).optional(),
-  dialect: dialectSchema.optional(),
+  dialect: dialectNameSchema.optional(),
   domains: z.boolean().optional(),
   envFile: z.string().optional(),
   excludePattern: z.string().nullable().optional(),
@@ -98,7 +99,13 @@ export const configSchema = z.object({
   partitions: z.boolean().optional(),
   print: z.boolean().optional(),
   runtimeEnums: z
-    .union([z.boolean(), z.nativeEnum(RuntimeEnumsStyle)])
+    .union([
+      z.boolean(),
+      z.enum<RuntimeEnumsStyle, ['pascal-case', 'screaming-snake-case']>([
+        'pascal-case',
+        'screaming-snake-case',
+      ]),
+    ])
     .optional(),
   serializer: z
     .object({

@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
+import type { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
 
 export const DEFAULT_OUT_FILE = join(
   process.cwd(),
@@ -9,8 +9,8 @@ export const DEFAULT_OUT_FILE = join(
   'db.d.ts',
 );
 
-export const DEFAULT_RUNTIME_ENUMS_STYLE =
-  RuntimeEnumsStyle.SCREAMING_SNAKE_CASE;
+export const DEFAULT_RUNTIME_ENUMS_STYLE: RuntimeEnumsStyle =
+  'screaming-snake-case';
 
 export const DEFAULT_URL = 'env(DATABASE_URL)';
 

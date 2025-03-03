@@ -22,7 +22,7 @@ import type { UnionExpressionNode } from '../ast/union-expression-node';
 import type { GeneratorDialect } from '../dialect';
 import { transform, type Overrides } from '../transformer/transformer';
 import { toPascalCase, toScreamingSnakeCase } from '../utils/case-converter';
-import { RuntimeEnumsStyle } from './runtime-enums-style';
+import type { RuntimeEnumsStyle } from './runtime-enums-style';
 import { createSingularizer } from './singularizer';
 
 const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
@@ -369,7 +369,7 @@ export class TypeScriptSerializer implements Serializer {
     for (const member of members) {
       data += '  ';
 
-      if (this.runtimeEnums === RuntimeEnumsStyle.PASCAL_CASE) {
+      if (this.runtimeEnums === 'pascal-case') {
         data += toPascalCase(member[0]);
       } else {
         data += toScreamingSnakeCase(member[0]);

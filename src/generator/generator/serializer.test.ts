@@ -23,7 +23,6 @@ import { UnionExpressionNode } from '../ast/union-expression-node';
 import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { transform } from '../transformer/transformer';
-import { RuntimeEnumsStyle } from './runtime-enums-style';
 import { TypeScriptSerializer } from './serializer';
 
 describe(TypeScriptSerializer.name, () => {
@@ -259,7 +258,7 @@ describe(TypeScriptSerializer.name, () => {
   describe(TypeScriptSerializer.prototype.serializeRuntimeEnum.name, () => {
     it('should serialize runtime enums properly in pascal case', () => {
       const enumSerializer = new TypeScriptSerializer({
-        runtimeEnums: RuntimeEnumsStyle.PASCAL_CASE,
+        runtimeEnums: 'pascal-case',
       });
 
       strictEqual(

@@ -1,16 +1,16 @@
 import { cosmiconfigSync } from 'cosmiconfig';
 import minimist from 'minimist';
 import { resolve } from 'path';
+import type { RuntimeEnumsStyle } from '../generator';
 import { getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';
 import { generate } from '../generator/generator/generate';
-import { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
 import { DEFAULT_LOG_LEVEL } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import { DateParser } from '../introspector/dialects/postgres/date-parser';
 import { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
-import type { Config } from './config';
-import { configSchema, dialectSchema } from './config';
+import type { Config, DialectName } from './config';
+import { configSchema, dialectNameSchema } from './config';
 import { ConfigError } from './config-error';
 import { DEFAULT_URL, VALID_DIALECTS } from './constants';
 import { FLAGS, serializeFlags } from './flags';
@@ -94,12 +94,12 @@ export class Cli {
       : explorer.search();
   }
 
-  #parseBoolean(input: any) {
+  #parseBoolean(input: any): boolean | undefined {
     if (input === undefined) return undefined;
     return !!input && input !== 'false';
   }
 
-  #parseDateParser(input: any) {
+  #parseDateParser(input: any): DateParser | undefined {
     if (input === undefined) return undefined;
     switch (input) {
       case 'string':
@@ -109,12 +109,12 @@ export class Cli {
     }
   }
 
-  #parseDialectName(input: any) {
-    const result = dialectSchema.safeParse(input);
+  #parseDialectName(input: any): DialectName | undefined {
+    const result = dialectNameSchema.safeParse(input);
     return result.success ? result.data : undefined;
   }
 
-  #parseNumericParser(input: any) {
+  #parseNumericParser(input: any): NumericParser | undefined {
     if (input === undefined) return undefined;
     switch (input) {
       case 'number':
@@ -126,24 +126,23 @@ export class Cli {
     }
   }
 
-  #parseRuntimeEnums(input: any) {
+  #parseRuntimeEnums(input: any): RuntimeEnumsStyle | boolean | undefined {
     if (input === undefined) return undefined;
     switch (input) {
       case 'pascal-case':
-        return RuntimeEnumsStyle.PASCAL_CASE;
       case 'screaming-snake-case':
-        return RuntimeEnumsStyle.SCREAMING_SNAKE_CASE;
+        return input;
       default:
         return this.#parseBoolean(input);
     }
   }
 
-  #parseString(input: any) {
+  #parseString(input: any): string | undefined {
     if (input === undefined) return undefined;
     return String(input);
   }
 
-  #parseStringArray(input: any) {
+  #parseStringArray(input: any): string[] | undefined {
     if (input === undefined) return undefined;
     if (!Array.isArray(input)) return [String(input)];
     return input.map(String);

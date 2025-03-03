@@ -28,7 +28,6 @@ import { Logger } from '../logger/logger';
 import { toKyselyCamelCase } from '../utils/case-converter';
 import type { GenerateOptions, SerializeFromMetadataOptions } from './generate';
 import { generate, serializeFromMetadata } from './generate';
-import { RuntimeEnumsStyle } from './runtime-enums-style';
 
 type Test = {
   connectionString: string;
@@ -61,7 +60,7 @@ const TESTS: Test[] = [
       dateParser: DateParser.STRING,
       numericParser: NumericParser.NUMBER_OR_STRING,
     }),
-    generateOptions: { runtimeEnums: RuntimeEnumsStyle.SCREAMING_SNAKE_CASE },
+    generateOptions: { runtimeEnums: 'screaming-snake-case' },
     name: 'postgres2',
   },
   {

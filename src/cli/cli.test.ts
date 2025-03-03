@@ -7,7 +7,6 @@ import { join } from 'path';
 import { Pool } from 'pg';
 import { dedent } from 'ts-dedent';
 import packageJson from '../../package.json';
-import { RuntimeEnumsStyle } from '../generator';
 import { DateParser } from '../introspector/dialects/postgres/date-parser';
 import { Cli } from './cli';
 import { ConfigError } from './config-error';
@@ -96,7 +95,7 @@ describe(Cli.name, () => {
         includePattern: 'cli.*',
         logLevel: 'silent',
         outFile: null,
-        runtimeEnums: RuntimeEnumsStyle.PASCAL_CASE,
+        runtimeEnums: 'pascal-case',
         singularize: { '/(bacch)(?:us|i)$/i': '$1us' },
         typeOnlyImports: false,
         url: 'postgres://user:password@localhost:5433/database',

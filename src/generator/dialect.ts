@@ -1,5 +1,4 @@
-import type { z } from 'zod';
-import type { dialectSchema } from '../cli/config';
+import type { DialectName } from '../cli/config';
 import { IntrospectorDialect } from '../introspector/dialect';
 import type { Adapter } from './adapter';
 import { KyselyBunSqliteDialect } from './dialects/kysely-bun-sqlite/kysely-bun-sqlite-dialect';
@@ -12,8 +11,6 @@ import {
 } from './dialects/postgres/postgres-dialect';
 import { SqliteDialect } from './dialects/sqlite/sqlite-dialect';
 import { WorkerBunSqliteDialect } from './dialects/worker-bun-sqlite/worker-bun-sqlite-dialect';
-
-export type DialectName = z.infer<typeof dialectSchema>;
 
 /**
  * A Dialect is the glue between the codegen and the specified database.

@@ -1,6 +1,6 @@
 import { config as loadEnv } from 'dotenv';
 import { expand as expandEnv } from 'dotenv-expand';
-import type { DialectName } from './dialect';
+import type { DialectName } from '../cli/config';
 import type { Logger } from './logger/logger';
 
 const CALL_STATEMENT_REGEXP = /^\s*([a-z]+)\s*\(\s*(.*)\s*\)\s*$/;

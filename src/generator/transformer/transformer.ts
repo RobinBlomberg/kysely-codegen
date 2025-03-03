@@ -22,7 +22,7 @@ import type { TemplateNode } from '../ast/template-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
 import type { GeneratorDialect } from '../dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
-import { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
+import type { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
 import { toKyselyCamelCase } from '../utils/case-converter';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { IdentifierStyle } from './identifier-style';
@@ -362,7 +362,7 @@ const transformColumnToArgs = (
       const symbol: SymbolNode = {
         node: new RuntimeEnumDeclarationNode(symbolId, enumValues, {
           identifierStyle:
-            context.runtimeEnums === RuntimeEnumsStyle.SCREAMING_SNAKE_CASE
+            context.runtimeEnums === 'screaming-snake-case'
               ? IdentifierStyle.SCREAMING_SNAKE_CASE
               : IdentifierStyle.KYSELY_PASCAL_CASE,
         }),
