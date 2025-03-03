@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import type { Kysely } from 'kysely';
 import { parse, relative, resolve, sep } from 'path';
 import { performance } from 'perf_hooks';
+import { DEFAULT_OUT_FILE } from '../../cli';
 import type { DatabaseMetadata } from '../../introspector';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
@@ -59,9 +60,12 @@ export const generate = async (options: GenerateOptions) => {
 
   const newOutput = serializeFromMetadata({ ...options, metadata, startTime });
 
-  const outFile = options.outFile
-    ? resolve(process.cwd(), options.outFile)
-    : null;
+  const outFile =
+    options.outFile === undefined
+      ? DEFAULT_OUT_FILE
+      : options.outFile === null
+        ? null
+        : resolve(process.cwd(), options.outFile);
 
   if (options.print) {
     console.info();
