@@ -47,6 +47,9 @@ importers:
       tedious:
         specifier: ^18.0.0
         version: 18.6.1
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
     devDependencies:
       '@libsql/kysely-libsql':
         specifier: ^0.4.1
@@ -135,9 +138,6 @@ importers:
       vitest:
         specifier: ^3.0.7
         version: 3.0.7(@types/node@22.13.8)
-      zod:
-        specifier: ^3.24.2
-        version: 3.24.2
 
 packages:
 

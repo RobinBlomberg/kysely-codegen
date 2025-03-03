@@ -48,7 +48,8 @@
     "git-diff": "^2.0.6",
     "micromatch": "^4.0.8",
     "minimist": "^1.2.8",
-    "pluralize": "^8.0.0"
+    "pluralize": "^8.0.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@libsql/kysely-libsql": "^0.4.1",
@@ -79,8 +80,7 @@
     "ts-dedent": "^2.2.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "vitest": "^3.0.7",
-    "zod": "^3.24.2"
+    "vitest": "^3.0.7"
   },
   "peerDependencies": {
     "@libsql/kysely-libsql": "^0.3.0 || ^0.4.1",
