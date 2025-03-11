@@ -79,7 +79,7 @@ export class ConnectionStringParser {
       }
 
       const { error } = expandEnv(loadEnv({ path: options.envFile }));
-      const envFile = options.envFile ?? '.env';
+      const displayEnvFile = options.envFile ?? '.env';
 
       if (error) {
         if (
@@ -87,19 +87,24 @@ export class ConnectionStringParser {
           typeof error.code === 'string' &&
           error.code === 'ENOENT'
         ) {
-          throw new ReferenceError(
-            `Could not resolve connection string '${connectionString}'. ` +
-              `Environment file '${envFile}' could not be found. ` +
-              "Use '--env-file' to specify a different file.",
-          );
+          if (options.envFile !== undefined) {
+            throw new ReferenceError(
+              `Could not resolve connection string '${connectionString}'. ` +
+                `Environment file '${displayEnvFile}' could not be found. ` +
+                "Use '--env-file' to specify a different file.",
+            );
+          }
+        } else {
+          throw error;
         }
-
-        throw error;
+      } else {
+        options.logger?.info(
+          `Loaded environment variables from '${displayEnvFile}'.`,
+        );
       }
 
-      options.logger?.info(`Loaded environment variables from '${envFile}'.`);
-
       const envConnectionString = process.env[key];
+
       if (!envConnectionString) {
         throw new ReferenceError(
           `Environment variable '${key}' could not be found.`,

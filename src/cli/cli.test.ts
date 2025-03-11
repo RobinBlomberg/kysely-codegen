@@ -221,11 +221,7 @@ describe(Cli.name, () => {
   it('should parse options correctly', () => {
     const assert = (args: string[], expectedOptions: Partial<Config>) => {
       const cliOptions = new Cli().parseOptions(args, { silent: true });
-
-      deepStrictEqual(cliOptions, {
-        url: 'postgres://user:password@localhost:5433/database',
-        ...expectedOptions,
-      });
+      deepStrictEqual(cliOptions, { camelCase: true, ...expectedOptions });
     };
 
     assert(['--camel-case'], { camelCase: true });

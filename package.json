@@ -35,7 +35,7 @@
     "lint:eslint": "eslint src",
     "lint:prettier": "prettier --check src",
     "prepublishOnly": "pnpm run ci",
-    "start": "pnpm build && node ./dist/cli/bin.js",
+    "start": "pnpm build && DATABASE_URL=postgres://user:password@localhost:5433/database node ./dist/cli/bin.js",
     "test": "vitest run --globals --fileParallelism=false --maxConcurrency=1 --maxWorkers=1 --sequence.seed=1",
     "test:watch": "vitest watch --globals --fileParallelism=false --maxConcurrency=1 --maxWorkers=1 --sequence.seed=1",
     "upgrade": "ncu -u"
