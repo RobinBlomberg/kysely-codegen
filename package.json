@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.18.2",
+  "version": "0.18.3",
   "author": "Robin Blomberg",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -57,11 +57,11 @@
     "@robinblomberg/eslint-config-robinblomberg": "0.28.0",
     "@robinblomberg/prettier-config": "^0.1.2",
     "@types/better-sqlite3": "^7.6.12",
-    "@types/bun": "^1.2.4",
+    "@types/bun": "^1.2.5",
     "@types/git-diff": "^2.0.7",
     "@types/micromatch": "^4.0.9",
     "@types/minimist": "^1.2.5",
-    "@types/node": "^22.13.9",
+    "@types/node": "^22.13.10",
     "@types/pg": "^8.11.11",
     "@types/pluralize": "^0.0.33",
     "@types/tedious": "^18.0.0",
@@ -71,7 +71,7 @@
     "execa": "^9.5.2",
     "knip": "^5.45.0",
     "kysely": "^0.27.6",
-    "mysql2": "^3.12.0",
+    "mysql2": "^3.13.0",
     "npm-run-all": "^4.1.5",
     "pg": "^8.13.3",
     "postgres-interval": "^4.0.2",
@@ -80,7 +80,7 @@
     "ts-dedent": "^2.2.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "vitest": "^3.0.7"
+    "vitest": "^3.0.8"
   },
   "peerDependencies": {
     "@libsql/kysely-libsql": "^0.3.0 || ^0.4.1",
