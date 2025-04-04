@@ -34,26 +34,9 @@ export class PostgresAdapter extends Adapter {
       new PropertyNode('y', new IdentifierNode('number')),
       new PropertyNode('radius', new IdentifierNode('number')),
     ]),
-    Int8: new ColumnTypeNode(
-      new IdentifierNode('string'),
-      new UnionExpressionNode([
-        new IdentifierNode('string'),
-        new IdentifierNode('number'),
-        new IdentifierNode('bigint'),
-      ]),
-      new UnionExpressionNode([
-        new IdentifierNode('string'),
-        new IdentifierNode('number'),
-        new IdentifierNode('bigint'),
-      ]),
-    ),
+    Int8: new ColumnTypeNode(new IdentifierNode('number')),
     Interval: new ColumnTypeNode(
       new IdentifierNode('IPostgresInterval'),
-      new UnionExpressionNode([
-        new IdentifierNode('IPostgresInterval'),
-        new IdentifierNode('number'),
-        new IdentifierNode('string'),
-      ]),
       new UnionExpressionNode([
         new IdentifierNode('IPostgresInterval'),
         new IdentifierNode('number'),
@@ -80,17 +63,11 @@ export class PostgresAdapter extends Adapter {
       new PropertyNode('x', new IdentifierNode('number')),
       new PropertyNode('y', new IdentifierNode('number')),
     ]),
-    Timestamp: new ColumnTypeNode(
-      new IdentifierNode('Date'),
-      new UnionExpressionNode([
-        new IdentifierNode('Date'),
-        new IdentifierNode('string'),
-      ]),
-      new UnionExpressionNode([
-        new IdentifierNode('Date'),
-        new IdentifierNode('string'),
-      ]),
-    ),
+    DBDate: new ColumnTypeNode(new IdentifierNode('DateString')),
+    DBTime: new ColumnTypeNode(new IdentifierNode('TimeString')),
+    DBTimeTZ: new ColumnTypeNode(new IdentifierNode('TimeTZString')),
+    DBTimestamp: new ColumnTypeNode(new IdentifierNode('Timestamp')),
+    DBTimestampTZ: new ColumnTypeNode(new IdentifierNode('TimestampTZ')),
   };
   override readonly imports = {
     IPostgresInterval: new ModuleReferenceNode('postgres-interval'),
@@ -104,7 +81,7 @@ export class PostgresAdapter extends Adapter {
     bytea: new IdentifierNode('Buffer'),
     cidr: new IdentifierNode('string'),
     circle: new IdentifierNode('Circle'),
-    date: new IdentifierNode('Timestamp'),
+    date: new IdentifierNode('DBDate'),
     float4: new IdentifierNode('number'), // Specified as "real" in Adminer.
     float8: new IdentifierNode('number'), // Specified as "double precision" in Adminer.
     inet: new IdentifierNode('string'),
@@ -124,9 +101,10 @@ export class PostgresAdapter extends Adapter {
     point: new IdentifierNode('Point'),
     polygon: new IdentifierNode('string'),
     text: new IdentifierNode('string'),
-    time: new IdentifierNode('string'),
-    timestamp: new IdentifierNode('Timestamp'),
-    timestamptz: new IdentifierNode('Timestamp'),
+    time: new IdentifierNode('DBTime'),
+    timestamp: new IdentifierNode('DBTimestamp'),
+    timestamptz: new IdentifierNode('DBTimestampTZ'),
+    timetz: new IdentifierNode('DBTimeTZ'),
     tsquery: new IdentifierNode('string'),
     tsvector: new IdentifierNode('string'),
     txid_snapshot: new IdentifierNode('string'),
@@ -141,8 +119,6 @@ export class PostgresAdapter extends Adapter {
 
     if (options?.dateParser === 'string') {
       this.scalars.date = new IdentifierNode('string');
-    } else {
-      this.scalars.date = new IdentifierNode('Timestamp');
     }
 
     if (options?.numericParser === 'number') {
