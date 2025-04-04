@@ -22,10 +22,18 @@ export const FLAGS = [
     longName: 'camel-case',
   },
   {
+    description: 'Specify the path to the configuration file to use.',
+    longName: 'config-file',
+  },
+  {
     default: 'timestamp',
     description: 'Specify which parser to use for PostgreSQL date values.',
     longName: 'date-parser',
     values: ['string', 'timestamp'],
+  },
+  {
+    description: 'Set the default schema(s) for the database connection.',
+    longName: 'default-schema',
   },
   {
     description: 'Set the SQL dialect.',
@@ -89,25 +97,16 @@ export const FLAGS = [
     longName: 'print',
   },
   {
+    default: DEFAULT_RUNTIME_ENUMS_STYLE,
     description:
       'Generate runtime enums instead of string unions for PostgreSQL enums.',
     longName: 'runtime-enums',
-  },
-  {
-    default: DEFAULT_RUNTIME_ENUMS_STYLE,
-    description:
-      'Which naming convention to use for runtime enum keys. Only works with `--runtime-enums`.',
-    longName: 'runtime-enums-style',
     values: ['pascal-case', 'screaming-snake-case'],
-  },
-  {
-    description: 'Set the default schema(s) for the database connection.',
-    longName: 'schema',
   },
   {
     description:
       'Singularize generated table names, e.g. `BlogPost` instead of `BlogPosts`.',
-    longName: 'singular',
+    longName: 'singularize',
   },
   {
     default: 'true',

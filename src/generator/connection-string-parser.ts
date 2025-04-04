@@ -1,6 +1,6 @@
 import { config as loadEnv } from 'dotenv';
 import { expand as expandEnv } from 'dotenv-expand';
-import type { DialectName } from './dialect-manager';
+import type { DialectName } from '../cli/config';
 import type { Logger } from './logger/logger';
 
 const CALL_STATEMENT_REGEXP = /^\s*([a-z]+)\s*\(\s*(.*)\s*\)\s*$/;
@@ -11,14 +11,14 @@ const DIALECT_PARTS_REGEXP = /([^:]*)(.*)/;
  */
 type ParseConnectionStringOptions = {
   connectionString: string;
-  dialectName?: DialectName;
+  dialect?: DialectName;
   envFile?: string;
   logger?: Logger;
 };
 
 type ParsedConnectionString = {
   connectionString: string;
-  inferredDialectName: DialectName;
+  dialect: DialectName;
 };
 
 /**
@@ -79,21 +79,32 @@ export class ConnectionStringParser {
       }
 
       const { error } = expandEnv(loadEnv({ path: options.envFile }));
-      const envFile = options.envFile ?? '.env';
+      const displayEnvFile = options.envFile ?? '.env';
 
       if (error) {
-        if (error.name === 'ENOENT') {
-          throw new ReferenceError(
-            `Environment file '${envFile}' could not be found. Use --env-file to specify a different file.`,
-          );
+        if (
+          'code' in error &&
+          typeof error.code === 'string' &&
+          error.code === 'ENOENT'
+        ) {
+          if (options.envFile !== undefined) {
+            throw new ReferenceError(
+              `Could not resolve connection string '${connectionString}'. ` +
+                `Environment file '${displayEnvFile}' could not be found. ` +
+                "Use '--env-file' to specify a different file.",
+            );
+          }
+        } else {
+          throw error;
         }
-
-        throw error;
+      } else {
+        options.logger?.info(
+          `Loaded environment variables from '${displayEnvFile}'.`,
+        );
       }
 
-      options.logger?.info(`Loaded environment variables from '${envFile}'.`);
-
       const envConnectionString = process.env[key];
+
       if (!envConnectionString) {
         throw new ReferenceError(
           `Environment variable '${key}' could not be found.`,
@@ -108,13 +119,11 @@ export class ConnectionStringParser {
     const tail = parts[2]!;
     const normalizedConnectionString =
       protocol === 'pg' ? `postgres${tail}` : connectionString;
-
-    const inferredDialectName =
-      options.dialectName ?? this.#inferDialectName(connectionString);
+    const dialect = options.dialect ?? this.#inferDialectName(connectionString);
 
     return {
       connectionString: normalizedConnectionString,
-      inferredDialectName,
+      dialect,
     };
   }
 }

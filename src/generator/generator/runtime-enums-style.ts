@@ -1,4 +1,1 @@
-export const enum RuntimeEnumsStyle {
-  PASCAL_CASE = 'pascal-case',
-  SCREAMING_SNAKE_CASE = 'screaming-snake-case',
-}
+export type RuntimeEnumsStyle = 'pascal-case' | 'screaming-snake-case';

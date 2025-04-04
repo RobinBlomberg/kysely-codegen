@@ -1,10 +1,9 @@
 import type { ExpressionNode } from './expression-node';
-import { NodeType } from './node-type';
 
 export class PropertyNode {
   readonly comment: string | null;
   readonly key: string;
-  readonly type = NodeType.PROPERTY;
+  readonly type = 'Property';
   readonly value: ExpressionNode;
 
   constructor(

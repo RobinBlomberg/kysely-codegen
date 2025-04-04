@@ -8,12 +8,11 @@ import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
 import type { ExpressionNode } from '../ast/expression-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
-import { IdentifierNode } from '../ast/identifier-node';
+import { IdentifierNode, TableIdentifierNode } from '../ast/identifier-node';
 import { ImportClauseNode } from '../ast/import-clause-node';
 import { ImportStatementNode } from '../ast/import-statement-node';
 import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
 import { LiteralNode } from '../ast/literal-node';
-import { NodeType } from '../ast/node-type';
 import { ObjectExpressionNode } from '../ast/object-expression-node';
 import { PropertyNode } from '../ast/property-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
@@ -21,13 +20,13 @@ import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node
 import type { TemplateNode } from '../ast/template-node';
 import { UnionExpressionNode } from '../ast/union-expression-node';
 import type { GeneratorDialect } from '../dialect';
-import { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
+import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
+import type { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
 import { toKyselyCamelCase } from '../utils/case-converter';
 import { GLOBAL_DEFINITIONS } from './definitions';
-import { IdentifierStyle } from './identifier-style';
 import { GLOBAL_IMPORTS } from './imports';
 import type { SymbolNode } from './symbol-collection';
-import { SymbolCollection, SymbolType } from './symbol-collection';
+import { SymbolCollection } from './symbol-collection';
 
 export type Overrides = {
   /**
@@ -53,24 +52,23 @@ type TransformContext = {
   defaultScalar: ExpressionNode;
   defaultSchemas: string[];
   definitions: Definitions;
+  dialect: GeneratorDialect;
   enums: EnumCollection;
   imports: Imports;
   metadata: DatabaseMetadata;
   overrides: Overrides | undefined;
-  runtimeEnums: boolean;
-  runtimeEnumsStyle: RuntimeEnumsStyle | undefined;
+  runtimeEnums: boolean | RuntimeEnumsStyle;
   scalars: Scalars;
   symbols: SymbolCollection;
 };
 
-type TransformOptions = {
+export type TransformOptions = {
   camelCase?: boolean;
   defaultSchemas?: string[];
   dialect: GeneratorDialect;
   metadata: DatabaseMetadata;
   overrides?: Overrides;
-  runtimeEnums?: boolean;
-  runtimeEnumsStyle?: RuntimeEnumsStyle;
+  runtimeEnums?: boolean | RuntimeEnumsStyle;
 };
 
 const collectSymbol = (name: string, context: TransformContext) => {
@@ -80,10 +78,7 @@ const collectSymbol = (name: string, context: TransformContext) => {
       return;
     }
 
-    context.symbols.set(name, {
-      node: definition,
-      type: SymbolType.DEFINITION,
-    });
+    context.symbols.set(name, { node: definition, type: 'Definition' });
     collectSymbols(definition, context);
     return;
   }
@@ -96,7 +91,7 @@ const collectSymbol = (name: string, context: TransformContext) => {
 
     context.symbols.set(name, {
       node: moduleReference,
-      type: SymbolType.MODULE_REFERENCE,
+      type: 'ModuleReference',
     });
   }
 };
@@ -106,15 +101,15 @@ const collectSymbols = (
   context: TransformContext,
 ) => {
   switch (node.type) {
-    case NodeType.ARRAY_EXPRESSION:
+    case 'ArrayExpression':
       collectSymbols(node.values, context);
       break;
-    case NodeType.EXTENDS_CLAUSE:
+    case 'ExtendsClause':
       collectSymbols(node.extendsType, context);
       collectSymbols(node.trueType, context);
       collectSymbols(node.falseType, context);
       break;
-    case NodeType.GENERIC_EXPRESSION: {
+    case 'GenericExpression': {
       collectSymbol(node.name, context);
 
       for (const arg of node.args) {
@@ -123,29 +118,29 @@ const collectSymbols = (
 
       break;
     }
-    case NodeType.IDENTIFIER:
+    case 'Identifier':
       collectSymbol(node.name, context);
       break;
-    case NodeType.INFER_CLAUSE:
+    case 'InferClause':
       break;
-    case NodeType.LITERAL:
+    case 'Literal':
       break;
-    case NodeType.MAPPED_TYPE:
+    case 'MappedType':
       collectSymbols(node.value, context);
       break;
-    case NodeType.OBJECT_EXPRESSION:
+    case 'ObjectExpression':
       for (const property of node.properties) {
         collectSymbols(property.value, context);
       }
 
       break;
-    case NodeType.RAW_EXPRESSION:
+    case 'RawExpression':
       collectSymbol(node.expression, context);
       break;
-    case NodeType.TEMPLATE:
+    case 'Template':
       collectSymbols(node.expression, context);
       break;
-    case NodeType.UNION_EXPRESSION:
+    case 'UnionExpression':
       for (const arg of node.args) {
         collectSymbols(arg, context);
       }
@@ -167,6 +162,7 @@ const createContext = (options: TransformOptions): TransformContext => {
       ...GLOBAL_DEFINITIONS,
       ...options.dialect.adapter.definitions,
     },
+    dialect: options.dialect,
     enums: options.metadata.enums,
     imports: {
       ...GLOBAL_IMPORTS,
@@ -174,8 +170,7 @@ const createContext = (options: TransformOptions): TransformContext => {
     },
     metadata: options.metadata,
     overrides: options.overrides,
-    runtimeEnums: !!options.runtimeEnums,
-    runtimeEnumsStyle: options.runtimeEnumsStyle,
+    runtimeEnums: options.runtimeEnums ?? false,
     scalars: {
       ...options.dialect.adapter.scalars,
     },
@@ -191,7 +186,7 @@ const createDatabaseExportNode = (context: TransformContext) => {
     const symbolName = context.symbols.getName(identifier);
 
     if (symbolName) {
-      const value = new IdentifierNode(symbolName);
+      const value = new TableIdentifierNode(symbolName);
       const tableProperty = new PropertyNode(identifier, value);
       tableProperties.push(tableProperty);
     }
@@ -200,7 +195,7 @@ const createDatabaseExportNode = (context: TransformContext) => {
   tableProperties.sort((a, b) => a.key.localeCompare(b.key));
 
   const body = new ObjectExpressionNode(tableProperties);
-  const argument = new InterfaceDeclarationNode('DB', body);
+  const argument = new InterfaceDeclarationNode(new IdentifierNode('DB'), body);
   return new ExportStatementNode(argument);
 };
 
@@ -208,7 +203,7 @@ const createRuntimeEnumDefinitionNodes = (context: TransformContext) => {
   const exportStatements: ExportStatementNode[] = [];
 
   for (const { symbol } of context.symbols.entries()) {
-    if (symbol.type !== SymbolType.RUNTIME_ENUM_DEFINITION) {
+    if (symbol.type !== 'RuntimeEnumDefinition') {
       continue;
     }
 
@@ -217,7 +212,7 @@ const createRuntimeEnumDefinitionNodes = (context: TransformContext) => {
   }
 
   return exportStatements.sort((a, b) => {
-    return a.argument.name.localeCompare(b.argument.name);
+    return a.argument.id.name.localeCompare(b.argument.id.name);
   });
 };
 
@@ -225,7 +220,7 @@ const createDefinitionNodes = (context: TransformContext) => {
   const definitionNodes: ExportStatementNode[] = [];
 
   for (const { name, symbol } of context.symbols.entries()) {
-    if (symbol.type !== SymbolType.DEFINITION) {
+    if (symbol.type !== 'Definition') {
       continue;
     }
 
@@ -235,7 +230,7 @@ const createDefinitionNodes = (context: TransformContext) => {
   }
 
   return definitionNodes.sort((a, b) =>
-    a.argument.name.localeCompare(b.argument.name),
+    a.argument.id.name.localeCompare(b.argument.id.name),
   );
 };
 
@@ -244,7 +239,7 @@ const createImportNodes = (context: TransformContext) => {
   const importNodes: ImportStatementNode[] = [];
 
   for (const { id, name, symbol } of context.symbols.entries()) {
-    if (symbol.type !== SymbolType.MODULE_REFERENCE) {
+    if (symbol.type !== 'ModuleReference') {
       continue;
     }
 
@@ -273,19 +268,29 @@ const getTableIdentifier = (
   return transformName(name, context);
 };
 
-const transformColumn = (
-  column: ColumnMetadata,
-  context: TransformContext,
-  tableName: string,
-) => {
-  const columnName = `${tableName}.${column.name}`;
-  const columnOverride = context.overrides?.columns?.[columnName];
+const transformColumn = ({
+  column,
+  context,
+  table,
+}: {
+  column: ColumnMetadata;
+  context: TransformContext;
+  table: TableMetadata;
+}) => {
+  const overrides = context.overrides?.columns;
+  const isDefaultSchema =
+    !!table.schema && context.defaultSchemas.includes(table.schema);
+  const path = `${table.name}.${column.name}`;
+  const override =
+    context.dialect instanceof PostgresDialect
+      ? isDefaultSchema
+        ? (overrides?.[`${table.schema}.${path}`] ?? overrides?.[path])
+        : overrides?.[`${table.schema}.${path}`]
+      : overrides?.[path];
 
-  if (columnOverride !== undefined) {
+  if (override !== undefined) {
     const node =
-      typeof columnOverride === 'string'
-        ? new RawExpressionNode(columnOverride)
-        : columnOverride;
+      typeof override === 'string' ? new RawExpressionNode(override) : override;
 
     collectSymbols(node, context);
 
@@ -297,7 +302,7 @@ const transformColumn = (
   if (column.isArray) {
     const unionizedArgs = unionize(args);
     const isSimpleNode =
-      unionizedArgs.type === NodeType.IDENTIFIER &&
+      unionizedArgs.type === 'Identifier' &&
       ['boolean', 'number', 'string'].includes(unionizedArgs.name);
     args = isSimpleNode
       ? [new ArrayExpressionNode(unionizedArgs)]
@@ -311,6 +316,7 @@ const transformColumn = (
   let node = unionize(args);
 
   const isGenerated = column.hasDefaultValue || column.isAutoIncrementing;
+
   if (isGenerated) {
     node = new GenericExpressionNode('Generated', [node]);
   }
@@ -351,20 +357,20 @@ const transformColumnToArgs = (
       const symbol: SymbolNode = {
         node: new RuntimeEnumDeclarationNode(symbolId, enumValues, {
           identifierStyle:
-            context.runtimeEnumsStyle === RuntimeEnumsStyle.SCREAMING_SNAKE_CASE
-              ? IdentifierStyle.SCREAMING_SNAKE_CASE
-              : IdentifierStyle.KYSELY_PASCAL_CASE,
+            context.runtimeEnums === 'screaming-snake-case'
+              ? 'screaming-snake-case'
+              : 'kysely-pascal-case',
         }),
-        type: SymbolType.RUNTIME_ENUM_DEFINITION,
+        type: 'RuntimeEnumDefinition',
       };
-      symbol.node.name = context.symbols.set(symbolId, symbol);
-      const node = new IdentifierNode(symbol.node.name);
+      symbol.node.id.name = context.symbols.set(symbolId, symbol);
+      const node = new IdentifierNode(symbol.node.id.name);
       return [node];
     }
 
     const symbolName = context.symbols.set(symbolId, {
       node: unionize(transformEnum(enumValues)),
-      type: SymbolType.DEFINITION,
+      type: 'Definition',
     });
     const node = new IdentifierNode(symbolName);
     return [node];
@@ -400,7 +406,7 @@ const transformTables = (context: TransformContext) => {
 
     for (const column of table.columns) {
       const key = transformName(column.name, context);
-      const value = transformColumn(column, context, table.name);
+      const value = transformColumn({ column, context, table });
       const comment = column.comment;
       const tableProperty = new PropertyNode(key, value, comment);
       tableProperties.push(tableProperty);
@@ -408,16 +414,19 @@ const transformTables = (context: TransformContext) => {
 
     const expression = new ObjectExpressionNode(tableProperties);
     const identifier = getTableIdentifier(table, context);
-    const symbolName = context.symbols.set(identifier, {
-      type: SymbolType.TABLE,
-    });
+    const symbolName = context.symbols.set(identifier, { type: 'Table' });
     const tableNode = new ExportStatementNode(
-      new InterfaceDeclarationNode(symbolName, expression),
+      new InterfaceDeclarationNode(
+        new TableIdentifierNode(symbolName),
+        expression,
+      ),
     );
     tableNodes.push(tableNode);
   }
 
-  tableNodes.sort((a, b) => a.argument.name.localeCompare(b.argument.name));
+  tableNodes.sort((a, b) =>
+    a.argument.id.name.localeCompare(b.argument.id.name),
+  );
 
   return tableNodes;
 };

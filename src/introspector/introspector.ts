@@ -10,8 +10,8 @@ type ConnectOptions = {
 
 export type IntrospectOptions<DB> = {
   db: Kysely<DB>;
-  excludePattern?: string;
-  includePattern?: string;
+  excludePattern?: string | null;
+  includePattern?: string | null;
   partitions?: boolean;
 };
 

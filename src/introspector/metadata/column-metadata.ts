@@ -11,15 +11,15 @@ export type ColumnMetadataOptions = {
 };
 
 export class ColumnMetadata {
-  readonly comment: string | null;
-  readonly dataType: string;
-  readonly dataTypeSchema: string | undefined;
-  readonly enumValues: string[] | null;
-  readonly hasDefaultValue: boolean;
-  readonly isArray: boolean;
-  readonly isAutoIncrementing: boolean;
-  readonly isNullable: boolean;
-  readonly name: string;
+  comment: string | null;
+  dataType: string;
+  dataTypeSchema: string | undefined;
+  enumValues: string[] | null;
+  hasDefaultValue: boolean;
+  isArray: boolean;
+  isAutoIncrementing: boolean;
+  isNullable: boolean;
+  name: string;
 
   constructor(options: ColumnMetadataOptions) {
     this.comment = options.comment ?? null;

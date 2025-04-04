@@ -1,80 +1,69 @@
 import chalk from 'chalk';
 import { inspect } from 'util';
-import { LogLevel } from './log-level';
+import type { LogLevel } from './log-level';
+import { matchLogLevel } from './log-level';
 
-/**
- * Provides pretty console logging.
- */
 export class Logger {
   readonly logLevel: LogLevel;
 
-  constructor(logLevel: LogLevel = LogLevel.INFO) {
+  constructor(logLevel: LogLevel = 'info') {
     this.logLevel = logLevel;
   }
 
-  #inspect(values: unknown[]) {
-    return values
-      .map((value) => {
-        return value instanceof Object
-          ? inspect(value, { colors: true })
-          : value;
-      })
-      .join(' ');
+  #log(
+    consoleMethod: 'debug' | 'error' | 'info' | 'log' | 'warn',
+    color: 'blue' | 'gray' | 'green' | 'red' | 'yellow' | null,
+    icon: string | null,
+    values: unknown[],
+  ) {
+    const texts = [...(icon === null ? [] : [icon]), ...values];
+    return console[consoleMethod](
+      ...texts.map((value) => {
+        const text = (
+          typeof value === 'string' ? value : inspect(value, { colors: true })
+        ).replaceAll(/(\r?\n)/g, icon === null ? '$1' : '$1  ');
+        return color ? chalk[color](text) : text;
+      }),
+    );
+  }
+
+  #shouldLog(messageLogLevel: LogLevel) {
+    return matchLogLevel({ actual: this.logLevel, expected: messageLogLevel });
   }
 
   debug(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.DEBUG) {
-      console.debug(...values.map((value) => this.serializeDebug(value)));
+    if (this.#shouldLog('debug')) {
+      this.#log('debug', 'gray', null, values);
     }
   }
 
   error(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.ERROR) {
-      console.error(...values.map((value) => this.serializeError(value)));
+    if (this.#shouldLog('error')) {
+      this.#log('error', 'red', '✗', values);
     }
   }
 
   info(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.INFO) {
-      console.info(...values.map((value) => this.serializeInfo(value)));
+    if (this.#shouldLog('info')) {
+      this.#log('info', 'blue', '•', values);
     }
   }
 
   log(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.INFO) {
+    if (this.#shouldLog('info')) {
       console.log(...values);
     }
   }
 
-  serializeDebug(...values: unknown[]) {
-    return chalk.gray(`  ${this.#inspect(values)}`);
-  }
-
-  serializeError(...values: unknown[]) {
-    return chalk.red(`✗ ${this.#inspect(values)}`);
-  }
-
-  serializeInfo(...values: unknown[]) {
-    return chalk.blue(`• ${this.#inspect(values)}`);
-  }
-
-  serializeSuccess(...values: unknown[]) {
-    return chalk.green(`✓ ${this.#inspect(values)}`);
-  }
-
-  serializeWarn(...values: unknown[]) {
-    return chalk.yellow(`⚠ ${this.#inspect(values)}`);
-  }
-
   success(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.INFO) {
-      console.log(...values.map((value) => this.serializeSuccess(value)));
+    if (this.#shouldLog('info')) {
+      this.#log('log', 'green', '✓', values);
     }
   }
 
   warn(...values: unknown[]) {
-    if (this.logLevel >= LogLevel.WARN) {
-      console.warn(...values.map((value) => this.serializeWarn(value)));
+    if (this.#shouldLog('warn')) {
+      this.#log('warn', 'yellow', '⚠', values);
     }
   }
 }

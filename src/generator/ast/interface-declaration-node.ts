@@ -1,13 +1,13 @@
-import { NodeType } from './node-type';
+import type { IdentifierNode } from './identifier-node';
 import type { ObjectExpressionNode } from './object-expression-node';
 
 export class InterfaceDeclarationNode {
   readonly body: ObjectExpressionNode;
-  readonly name: string;
-  readonly type = NodeType.INTERFACE_DECLARATION;
+  readonly id: IdentifierNode;
+  readonly type = 'InterfaceDeclaration';
 
-  constructor(name: string, body: ObjectExpressionNode) {
-    this.name = name;
+  constructor(name: IdentifierNode, body: ObjectExpressionNode) {
+    this.id = name;
     this.body = body;
   }
 }

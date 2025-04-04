@@ -1,4 +1,6 @@
 export * from './dialect';
+export * from './dialects/kysely-bun-sqlite/kysely-bun-sqlite-dialect';
+export * from './dialects/kysely-bun-sqlite/kysely-bun-sqlite-introspector';
 export * from './dialects/libsql/libsql-dialect';
 export * from './dialects/libsql/libsql-introspector';
 export * from './dialects/mssql/mssql-dialect';

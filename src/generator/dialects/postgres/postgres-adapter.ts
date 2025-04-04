@@ -1,5 +1,5 @@
-import { DateParser } from '../../../introspector/dialects/postgres/date-parser';
-import { NumericParser } from '../../../introspector/dialects/postgres/numeric-parser';
+import type { DateParser } from '../../../introspector/dialects/postgres/date-parser';
+import type { NumericParser } from '../../../introspector/dialects/postgres/numeric-parser';
 import { Adapter } from '../../adapter';
 import { ColumnTypeNode } from '../../ast/column-type-node';
 import { IdentifierNode } from '../../ast/identifier-node';
@@ -117,11 +117,11 @@ export class PostgresAdapter extends Adapter {
   constructor(options?: PostgresAdapterOptions) {
     super();
 
-    if (options?.dateParser === DateParser.STRING) {
+    if (options?.dateParser === 'string') {
       this.scalars.date = new IdentifierNode('string');
     }
 
-    if (options?.numericParser === NumericParser.NUMBER) {
+    if (options?.numericParser === 'number') {
       this.definitions.Numeric = new ColumnTypeNode(
         new IdentifierNode('number'),
         new UnionExpressionNode([
@@ -133,7 +133,7 @@ export class PostgresAdapter extends Adapter {
           new IdentifierNode('string'),
         ]),
       );
-    } else if (options?.numericParser === NumericParser.NUMBER_OR_STRING) {
+    } else if (options?.numericParser === 'number-or-string') {
       this.definitions.Numeric = new ColumnTypeNode(
         new UnionExpressionNode([
           new IdentifierNode('number'),

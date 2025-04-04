@@ -1,9 +1,7 @@
-import { NodeType } from './node-type';
-
 export class ImportClauseNode {
   readonly alias: string | null;
   readonly name: string;
-  readonly type = NodeType.IMPORT_CLAUSE;
+  readonly type = 'ImportClause';
 
   constructor(name: string, alias: string | null = null) {
     this.name = name;

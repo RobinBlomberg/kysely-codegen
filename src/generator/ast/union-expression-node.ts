@@ -1,9 +1,8 @@
 import type { ExpressionNode } from './expression-node';
-import { NodeType } from './node-type';
 
 export class UnionExpressionNode {
   readonly args: ExpressionNode[];
-  readonly type = NodeType.UNION_EXPRESSION;
+  readonly type = 'UnionExpression';
 
   constructor(args: ExpressionNode[]) {
     this.args = args;

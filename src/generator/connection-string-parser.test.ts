@@ -1,5 +1,4 @@
 import { deepStrictEqual } from 'assert';
-import { describe, it } from 'vitest';
 import { ConnectionStringParser } from './connection-string-parser';
 
 describe(ConnectionStringParser.name, () => {
@@ -13,7 +12,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'postgres://username:password@hostname/database',
-          inferredDialectName: 'postgres',
+          dialect: 'postgres',
         },
       );
       deepStrictEqual(
@@ -22,7 +21,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'postgresql://username:password@hostname/database',
-          inferredDialectName: 'postgres',
+          dialect: 'postgres',
         },
       );
       deepStrictEqual(
@@ -31,7 +30,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'postgres://username:password@hostname/database',
-          inferredDialectName: 'postgres',
+          dialect: 'postgres',
         },
       );
     });
@@ -45,7 +44,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'mysql://username:password@hostname/database',
-          inferredDialectName: 'mysql',
+          dialect: 'mysql',
         },
       );
       deepStrictEqual(
@@ -54,7 +53,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'mysqlx://username:password@hostname/database',
-          inferredDialectName: 'mysql',
+          dialect: 'mysql',
         },
       );
     });
@@ -68,7 +67,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'C:/Program Files/sqlite3/db',
-          inferredDialectName: 'sqlite',
+          dialect: 'sqlite',
         },
       );
       deepStrictEqual(
@@ -77,7 +76,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: '/usr/local/bin',
-          inferredDialectName: 'sqlite',
+          dialect: 'sqlite',
         },
       );
     });
@@ -91,7 +90,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'libsql://token@hostname:port/db',
-          inferredDialectName: 'libsql',
+          dialect: 'libsql',
         },
       );
       deepStrictEqual(
@@ -100,7 +99,7 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: 'libsql://hostname:port/db',
-          inferredDialectName: 'libsql',
+          dialect: 'libsql',
         },
       );
     });

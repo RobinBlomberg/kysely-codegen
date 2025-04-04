@@ -4,7 +4,7 @@ import { PostgresIntrospectorDialect } from '../../../introspector/dialects/post
 import type { GeneratorDialect } from '../../dialect';
 import { PostgresAdapter } from './postgres-adapter';
 
-type PostgresDialectOptions = {
+export type PostgresDialectOptions = {
   dateParser?: DateParser;
   defaultSchemas?: string[];
   domains?: boolean;
@@ -19,7 +19,13 @@ export class PostgresDialect
   readonly adapter: PostgresAdapter;
 
   constructor(options?: PostgresDialectOptions) {
-    super(options);
+    super({
+      dateParser: options?.dateParser,
+      defaultSchemas: options?.defaultSchemas,
+      domains: options?.domains,
+      numericParser: options?.numericParser,
+      partitions: options?.partitions,
+    });
 
     this.adapter = new PostgresAdapter({
       dateParser: this.options.dateParser,

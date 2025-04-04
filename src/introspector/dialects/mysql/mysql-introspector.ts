@@ -9,7 +9,7 @@ import { MysqlParser } from './mysql-parser';
 const ENUM_REGEXP = /^enum\(.*\)$/;
 
 export class MysqlIntrospector extends Introspector<MysqlDB> {
-  #createDatabaseMetadata({
+  createDatabaseMetadata({
     enums,
     tables: rawTables,
   }: {
@@ -29,7 +29,13 @@ export class MysqlIntrospector extends Introspector<MysqlDB> {
     return new DatabaseMetadata({ tables });
   }
 
-  async #introspectEnums(db: Kysely<MysqlDB>) {
+  async introspect(options: IntrospectOptions<MysqlDB>) {
+    const tables = await this.getTables(options);
+    const enums = await this.introspectEnums(options.db);
+    return this.createDatabaseMetadata({ enums, tables });
+  }
+
+  async introspectEnums(db: Kysely<MysqlDB>) {
     const enums = new EnumCollection();
 
     const rows = await db
@@ -48,11 +54,5 @@ export class MysqlIntrospector extends Introspector<MysqlDB> {
     }
 
     return enums;
-  }
-
-  async introspect(options: IntrospectOptions<MysqlDB>) {
-    const tables = await this.getTables(options);
-    const enums = await this.#introspectEnums(options.db);
-    return this.#createDatabaseMetadata({ enums, tables });
   }
 }

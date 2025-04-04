@@ -1,9 +1,8 @@
-import { NodeType } from './node-type';
 import type { PropertyNode } from './property-node';
 
 export class ObjectExpressionNode {
   readonly properties: PropertyNode[];
-  readonly type = NodeType.OBJECT_EXPRESSION;
+  readonly type = 'ObjectExpression';
 
   constructor(properties: PropertyNode[]) {
     this.properties = properties;

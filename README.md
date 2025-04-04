@@ -8,6 +8,7 @@
 - [Generating type definitions](#generating-type-definitions)
 - [Using the type definitions](#using-the-type-definitions)
 - [CLI arguments](#cli-arguments)
+- [Configuration file](#configuration-file)
 - [Issue funding](#issue-funding)
 
 ## Installation
@@ -142,11 +143,11 @@ async function insertUser(user: Insertable<User>) {
   // ^ Selectable<User>
 }
 
-async function updateUser(user: Updateable<User>) {
+async function updateUser(id: number, user: Updateable<User>) {
   return await db
     .updateTable('users')
     .set(user)
-    .where({ id: user.id })
+    .where('id', '=', id)
     .returning(['email', 'id'])
     .executeTakeFirstOrThrow();
   // ^ { email: string; id: number; }
@@ -177,11 +178,21 @@ export interface User {
 
 #### --date-parser <!-- omit from toc -->
 
-Specify which parser to use for PostgreSQL date values. (values: [`string`, `timestamp`], default: `timestamp`)
+Specify which parser to use for PostgreSQL date values. (values: `string`/`timestamp`, default: `timestamp`)
+
+#### --default-schema [value] <!-- omit from toc -->
+
+Set the default schema(s) for the database connection.
+
+Multiple schemas can be specified:
+
+```sh
+kysely-codegen --default-schema=public --default-schema=hidden
+```
 
 #### --dialect [value] <!-- omit from toc -->
 
-Set the SQL dialect. (values: [`postgres`, `mysql`, `sqlite`, `mssql`, `libsql`, `bun-sqlite`, `kysely-bun-sqlite`, `worker-bun-sqlite`])
+Set the SQL dialect. (values: `postgres`/`mysql`/`sqlite`/`mssql`/`libsql`/`bun-sqlite`/`kysely-bun-sqlite`/`worker-bun-sqlite`)
 
 #### --env-file [value] <!-- omit from toc -->
 
@@ -213,7 +224,7 @@ kysely-codegen --exclude-pattern="documents.*"
 
 #### --log-level [value] <!-- omit from toc -->
 
-Set the terminal log level. (values: [`debug`, `info`, `warn`, `error`, `silent`], default: `warn`)
+Set the terminal log level. (values: `debug`/`info`/`warn`/`error`/`silent`, default: `warn`)
 
 #### --no-domains <!-- omit from toc -->
 
@@ -221,7 +232,7 @@ Skip generating types for PostgreSQL domains. (default: `false`)
 
 #### --numeric-parser <!-- omit from toc -->
 
-Specify which parser to use for PostgreSQL numeric values. (values: [`string`, `number`, `number-or-string`], default: `string`)
+Specify which parser to use for PostgreSQL numeric values. (values: `string`/`number`/`number-or-string`, default: `string`)
 
 #### --overrides <!-- omit from toc -->
 
@@ -245,11 +256,9 @@ Include partitions of PostgreSQL tables in the generated code.
 
 Print the generated output to the terminal instead of a file.
 
-#### --runtime-enums, --runtime-enums-style <!-- omit from toc -->
+#### --runtime-enums <!-- omit from toc -->
 
-The PostgreSQL `--runtime-enums` option generates runtime enums instead of string unions.
-
-The option `--runtime-enums-style` specifies which naming convention to use for runtime enum keys. (values: [`pascal-case`, `screaming-snake-case`], default: `pascal-case`)
+The PostgreSQL `--runtime-enums` option generates runtime enums instead of string unions. You can optionally specify which naming convention to use for runtime enum keys. (values: [`pascal-case`, `screaming-snake-case`], default: `screaming-snake-case`)
 
 **Examples:**
 
@@ -259,7 +268,7 @@ The option `--runtime-enums-style` specifies which naming convention to use for 
 export type Status = 'CONFIRMED' | 'UNCONFIRMED';
 ```
 
-`--runtime-enums`
+`--runtime-enums` or `--runtime-enums=screaming-snake-case`
 
 ```ts
 export enum Status {
@@ -268,7 +277,7 @@ export enum Status {
 }
 ```
 
-`--runtime-enums --runtime-enums-style=pascal-case`
+`--runtime-enums=pascal-case`
 
 ```ts
 export enum Status {
@@ -277,19 +286,11 @@ export enum Status {
 }
 ```
 
-#### --schema [value] <!-- omit from toc -->
+#### --singularize <!-- omit from toc -->
 
-Set the default schema(s) for the database connection.
+Singularize generated type aliases, e.g. as `BlogPost` instead of `BlogPosts`. The codegen uses the [pluralize](https://www.npmjs.com/package/pluralize) package for singularization.
 
-Multiple schemas can be specified:
-
-```sh
-kysely-codegen --schema=public --schema=hidden
-```
-
-#### --singular <!-- omit from toc -->
-
-Singularize generated table names, e.g. `BlogPost` instead of `BlogPosts`. We use the [pluralize](https://www.npmjs.com/package/pluralize) package for singularization.
+You can specify custom singularization rules in the [configuration file](#configuration-file).
 
 #### --type-only-imports <!-- omit from toc -->
 
@@ -302,6 +303,68 @@ Set the database connection string URL. This may point to an environment variabl
 #### --verify <!-- omit from toc -->
 
 Verify that the generated types are up-to-date. (default: `false`)
+
+## Configuration file
+
+All codegen options can also be configured in a `.kysely-codegenrc.json` (or `.js`, `.ts`, `.yaml` etc.) file or the `kysely-codegen` property in `package.json`. See [Cosmiconfig](https://github.com/cosmiconfig/cosmiconfig) for all available configuration file formats.
+
+The default configuration:
+
+```json
+{
+  "camelCase": false,
+  "dateParser": "timestamp",
+  "defaultSchemas": [], // ["public"] for PostgreSQL.
+  "dialect": null,
+  "domains": true,
+  "envFile": null,
+  "excludePattern": null,
+  "includePattern": null,
+  "logLevel": "warn",
+  "numericParser": "string",
+  "outFile": "./node_modules/kysely-codegen/dist/db.d.ts",
+  "overrides": {},
+  "partitions": false,
+  "print": false,
+  "runtimeEnums": false,
+  "singularize": false,
+  "typeOnlyImports": true,
+  "url": "env(DATABASE_URL)",
+  "verify": false
+}
+```
+
+The configuration object adds support for more advanced options:
+
+```json
+{
+  "camelCase": true,
+  "overrides": {
+    "columns": {
+      "users.settings": "{ theme: 'dark' }"
+    }
+  },
+  "singularize": {
+    "/^(.*?)s?$/": "$1_model",
+    "/(bacch)(?:us|i)$/i": "$1us"
+  }
+}
+```
+
+The generated output:
+
+```ts
+export interface UserModel {
+  settings: { theme: 'dark' };
+}
+
+// ...
+
+export interface DB {
+  bacchi: Bacchus;
+  users: UserModel;
+}
+```
 
 ## Issue funding
 

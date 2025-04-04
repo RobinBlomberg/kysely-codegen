@@ -1,7 +1,6 @@
 import { deepStrictEqual } from 'assert';
-import { describe, it } from 'vitest';
-import { DateParser } from '../../introspector/dialects/postgres/date-parser';
-import { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
+import type { DateParser } from '../../introspector/dialects/postgres/date-parser';
+import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import { EnumCollection } from '../../introspector/enum-collection';
 import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
 import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
@@ -10,7 +9,7 @@ import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
-import { IdentifierNode } from '../ast/identifier-node';
+import { IdentifierNode, TableIdentifierNode } from '../ast/identifier-node';
 import { ImportClauseNode } from '../ast/import-clause-node';
 import { ImportStatementNode } from '../ast/import-statement-node';
 import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
@@ -25,7 +24,7 @@ import { PostgresAdapter } from '../dialects/postgres/postgres-adapter';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import type { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
 import { GLOBAL_DEFINITIONS } from './definitions';
-import { transform } from './transform';
+import { transform } from './transformer';
 
 describe(transform.name, () => {
   const enums = new EnumCollection({
@@ -43,8 +42,7 @@ describe(transform.name, () => {
     camelCase?: boolean;
     dateParser?: DateParser;
     numericParser?: NumericParser;
-    runtimeEnums?: boolean;
-    runtimeEnumsStyle?: RuntimeEnumsStyle;
+    runtimeEnums?: boolean | RuntimeEnumsStyle;
     tables: TableMetadata[];
   }) => {
     return transform({
@@ -157,7 +155,7 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'NotPublicOtherTable',
+          new TableIdentifierNode('NotPublicOtherTable'),
           new ObjectExpressionNode([
             new PropertyNode('id', new IdentifierNode('string')),
           ]),
@@ -165,7 +163,7 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'Table',
+          new TableIdentifierNode('Table'),
           new ObjectExpressionNode([
             new PropertyNode(
               'expression_override',
@@ -203,13 +201,13 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new IdentifierNode('DB'),
           new ObjectExpressionNode([
             new PropertyNode(
               'not_public.other_table',
-              new IdentifierNode('NotPublicOtherTable'),
+              new TableIdentifierNode('NotPublicOtherTable'),
             ),
-            new PropertyNode('table', new IdentifierNode('Table')),
+            new PropertyNode('table', new TableIdentifierNode('Table')),
           ]),
         ),
       ),
@@ -241,7 +239,7 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'FooBar',
+          new TableIdentifierNode('FooBar'),
           new ObjectExpressionNode([
             new PropertyNode(
               'bazQux',
@@ -254,9 +252,9 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new IdentifierNode('DB'),
           new ObjectExpressionNode([
-            new PropertyNode('fooBar', new IdentifierNode('FooBar')),
+            new PropertyNode('fooBar', new TableIdentifierNode('FooBar')),
           ]),
         ),
       ),
@@ -265,7 +263,7 @@ describe(transform.name, () => {
 
   it('should be able to transform using an alternative Postgres date parser', () => {
     const nodes = transformWithDefaults({
-      dateParser: DateParser.STRING,
+      dateParser: 'string',
       tables: [
         new TableMetadata({
           columns: [
@@ -282,7 +280,7 @@ describe(transform.name, () => {
     deepStrictEqual(nodes, [
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'Table',
+          new TableIdentifierNode('Table'),
           new ObjectExpressionNode([
             new PropertyNode('date', new IdentifierNode('string')),
           ]),
@@ -290,9 +288,9 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new IdentifierNode('DB'),
           new ObjectExpressionNode([
-            new PropertyNode('table', new IdentifierNode('Table')),
+            new PropertyNode('table', new TableIdentifierNode('Table')),
           ]),
         ),
       ),
@@ -301,7 +299,7 @@ describe(transform.name, () => {
 
   it('should be able to transform using an alternative Postgres numeric parser', () => {
     const nodes = transformWithDefaults({
-      numericParser: NumericParser.NUMBER,
+      numericParser: 'number',
       tables: [
         new TableMetadata({
           columns: [
@@ -368,7 +366,7 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'Table',
+          new TableIdentifierNode('Table'),
           new ObjectExpressionNode([
             new PropertyNode('column1', new IdentifierNode('Mood')),
             new PropertyNode(
@@ -382,9 +380,9 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new IdentifierNode('DB'),
           new ObjectExpressionNode([
-            new PropertyNode('table', new IdentifierNode('Table')),
+            new PropertyNode('table', new TableIdentifierNode('Table')),
           ]),
         ),
       ),
@@ -427,7 +425,7 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'Table',
+          new TableIdentifierNode('Table'),
           new ObjectExpressionNode([
             new PropertyNode('column1', new IdentifierNode('Mood')),
             new PropertyNode(
@@ -441,9 +439,9 @@ describe(transform.name, () => {
       ),
       new ExportStatementNode(
         new InterfaceDeclarationNode(
-          'DB',
+          new IdentifierNode('DB'),
           new ObjectExpressionNode([
-            new PropertyNode('table', new IdentifierNode('Table')),
+            new PropertyNode('table', new TableIdentifierNode('Table')),
           ]),
         ),
       ),
