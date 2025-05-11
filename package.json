@@ -55,7 +55,7 @@
     "@libsql/kysely-libsql": "^0.4.1",
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
     "@robinblomberg/eslint-config-robinblomberg": "0.28.0",
-    "@robinblomberg/prettier-config": "^0.1.2",
+    "@robinblomberg/prettier-config": "^0.2.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/bun": "^1.2.13",
     "@types/git-diff": "^2.0.7",
@@ -67,6 +67,7 @@
     "better-sqlite3": "^11.10.0",
     "cspell-cli": "^9.0.1",
     "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.31.0",
     "execa": "^9.5.3",
     "knip": "^5.55.1",
     "kysely": "^0.28.2",
@@ -125,6 +126,9 @@
     "tedious": {
       "optional": true
     }
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "eslintConfig": {
     "extends": [
