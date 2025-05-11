@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@tediousjs/connection-string':
-        specifier: ^0.5.0
+        specifier: '>=0.5.0 <0.6.0'
         version: 0.5.0
       chalk:
         specifier: 4.1.2
@@ -27,10 +27,10 @@ importers:
         specifier: ^2.0.6
         version: 2.0.6
       kysely-bun-sqlite:
-        specifier: ^0.3.2
+        specifier: '>=0.3.2 <1.0.0'
         version: 0.3.2(kysely@0.28.2)
       kysely-bun-worker:
-        specifier: ^1.2.0
+        specifier: '>=1.2.0 <2.0.0'
         version: 1.2.0(bun-types@1.2.5)(kysely@0.28.2)
       micromatch:
         specifier: ^4.0.8
@@ -42,7 +42,7 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       tarn:
-        specifier: ^3.0.0
+        specifier: '>=3.0.0 <4.0.0'
         version: 3.0.2
       zod:
         specifier: ^3.24.2
@@ -1081,9 +1081,6 @@ packages:
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
 
-  '@types/node@20.12.14':
-    resolution: {integrity: sha512-scnD59RpYD91xngrQQLGkE+6UrHUPzeKZWhhjBSa3HSkwjbQc38+q3RoIVEwxQGRw3M+j5hpNAM+lgV3cVormg==}
-
   '@types/node@22.13.10':
     resolution: {integrity: sha512-I6LPUvlRH+O6VRUqYOcMudhaIdUVWfsjnZavnsraHvpBwaEyMN29ry+0UVJhImYL16xsscu0aske3yA+uPOWfw==}
 
@@ -1385,9 +1382,6 @@ packages:
   builtin-modules@3.3.0:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
     engines: {node: '>=6'}
-
-  bun-types@1.1.32:
-    resolution: {integrity: sha512-Lxgux4InO/WRjSAEy3iyDscsnDXR8+3rgNDeZYjPAizFYjUraoNuMl9PuRd9XMgFZgdyQwaUX7/QHmOw5KGFQw==}
 
   bun-types@1.2.5:
     resolution: {integrity: sha512-3oO6LVGGRRKI4kHINx5PIdIgnLRb7l/SprhzqXapmoYkFl5m4j6EvALvbDVuuBFaamB46Ap6HCUxIXNLCGy+tg==}
@@ -3417,9 +3411,6 @@ packages:
   unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
 
-  undici-types@5.26.5:
-    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
-
   undici-types@6.20.0:
     resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
 
@@ -4507,10 +4498,6 @@ snapshots:
 
   '@types/minimist@1.2.5': {}
 
-  '@types/node@20.12.14':
-    dependencies:
-      undici-types: 5.26.5
-
   '@types/node@22.13.10':
     dependencies:
       undici-types: 6.20.0
@@ -4890,11 +4877,6 @@ snapshots:
       ieee754: 1.2.1
 
   builtin-modules@3.3.0: {}
-
-  bun-types@1.1.32:
-    dependencies:
-      '@types/node': 20.12.14
-      '@types/ws': 8.5.12
 
   bun-types@1.2.5:
     dependencies:
@@ -6198,7 +6180,7 @@ snapshots:
 
   kysely-bun-sqlite@0.3.2(kysely@0.28.2):
     dependencies:
-      bun-types: 1.1.32
+      bun-types: 1.2.5
       kysely: 0.28.2
 
   kysely-bun-worker@1.2.0(bun-types@1.2.5)(kysely@0.28.2):
@@ -7165,8 +7147,6 @@ snapshots:
       has-bigints: 1.0.2
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
-
-  undici-types@5.26.5: {}
 
   undici-types@6.20.0: {}
 
