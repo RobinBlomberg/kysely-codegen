@@ -169,6 +169,7 @@
       "@libsql/kysely-libsql",
       "@tediousjs/connection-string",
       "better-sqlite3",
+      "eslint-plugin-import",
       "kysely-bun-sqlite",
       "mysql2",
       "pg",
