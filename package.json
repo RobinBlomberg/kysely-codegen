@@ -21,6 +21,7 @@
     "check:types": "tsc --noEmit",
     "ci": "run-s ci:*",
     "ci:build": "pnpm build",
+    "ci:circular-imports": "madge -c ./src/index.ts",
     "ci:eslint": "pnpm lint:eslint --max-warnings=0 --report-unused-disable-directives",
     "ci:prettier": "pnpm lint:prettier",
     "ci:spelling": "cspell-cli -e dist -e pnpm-lock.yaml -e '*.svg' .",
@@ -71,6 +72,7 @@
     "execa": "^9.5.3",
     "knip": "^5.55.1",
     "kysely": "^0.28.2",
+    "madge": "^8.0.0",
     "mysql2": "^3.14.1",
     "npm-run-all": "^4.1.5",
     "pg": "^8.15.6",
@@ -176,6 +178,13 @@
       "tarn",
       "tedious"
     ]
+  },
+  "madge": {
+    "detectiveOptions": {
+      "ts": {
+        "skipTypeImports": true
+      }
+    }
   },
   "prettier": "@robinblomberg/prettier-config",
   "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f"

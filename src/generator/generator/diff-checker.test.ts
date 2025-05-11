@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert';
+import { strictEqual } from 'node:assert';
 import { DiffChecker } from './diff-checker';
 
 test(DiffChecker.name, () => {

@@ -1,9 +1,9 @@
-import { deepStrictEqual } from 'assert';
 import type { Config } from 'cosmiconfig';
 import { execa, ExecaError } from 'execa';
-import fs from 'fs/promises';
 import { Kysely, PostgresDialect, sql } from 'kysely';
-import { join } from 'path';
+import { deepStrictEqual } from 'node:assert';
+import fs from 'node:fs/promises';
+import { join } from 'node:path';
 import { Pool } from 'pg';
 import { dedent } from 'ts-dedent';
 import packageJson from '../../package.json';

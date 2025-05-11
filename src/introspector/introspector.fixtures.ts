@@ -1,5 +1,5 @@
-import assert from 'assert';
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
+import assert from 'node:assert';
 import { IntrospectorDialect } from './dialect';
 import { MysqlIntrospectorDialect } from './dialects/mysql/mysql-dialect';
 import { PostgresIntrospectorDialect } from './dialects/postgres/postgres-dialect';

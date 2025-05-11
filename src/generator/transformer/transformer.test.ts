@@ -1,4 +1,4 @@
-import { deepStrictEqual } from 'assert';
+import { deepStrictEqual } from 'node:assert';
 import type { DateParser } from '../../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
 import { EnumCollection } from '../../introspector/enum-collection';

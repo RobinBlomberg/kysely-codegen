@@ -1,13 +1,4 @@
-import { join } from 'path';
 import type { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
-
-export const DEFAULT_OUT_FILE = join(
-  process.cwd(),
-  'node_modules',
-  'kysely-codegen',
-  'dist',
-  'db.d.ts',
-);
 
 export const DEFAULT_RUNTIME_ENUMS_STYLE: RuntimeEnumsStyle =
   'screaming-snake-case';

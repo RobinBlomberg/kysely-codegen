@@ -1,5 +1,5 @@
+import { DEFAULT_OUT_FILE } from '../generator';
 import {
-  DEFAULT_OUT_FILE,
   DEFAULT_RUNTIME_ENUMS_STYLE,
   DEFAULT_URL,
   LOG_LEVEL_NAMES,

@@ -1,7 +1,7 @@
-import { strictEqual } from 'assert';
-import { readFile } from 'fs/promises';
 import { sql } from 'kysely';
-import { join } from 'path';
+import { strictEqual } from 'node:assert';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { dedent } from 'ts-dedent';
 import type {
   DatabaseMetadataOptions,
