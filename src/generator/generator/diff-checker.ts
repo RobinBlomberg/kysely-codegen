@@ -1,4 +1,7 @@
-import gitDiff from 'git-diff';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 export class DiffChecker {
   #sanitize(string: string) {
@@ -7,6 +10,22 @@ export class DiffChecker {
   }
 
   diff(oldTypes: string, newTypes: string) {
-    return gitDiff(this.#sanitize(oldTypes), this.#sanitize(newTypes));
+    const temporaryDirectoryPath = mkdtempSync(join(tmpdir(), 'diff-'));
+
+    const oldTypesFilePath = join(temporaryDirectoryPath, 'old-types');
+    writeFileSync(oldTypesFilePath, this.#sanitize(oldTypes));
+
+    const newTypesFilePath = join(temporaryDirectoryPath, 'new-types');
+    writeFileSync(newTypesFilePath, this.#sanitize(newTypes));
+
+    const { stdout } = spawnSync(
+      'git',
+      ['diff', '--no-index', oldTypesFilePath, newTypesFilePath],
+      { encoding: 'utf-8' },
+    );
+
+    rmSync(temporaryDirectoryPath, { recursive: true });
+
+    return stdout.match(/@@.*/s)?.[0];
   }
 }
