@@ -2,6 +2,9 @@ import { strictEqual } from 'node:assert';
 import { DiffChecker } from './diff-checker';
 
 test(DiffChecker.name, () => {
+  expectTypeOf<ReturnType<DiffChecker['diff']>>().toEqualTypeOf<
+    string | undefined
+  >();
   strictEqual(
     new DiffChecker().diff('Foo\nBar\nBaz', 'Foo\nBar\nBaz'),
     undefined,
