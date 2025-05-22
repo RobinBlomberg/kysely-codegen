@@ -176,6 +176,10 @@ export interface User {
 }
 ```
 
+#### --config-file <!-- omit from toc -->
+
+Specify the path to the configuration file to use.
+
 #### --date-parser <!-- omit from toc -->
 
 Specify which parser to use for PostgreSQL date values. (values: `string`/`timestamp`, default: `timestamp`)
