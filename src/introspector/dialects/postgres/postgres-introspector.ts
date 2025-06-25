@@ -21,11 +21,13 @@ export type PostgresDomainInspector = {
 export type TableReference = {
   schema?: string;
   name: string;
+  isForeignTable: boolean;
 };
 
 export type PostgresIntrospectorOptions = {
   defaultSchemas?: string[];
   domains?: boolean;
+  foreignTables?: boolean;
   partitions?: boolean;
 };
 
@@ -41,6 +43,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
           ? options.defaultSchemas
           : ['public'],
       domains: options?.domains ?? true,
+      foreignTables: options?.foreignTables,
       partitions: options?.partitions,
     };
   }
@@ -87,13 +90,20 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
         return {
           columns,
           isPartition,
+          isForeignTable: table.isForeignTable,
           isView: table.isView,
           name: table.name,
           schema: table.schema,
         };
       })
       .filter((table) => {
-        return this.options.partitions ? true : !table.isPartition;
+        if (!this.options.partitions && table.isPartition) {
+          return false;
+        }
+        if (!this.options.foreignTables && table.isForeignTable) {
+          return false;
+        }
+        return true;
       });
 
     return new DatabaseMetadata({ enums, tables });
@@ -121,7 +131,12 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
       this.introspectPartitions(options.db),
     ]);
 
-    return this.createDatabaseMetadata({ enums, domains, partitions, tables });
+    return this.createDatabaseMetadata({
+      enums,
+      domains,
+      partitions,
+      tables,
+    });
   }
 
   async introspectDomains(db: Kysely<PostgresDB>) {
@@ -190,6 +205,9 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
       join pg_namespace on pg_namespace.oid = pg_class.relnamespace;
     `.execute(db);
 
-    return result.rows;
+    return result.rows.map((row) => ({
+      ...row,
+      isForeignTable: false,
+    }));
   }
 }

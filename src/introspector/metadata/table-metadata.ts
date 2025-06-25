@@ -3,6 +3,7 @@ import { ColumnMetadata } from './column-metadata';
 
 export type TableMetadataOptions = {
   columns: ColumnMetadataOptions[];
+  isForeignTable?: boolean;
   isPartition?: boolean;
   isView?: boolean;
   name: string;
@@ -11,6 +12,7 @@ export type TableMetadataOptions = {
 
 export class TableMetadata {
   columns: ColumnMetadata[];
+  isForeignTable: boolean;
   isPartition: boolean;
   isView: boolean;
   name: string;
@@ -18,6 +20,7 @@ export class TableMetadata {
 
   constructor(options: TableMetadataOptions) {
     this.columns = options.columns.map((column) => new ColumnMetadata(column));
+    this.isForeignTable = !!options.isForeignTable;
     this.isPartition = !!options.isPartition;
     this.isView = !!options.isView;
     this.name = options.name;

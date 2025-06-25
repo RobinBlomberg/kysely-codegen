@@ -11,6 +11,7 @@ type ConnectOptions = {
 export type IntrospectOptions<DB> = {
   db: Kysely<DB>;
   excludePattern?: string | null;
+  foreignTables?: boolean;
   includePattern?: string | null;
   partitions?: boolean;
 };
@@ -53,7 +54,10 @@ export abstract class Introspector<DB> {
   }
 
   protected async getTables(options: IntrospectOptions<DB>) {
-    let tables = await options.db.introspection.getTables();
+    let tables = await options.db.introspection.getTables({
+      withForeignTables: options.foreignTables ?? false,
+      withInternalKyselyTables: false,
+    });
 
     if (options.includePattern) {
       const tableMatcher = new TableMatcher(options.includePattern);

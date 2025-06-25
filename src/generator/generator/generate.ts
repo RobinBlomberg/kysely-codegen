@@ -18,6 +18,7 @@ export type GenerateOptions = {
   defaultSchemas?: string[];
   dialect: GeneratorDialect;
   excludePattern?: string | null;
+  foreignTables?: boolean;
   includePattern?: string | null;
   logger?: Logger;
   outFile?: string | null;
@@ -36,6 +37,7 @@ export type SerializeFromMetadataOptions = Omit<
   GenerateOptions,
   | 'db'
   | 'excludePattern'
+  | 'foreignTables'
   | 'includePattern'
   | 'outFile'
   | 'partitions'
@@ -54,6 +56,7 @@ export const generate = async (options: GenerateOptions) => {
   const metadata = await options.dialect.introspector.introspect({
     db: options.db,
     excludePattern: options.excludePattern,
+    foreignTables: options.foreignTables,
     includePattern: options.includePattern,
     partitions: options.partitions,
   });

@@ -30,6 +30,7 @@ export type Config = {
   domains?: boolean;
   envFile?: string;
   excludePattern?: string | null;
+  foreignTables?: boolean;
   includePattern?: string | null;
   logger?: Logger;
   logLevel?: LogLevel;
@@ -88,6 +89,7 @@ export const configSchema = z.object({
   domains: z.boolean().optional(),
   envFile: z.string().optional(),
   excludePattern: z.string().nullable().optional(),
+  foreignTables: z.boolean().optional(),
   includePattern: z.string().nullable().optional(),
   logger: z.instanceof(Logger).optional(),
   logLevel: z.enum(LOG_LEVELS).optional(),

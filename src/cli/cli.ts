@@ -52,6 +52,7 @@ export class Cli {
     const dialect = getDialect(dialectName, {
       dateParser: options.dateParser,
       domains: options.domains,
+      foreignTables: options.foreignTables,
       numericParser: options.numericParser,
       partitions: options.partitions,
     });
@@ -67,6 +68,7 @@ export class Cli {
       defaultSchemas: options.defaultSchemas,
       dialect,
       excludePattern: options.excludePattern,
+      foreignTables: options.foreignTables,
       includePattern: options.includePattern,
       logger,
       outFile: options.outFile,
@@ -234,6 +236,7 @@ export class Cli {
       domains: this.#parseBoolean(argv.domains),
       envFile: this.#parseString(argv['env-file']),
       excludePattern: this.#parseString(argv['exclude-pattern']),
+      foreignTables: this.#parseBoolean(argv['foreign-tables']),
       includePattern: this.#parseString(argv['include-pattern']),
       logLevel,
       numericParser: this.#parseNumericParser(argv['numeric-parser']),

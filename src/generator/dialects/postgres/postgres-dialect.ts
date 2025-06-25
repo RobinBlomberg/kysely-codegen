@@ -8,6 +8,7 @@ export type PostgresDialectOptions = {
   dateParser?: DateParser;
   defaultSchemas?: string[];
   domains?: boolean;
+  foreignTables?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;
 };
@@ -23,6 +24,7 @@ export class PostgresDialect
       dateParser: options?.dateParser,
       defaultSchemas: options?.defaultSchemas,
       domains: options?.domains,
+      foreignTables: options?.foreignTables,
       numericParser: options?.numericParser,
       partitions: options?.partitions,
     });

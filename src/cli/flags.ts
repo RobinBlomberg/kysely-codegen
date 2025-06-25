@@ -50,6 +50,10 @@ export const FLAGS = [
     longName: 'exclude-pattern',
   },
   {
+    description: 'Include foreign tables (FDW) in the generated code.',
+    longName: 'foreign-tables',
+  },
+  {
     description: 'Print this message.',
     longName: 'help',
     shortName: 'h',

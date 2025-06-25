@@ -11,6 +11,7 @@ type PostgresDialectOptions = {
   dateParser?: DateParser;
   defaultSchemas?: string[];
   domains?: boolean;
+  foreignTables?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;
 };
@@ -25,12 +26,14 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
     this.introspector = new PostgresIntrospector({
       defaultSchemas: options?.defaultSchemas,
       domains: options?.domains,
+      foreignTables: options?.foreignTables,
       partitions: options?.partitions,
     });
     this.options = {
       dateParser: options?.dateParser ?? DEFAULT_DATE_PARSER,
       defaultSchemas: options?.defaultSchemas,
       domains: options?.domains ?? true,
+      foreignTables: options?.foreignTables,
       numericParser: options?.numericParser ?? DEFAULT_NUMERIC_PARSER,
     };
   }
