@@ -13,7 +13,8 @@ import {
   migrate,
 } from '../../introspector/introspector.fixtures';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
-import { TableIdentifierNode } from '../ast/identifier-node';
+import { GenericExpressionNode } from '../ast/generic-expression-node';
+import { IdentifierNode, TableIdentifierNode } from '../ast/identifier-node';
 import { JsonColumnTypeNode } from '../ast/json-column-type-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
 import type { GeneratorDialect } from '../dialect';
@@ -534,6 +535,54 @@ describe(serializeFromMetadata.name, () => {
 
         export interface DB {
           users: UserModel;
+        }
+      `,
+    );
+  });
+
+  test('customImports', () => {
+    expect(
+      serialize({
+        customImports: {
+          InstantRange: './custom-types',
+          MyCustomType: '@my-org/custom-types',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'text', name: 'date_range' },
+                { dataType: 'json', name: 'metadata' },
+              ],
+              name: 'events',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'events.date_range': new GenericExpressionNode('ColumnType', [
+              new IdentifierNode('InstantRange'),
+              new IdentifierNode('InstantRange'),
+              new IdentifierNode('never'),
+            ]),
+            'events.metadata': new IdentifierNode('MyCustomType'),
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { InstantRange } from "./custom-types";
+        import type { MyCustomType } from "@my-org/custom-types";
+        import type { ColumnType } from "kysely";
+
+        export interface Events {
+          date_range: ColumnType<InstantRange, InstantRange, never>;
+          metadata: MyCustomType;
+        }
+
+        export interface DB {
+          events: Events;
         }
       `,
     );

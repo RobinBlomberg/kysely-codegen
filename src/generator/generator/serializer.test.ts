@@ -443,6 +443,50 @@ describe(TypeScriptSerializer.name, () => {
     });
   });
 
+  describe(TypeScriptSerializer.prototype.serializeFile.name, () => {
+    it('should serialize custom imports properly', () => {
+      const dialect = new PostgresDialect();
+      const metadata = new DatabaseMetadata({
+        enums: new EnumCollection(),
+        tables: [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'custom_field',
+              }),
+            ],
+            name: 'events',
+            schema: 'public',
+          }),
+        ],
+      });
+
+      const result = serializer.serializeFile(metadata, dialect, {
+        customImports: {
+          InstantRange: './custom-types',
+          MyCustomType: '@my-org/custom-types',
+        },
+        overrides: {
+          columns: {
+            'events.custom_field': new GenericExpressionNode('ColumnType', [
+              new IdentifierNode('InstantRange'),
+              new IdentifierNode('InstantRange'),
+              new IdentifierNode('never'),
+            ]),
+          },
+        },
+      });
+
+      // Should include the custom import
+      strictEqual(result.includes('import type { InstantRange } from "./custom-types";'), true);
+      // Should use the custom type in the interface
+      strictEqual(result.includes('custom_field: ColumnType<InstantRange, InstantRange, never>;'), true);
+      // Should not include unused custom imports
+      strictEqual(result.includes('MyCustomType'), false);
+    });
+  });
+
   describe(TypeScriptSerializer.prototype.serializeUnionExpression.name, () => {
     it('should serialize union constituents properly with the correct ordering', () => {
       strictEqual(
