@@ -225,6 +225,10 @@ describe(Cli.name, () => {
     };
 
     assert(['--camel-case'], { camelCase: true });
+    assert(
+      [`--custom-imports={"InstantRange":"./custom-types"}`],
+      { customImports: { InstantRange: './custom-types' } },
+    );
     assert(['--date-parser=timestamp'], { dateParser: 'timestamp' });
     assert(['--date-parser=string'], { dateParser: 'string' });
     assert(['--default-schema=foo'], { defaultSchemas: ['foo'] });
@@ -281,6 +285,7 @@ describe(Cli.name, () => {
     };
 
     assert({ camelCase: 'true' }, 'Expected boolean, received string');
+    assert({ customImports: [] }, 'Expected object, received array');
     assert(
       { dateParser: 'timestamps' },
       "Invalid enum value. Expected 'string' | 'timestamp', received 'timestamps'",

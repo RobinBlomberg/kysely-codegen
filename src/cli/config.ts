@@ -22,8 +22,11 @@ import {
 import type { DateParser, NumericParser } from '../introspector';
 import { DatabaseMetadata, IntrospectorDialect } from '../introspector';
 
+export type CustomImports = Record<string, string>;
+
 export type Config = {
   camelCase?: boolean;
+  customImports?: CustomImports;
   dateParser?: DateParser;
   defaultSchemas?: string[];
   dialect?: DialectName;
@@ -80,6 +83,7 @@ const overridesSchema = z
 
 export const configSchema = z.object({
   camelCase: z.boolean().optional(),
+  customImports: z.record(z.string(), z.string()).optional(),
   dateParser: z
     .enum<DateParser, ['string', 'timestamp']>(['string', 'timestamp'])
     .optional(),
@@ -119,6 +123,7 @@ export const configSchema = z.object({
           z
             .object({
               camelCase: z.boolean().optional(),
+              customImports: z.record(z.string(), z.string()).optional(),
               defaultSchemas: z.string().array().optional(),
               overrides: overridesSchema.optional(),
             })

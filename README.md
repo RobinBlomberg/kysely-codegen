@@ -244,6 +244,22 @@ Specify type overrides for specific table columns in JSON format.
 kysely-codegen --overrides='{"columns":{"table_name.column_name":"{foo:\"bar\"}"}}'
 ```
 
+#### --custom-imports <!-- omit from toc -->
+
+Specify custom type imports to use with type overrides. This is particularly useful when using custom types from external packages or local files.
+
+**Example:**
+
+```sh
+kysely-codegen --custom-imports='{"InstantRange":"./custom-types","MyCustomType":"@my-org/custom-types"}'
+```
+
+Then you can use these imported types in your overrides:
+
+```sh
+kysely-codegen --overrides='{"columns":{"events.date_range":"ColumnType<InstantRange, InstantRange, never>"}}'
+```
+
 #### --out-file [value] <!-- omit from toc -->
 
 Set the file build path. (default: `./node_modules/kysely-codegen/dist/db.d.ts`)
@@ -313,6 +329,7 @@ The default configuration:
 ```json
 {
   "camelCase": false,
+  "customImports": {},
   "dateParser": "timestamp",
   "defaultSchemas": [], // ["public"] for PostgreSQL.
   "dialect": null,
@@ -339,8 +356,13 @@ The configuration object adds support for more advanced options:
 ```json
 {
   "camelCase": true,
+  "customImports": {
+    "InstantRange": "./custom-types",
+    "MyCustomType": "@my-org/custom-types"
+  },
   "overrides": {
     "columns": {
+      "events.date_range": "ColumnType<InstantRange, InstantRange, never>",
       "users.settings": "{ theme: 'dark' }"
     }
   },
@@ -354,6 +376,13 @@ The configuration object adds support for more advanced options:
 The generated output:
 
 ```ts
+import type { InstantRange } from './custom-types';
+import type { MyCustomType } from '@my-org/custom-types';
+
+export interface EventModel {
+  dateRange: ColumnType<InstantRange, InstantRange, never>;
+}
+
 export interface UserModel {
   settings: { theme: 'dark' };
 }
@@ -362,6 +391,7 @@ export interface UserModel {
 
 export interface DB {
   bacchi: Bacchus;
+  events: EventModel;
   users: UserModel;
 }
 ```

@@ -13,6 +13,7 @@ import { ImportClauseNode } from '../ast/import-clause-node';
 import { ImportStatementNode } from '../ast/import-statement-node';
 import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
 import { LiteralNode } from '../ast/literal-node';
+import { ModuleReferenceNode } from '../ast/module-reference-node';
 import { ObjectExpressionNode } from '../ast/object-expression-node';
 import { PropertyNode } from '../ast/property-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
@@ -49,6 +50,7 @@ export type Overrides = {
 
 type TransformContext = {
   camelCase: boolean;
+  customImports: Record<string, string> | undefined;
   defaultScalar: ExpressionNode;
   defaultSchemas: string[];
   definitions: Definitions;
@@ -64,6 +66,7 @@ type TransformContext = {
 
 export type TransformOptions = {
   camelCase?: boolean;
+  customImports?: Record<string, string>;
   defaultSchemas?: string[];
   dialect: GeneratorDialect;
   metadata: DatabaseMetadata;
@@ -150,8 +153,17 @@ const collectSymbols = (
 };
 
 const createContext = (options: TransformOptions): TransformContext => {
+  const customImports = options.customImports || {};
+  const customImportNodes: Imports = {};
+  
+  // Convert custom imports to ModuleReferenceNode instances
+  for (const [name, module] of Object.entries(customImports)) {
+    customImportNodes[name] = new ModuleReferenceNode(module);
+  }
+  
   return {
     camelCase: !!options.camelCase,
+    customImports: options.customImports,
     defaultScalar:
       options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
     defaultSchemas:
@@ -167,6 +179,7 @@ const createContext = (options: TransformOptions): TransformContext => {
     imports: {
       ...GLOBAL_IMPORTS,
       ...options.dialect.adapter.imports,
+      ...customImportNodes,
     },
     metadata: options.metadata,
     overrides: options.overrides,

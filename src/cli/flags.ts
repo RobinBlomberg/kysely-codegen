@@ -26,6 +26,11 @@ export const FLAGS = [
     longName: 'config-file',
   },
   {
+    description: 'Specify custom type imports, in JSON format.',
+    example: '{"InstantRange":"./custom-types","MyCustomType":"@my-org/custom-types"}',
+    longName: 'custom-imports',
+  },
+  {
     default: 'timestamp',
     description: 'Specify which parser to use for PostgreSQL date values.',
     longName: 'date-parser',

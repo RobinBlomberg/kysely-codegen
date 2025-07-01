@@ -447,4 +447,45 @@ describe(transform.name, () => {
       ),
     ]);
   });
+
+  it('should transform with custom imports correctly', () => {
+    const nodes = transform({
+      customImports: {
+        'InstantRange': './custom-types',
+        'MyCustomType': '@my-org/custom-types',
+      },
+      dialect: new PostgresDialect({}),
+      metadata: new DatabaseMetadata({ 
+        enums,
+        tables: [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'custom_column',
+              }),
+            ],
+            name: 'table',
+            schema: 'public',
+          }),
+        ],
+      }),
+      overrides: {
+        columns: {
+          'table.custom_column': new GenericExpressionNode('ColumnType', [
+            new IdentifierNode('InstantRange'),
+            new IdentifierNode('InstantRange'),
+            new IdentifierNode('never'),
+          ]),
+        },
+      },
+    });
+
+    // Verify custom imports are included
+    const importNodes = nodes.filter(node => node.type === 'ImportStatement') as ImportStatementNode[];
+    const customImport = importNodes.find(node => node.moduleName === './custom-types');
+    deepStrictEqual(customImport, new ImportStatementNode('./custom-types', [
+      new ImportClauseNode('InstantRange'),
+    ]));
+  });
 });

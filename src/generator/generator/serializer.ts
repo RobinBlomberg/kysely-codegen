@@ -28,6 +28,7 @@ const IDENTIFIER_REGEXP = /^[$A-Z_a-z][\w$]*$/;
 
 export type SerializeFileOptions = {
   camelCase?: boolean;
+  customImports?: Record<string, string>;
   defaultSchemas?: string[];
   overrides?: Overrides;
 };
@@ -190,6 +191,7 @@ export class TypeScriptSerializer implements Serializer {
     data += this.serializeStatements(
       transform({
         camelCase: options?.camelCase,
+        customImports: options?.customImports,
         defaultSchemas: options?.defaultSchemas,
         dialect,
         metadata,

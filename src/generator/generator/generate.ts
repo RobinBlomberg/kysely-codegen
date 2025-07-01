@@ -14,6 +14,7 @@ import { TypeScriptSerializer } from './serializer';
 
 export type GenerateOptions = {
   camelCase?: boolean;
+  customImports?: Record<string, string>;
   db: Kysely<any>;
   defaultSchemas?: string[];
   dialect: GeneratorDialect;
@@ -139,6 +140,7 @@ export const serializeFromMetadata = (
 
   return serializer.serializeFile(options.metadata, options.dialect, {
     camelCase: options.camelCase,
+    customImports: options.customImports,
     defaultSchemas: options.defaultSchemas,
     overrides: options.overrides,
   });

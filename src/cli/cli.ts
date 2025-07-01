@@ -63,6 +63,7 @@ export class Cli {
 
     const output = await generate({
       camelCase: options.camelCase,
+      customImports: options.customImports,
       db,
       defaultSchemas: options.defaultSchemas,
       dialect,
@@ -228,6 +229,10 @@ export class Cli {
 
     const cliOptions: Config = compact({
       camelCase: this.#parseBoolean(argv['camel-case']),
+      customImports:
+        typeof argv['custom-imports'] === 'string'
+          ? JSON.parse(argv['custom-imports'])
+          : undefined,
       dateParser: this.#parseDateParser(argv['date-parser']),
       defaultSchemas: this.#parseStringArray(argv['default-schema']),
       dialect: this.#parseDialectName(argv.dialect),
