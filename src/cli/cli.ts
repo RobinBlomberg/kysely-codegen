@@ -55,6 +55,7 @@ export class Cli {
       domains: options.domains,
       numericParser: options.numericParser,
       partitions: options.partitions,
+      timestampParser: options.timestampParser,
     });
 
     const db = await dialect.introspector.connect({
