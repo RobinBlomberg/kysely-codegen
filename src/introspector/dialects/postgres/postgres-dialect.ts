@@ -6,6 +6,8 @@ import { DEFAULT_DATE_PARSER } from './date-parser';
 import type { NumericParser } from './numeric-parser';
 import { DEFAULT_NUMERIC_PARSER } from './numeric-parser';
 import { PostgresIntrospector } from './postgres-introspector';
+import type { TimestampParser } from './timestamp-parser';
+import { DEFAULT_TIMESTAMP_PARSER } from './timestamp-parser';
 
 type PostgresDialectOptions = {
   dateParser?: DateParser;
@@ -13,6 +15,7 @@ type PostgresDialectOptions = {
   domains?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;
+  timestampParser?: TimestampParser;
 };
 
 export class PostgresIntrospectorDialect extends IntrospectorDialect {
@@ -32,6 +35,7 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
       defaultSchemas: options?.defaultSchemas,
       domains: options?.domains ?? true,
       numericParser: options?.numericParser ?? DEFAULT_NUMERIC_PARSER,
+      timestampParser: options?.timestampParser ?? DEFAULT_TIMESTAMP_PARSER,
     };
   }
 
@@ -52,6 +56,17 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
           ? value
           : number;
       });
+    }
+
+    if (this.options.timestampParser === 'string') {
+      /**
+       * 13234: time_stamp
+       * 1114: timestamp
+       * 1184: timestamptz
+       */
+      pg.types.setTypeParser(13234, (ts) => ts);
+      pg.types.setTypeParser(1114, (ts) => ts);
+      pg.types.setTypeParser(1184, (ts) => ts);
     }
 
     return new KyselyPostgresDialect({

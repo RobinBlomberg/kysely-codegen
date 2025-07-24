@@ -109,6 +109,12 @@ export const FLAGS = [
     longName: 'singularize',
   },
   {
+    default: 'js-date',
+    description: 'Specify which parser to use for PostgreSQL timestamp values.',
+    longName: 'timestamp-parser',
+    values: ['js-date', 'string'],
+  },
+  {
     default: 'true',
     description:
       'Generate code using the TypeScript 3.8+ `import type` syntax.',

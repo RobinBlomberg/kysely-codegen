@@ -292,6 +292,10 @@ Singularize generated type aliases, e.g. as `BlogPost` instead of `BlogPosts`. T
 
 You can specify custom singularization rules in the [configuration file](#configuration-file).
 
+#### --timestamp-parser <!-- omit from toc -->
+
+Specify which parser to use for PostgreSQL timestamp values. (values: `js-date`/`string`, default: `js-date`)
+
 #### --type-only-imports <!-- omit from toc -->
 
 Generate code using the TypeScript 3.8+ `import type` syntax. (default: `true`)
@@ -328,6 +332,7 @@ The default configuration:
   "print": false,
   "runtimeEnums": false,
   "singularize": false,
+  "timestampParser": "js-date",
   "typeOnlyImports": true,
   "url": "env(DATABASE_URL)",
   "verify": false

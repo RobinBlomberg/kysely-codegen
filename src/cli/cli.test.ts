@@ -247,6 +247,8 @@ describe(Cli.name, () => {
     );
     assert(['--print'], { print: true });
     assert(['--singularize'], { singularize: true });
+    assert(['--timestamp-parser=js-date'], { timestampParser: 'js-date' });
+    assert(['--timestamp-parser=string'], { timestampParser: 'string' });
     assert(['--type-only-imports'], { typeOnlyImports: true });
     assert(['--type-only-imports=false'], { typeOnlyImports: false });
     assert(['--type-only-imports=true'], { typeOnlyImports: true });
@@ -311,6 +313,10 @@ describe(Cli.name, () => {
     assert({ print: 'true' }, 'Expected boolean, received string');
     assert({ runtimeEnums: 'true' }, 'Invalid input');
     assert({ singularize: 'true' }, 'Invalid input');
+    assert(
+      { timestampParser: 'date' },
+      "Invalid enum value. Expected 'js-date' | 'string', received 'date'",
+    );
     assert({ typeOnlyImports: 'true' }, 'Expected boolean, received string');
     assert({ url: null }, 'Expected string, received null');
     assert({ verify: 'true' }, 'Expected boolean, received string');

@@ -14,6 +14,7 @@ export * from './dialects/postgres/numeric-parser';
 export * from './dialects/postgres/postgres-db';
 export * from './dialects/postgres/postgres-dialect';
 export * from './dialects/postgres/postgres-introspector';
+export * from './dialects/postgres/timestamp-parser';
 export * from './dialects/sqlite/sqlite-dialect';
 export * from './dialects/sqlite/sqlite-introspector';
 export * from './enum-collection';

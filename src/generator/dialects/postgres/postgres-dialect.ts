@@ -1,6 +1,7 @@
 import type { DateParser } from '../../../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../../../introspector/dialects/postgres/numeric-parser';
 import { PostgresIntrospectorDialect } from '../../../introspector/dialects/postgres/postgres-dialect';
+import type { TimestampParser } from '../../../introspector/dialects/postgres/timestamp-parser';
 import type { GeneratorDialect } from '../../dialect';
 import { PostgresAdapter } from './postgres-adapter';
 
@@ -10,6 +11,7 @@ export type PostgresDialectOptions = {
   domains?: boolean;
   numericParser?: NumericParser;
   partitions?: boolean;
+  timestampParser?: TimestampParser;
 };
 
 export class PostgresDialect
@@ -25,11 +27,13 @@ export class PostgresDialect
       domains: options?.domains,
       numericParser: options?.numericParser,
       partitions: options?.partitions,
+      timestampParser: options?.timestampParser,
     });
 
     this.adapter = new PostgresAdapter({
       dateParser: this.options.dateParser,
       numericParser: this.options.numericParser,
+      timestampParser: this.options?.timestampParser,
     });
   }
 }

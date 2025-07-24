@@ -57,6 +57,7 @@ const TESTS: Test[] = [
     dialect: new PostgresDialect({
       dateParser: 'string',
       numericParser: 'number-or-string',
+      timestampParser: 'string',
     }),
     generateOptions: { runtimeEnums: 'screaming-snake-case' },
     name: 'postgres2',
@@ -360,6 +361,7 @@ describe(serializeFromMetadata.name, () => {
           dialect: new PostgresDialect({
             dateParser: 'string',
             numericParser: 'number',
+            timestampParser: 'string',
           }),
           metadata: {
             tables: [
@@ -367,6 +369,8 @@ describe(serializeFromMetadata.name, () => {
                 columns: [
                   { dataType: 'date', name: 'date' },
                   { dataType: 'numeric', name: 'numeric' },
+                  { dataType: 'timestamp', name: 'timestamp' },
+                  { dataType: 'timestamptz', name: 'timestamptz' },
                 ],
                 name: 'table',
               },
@@ -379,9 +383,13 @@ describe(serializeFromMetadata.name, () => {
 
           export type Numeric = ColumnType<number, number | string, number | string>;
 
+          export type Timestamp = ColumnType<string, Date | string, Date | string>;
+
           export interface Table {
             date: string;
             numeric: Numeric;
+            timestamp: Timestamp;
+            timestamptz: Timestamp;
           }
 
           export interface DB {
