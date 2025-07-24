@@ -64,7 +64,7 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
        * 1114: timestamp
        * 1184: timestamptz
        */
-      pg.types.setTypeParser(13234, (ts) => ts);
+      pg.types.setTypeParser(13_234, (ts) => ts);
       pg.types.setTypeParser(1114, (ts) => ts);
       pg.types.setTypeParser(1184, (ts) => ts);
     }
