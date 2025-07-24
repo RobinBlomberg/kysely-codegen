@@ -7,6 +7,7 @@ import { ConnectionStringParser } from '../generator/connection-string-parser';
 import { generate } from '../generator/generator/generate';
 import { DEFAULT_LOG_LEVEL } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
+import type { TimestampParser } from '../introspector';
 import type { DateParser } from '../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import type { Config, DialectName } from './config';
@@ -54,6 +55,7 @@ export class Cli {
       domains: options.domains,
       numericParser: options.numericParser,
       partitions: options.partitions,
+      timestampParser: options.timestampParser,
     });
 
     const db = await dialect.introspector.connect({
@@ -143,6 +145,15 @@ export class Cli {
     if (input === undefined) return undefined;
     if (!Array.isArray(input)) return [String(input)];
     return input.map(String);
+  }
+
+  #parseTimestampParser(input: any): TimestampParser | undefined {
+    if (input === undefined) return undefined;
+    switch (input) {
+      case 'js-date':
+      case 'string':
+        return input;
+    }
   }
 
   #showHelp() {
@@ -246,6 +257,7 @@ export class Cli {
       print: this.#parseBoolean(argv.print),
       runtimeEnums: this.#parseRuntimeEnums(argv['runtime-enums']),
       singularize: this.#parseBoolean(argv.singularize),
+      timestampParser: this.#parseTimestampParser(argv['timestamp-parser']),
       typeOnlyImports: this.#parseBoolean(argv['type-only-imports']),
       url: this.#parseString(argv.url),
       verify: this.#parseBoolean(argv.verify),

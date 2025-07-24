@@ -44,7 +44,7 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Numeric = ColumnType<number | string>;
 
-export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+export type Timestamp = ColumnType<string, Date | string, Date | string>;
 
 export interface Enum {
   name: string;

@@ -1,5 +1,6 @@
 import type { DateParser } from '../../../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../../../introspector/dialects/postgres/numeric-parser';
+import type { TimestampParser } from '../../../introspector/dialects/postgres/timestamp-parser';
 import { Adapter } from '../../adapter';
 import { ColumnTypeNode } from '../../ast/column-type-node';
 import { IdentifierNode } from '../../ast/identifier-node';
@@ -18,6 +19,7 @@ import {
 type PostgresAdapterOptions = {
   dateParser?: DateParser;
   numericParser?: NumericParser;
+  timestampParser?: TimestampParser;
 };
 
 export class PostgresAdapter extends Adapter {
@@ -161,6 +163,20 @@ export class PostgresAdapter extends Adapter {
       this.definitions.Numeric = new ColumnTypeNode(
         new UnionExpressionNode([
           new IdentifierNode('number'),
+          new IdentifierNode('string'),
+        ]),
+      );
+    }
+
+    if (options?.timestampParser === 'string') {
+      this.definitions.Timestamp = new ColumnTypeNode(
+        new IdentifierNode('string'),
+        new UnionExpressionNode([
+          new IdentifierNode('Date'),
+          new IdentifierNode('string'),
+        ]),
+        new UnionExpressionNode([
+          new IdentifierNode('Date'),
           new IdentifierNode('string'),
         ]),
       );

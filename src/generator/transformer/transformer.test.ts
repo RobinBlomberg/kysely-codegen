@@ -1,12 +1,14 @@
 import { deepStrictEqual } from 'node:assert';
 import type { DateParser } from '../../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../../introspector/dialects/postgres/numeric-parser';
+import type { TimestampParser } from '../../introspector/dialects/postgres/timestamp-parser';
 import { EnumCollection } from '../../introspector/enum-collection';
 import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
 import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
 import { TableMetadata } from '../../introspector/metadata/table-metadata';
 import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
+import { ColumnTypeNode } from '../ast/column-type-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
 import { IdentifierNode, TableIdentifierNode } from '../ast/identifier-node';
@@ -38,16 +40,22 @@ describe(transform.name, () => {
     numericParser,
     runtimeEnums,
     tables,
+    timestampParser,
   }: {
     camelCase?: boolean;
     dateParser?: DateParser;
     numericParser?: NumericParser;
     runtimeEnums?: boolean | RuntimeEnumsStyle;
     tables: TableMetadata[];
+    timestampParser?: TimestampParser;
   }) => {
     return transform({
       camelCase,
-      dialect: new PostgresDialect({ dateParser, numericParser }),
+      dialect: new PostgresDialect({
+        dateParser,
+        numericParser,
+        timestampParser,
+      }),
       metadata: new DatabaseMetadata({ enums, tables }),
       overrides: {
         columns: {
@@ -314,6 +322,64 @@ describe(transform.name, () => {
     });
 
     deepStrictEqual((nodes[1] as any).argument.body.args[0].name, 'number');
+  });
+
+  it('should be able to transform using an alternative Postgres timestamp parser', () => {
+    const nodes = transformWithDefaults({
+      timestampParser: 'string',
+      tables: [
+        new TableMetadata({
+          columns: [
+            new ColumnMetadata({
+              dataType: 'timestamp',
+              name: 'timestamp',
+            }),
+            new ColumnMetadata({
+              dataType: 'timestamptz',
+              name: 'timestamptz',
+            }),
+          ],
+          name: 'table',
+        }),
+      ],
+    });
+
+    deepStrictEqual(nodes, [
+      new ImportStatementNode('kysely', [new ImportClauseNode('ColumnType')]),
+      new ExportStatementNode(
+        new AliasDeclarationNode(
+          'Timestamp',
+          new ColumnTypeNode(
+            new IdentifierNode('string'),
+            new UnionExpressionNode([
+              new IdentifierNode('Date'),
+              new IdentifierNode('string'),
+            ]),
+            new UnionExpressionNode([
+              new IdentifierNode('Date'),
+              new IdentifierNode('string'),
+            ]),
+          ),
+        ),
+      ),
+      new ExportStatementNode(
+        new InterfaceDeclarationNode(
+          new TableIdentifierNode('Table'),
+          new ObjectExpressionNode([
+            new PropertyNode('timestamp', new IdentifierNode('Timestamp')),
+            new PropertyNode('timestamptz', new IdentifierNode('Timestamp')),
+          ]),
+        ),
+      ),
+      new ExportStatementNode(
+        new InterfaceDeclarationNode(
+          new IdentifierNode('DB'),
+          new ObjectExpressionNode([
+            new PropertyNode('table', new TableIdentifierNode('Table')),
+          ]),
+        ),
+      ),
+    ]);
   });
 
   it('should transform Postgres enums correctly', () => {
