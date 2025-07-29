@@ -30,7 +30,7 @@ npm install kysely mysql2
 npm install kysely better-sqlite3
 
 # MSSQL
-npm install kysely tedious tarn @tediousjs/connection-string
+npm install kysely tedious tarn @tediousjs/connection-string@0.5.0
 
 # LibSQL
 npm install @libsql/kysely-libsql
