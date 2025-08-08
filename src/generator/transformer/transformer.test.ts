@@ -488,4 +488,70 @@ describe(transform.name, () => {
       new ImportClauseNode('InstantRange'),
     ]));
   });
+
+  it('should support named imports with # syntax', () => {
+    const nodes = transform({
+      customImports: {
+        'InstantRange': './custom-types#CustomInstantRange',
+        'MyType': '@my-org/types#OriginalType',
+        'SameNameImport': './same-types#SameNameImport',
+      },
+      dialect: new PostgresDialect({}),
+      metadata: new DatabaseMetadata({ 
+        enums,
+        tables: [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'date_range',
+              }),
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'metadata',
+              }),
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'same_data',
+              }),
+            ],
+            name: 'events',
+            schema: 'public',
+          }),
+        ],
+      }),
+      overrides: {
+        columns: {
+          'events.date_range': new GenericExpressionNode('ColumnType', [
+            new IdentifierNode('InstantRange'),
+            new IdentifierNode('InstantRange'),
+            new IdentifierNode('never'),
+          ]),
+          'events.metadata': new IdentifierNode('MyType'),
+          'events.same_data': new IdentifierNode('SameNameImport'),
+        },
+      },
+    });
+
+    // Verify custom imports with named exports are generated correctly
+    const importNodes = nodes.filter(node => node.type === 'ImportStatement') as ImportStatementNode[];
+    
+    // Check aliased import: import { CustomInstantRange as InstantRange } from './custom-types';
+    const customImport = importNodes.find(node => node.moduleName === './custom-types');
+    deepStrictEqual(customImport, new ImportStatementNode('./custom-types', [
+      new ImportClauseNode('CustomInstantRange', 'InstantRange'),
+    ]));
+
+    // Check aliased import: import { OriginalType as MyType } from '@my-org/types';
+    const orgImport = importNodes.find(node => node.moduleName === '@my-org/types');
+    deepStrictEqual(orgImport, new ImportStatementNode('@my-org/types', [
+      new ImportClauseNode('OriginalType', 'MyType'),
+    ]));
+
+    // Check non-aliased named import: import { SameNameImport } from './same-types';
+    const sameImport = importNodes.find(node => node.moduleName === './same-types');
+    deepStrictEqual(sameImport, new ImportStatementNode('./same-types', [
+      new ImportClauseNode('SameNameImport', null),
+    ]));
+  });
 });

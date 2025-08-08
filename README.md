@@ -248,16 +248,30 @@ kysely-codegen --overrides='{"columns":{"table_name.column_name":"{foo:\"bar\"}"
 
 Specify custom type imports to use with type overrides. This is particularly useful when using custom types from external packages or local files.
 
-**Example:**
+**Basic Example:**
 
 ```sh
 kysely-codegen --custom-imports='{"InstantRange":"./custom-types","MyCustomType":"@my-org/custom-types"}'
 ```
 
+**Named Imports with Aliasing:**
+
+You can import specific named exports and optionally alias them using the `#` syntax:
+
+```sh
+kysely-codegen --custom-imports='{"MyType":"./types#OriginalType","DateRange":"@org/utils#CustomDateRange"}'
+```
+
+This generates:
+```ts
+import type { OriginalType as MyType } from './types';
+import type { CustomDateRange as DateRange } from '@org/utils';
+```
+
 Then you can use these imported types in your overrides:
 
 ```sh
-kysely-codegen --overrides='{"columns":{"events.date_range":"ColumnType<InstantRange, InstantRange, never>"}}'
+kysely-codegen --overrides='{"columns":{"events.date_range":"ColumnType<DateRange, DateRange, never>"}}'
 ```
 
 #### --out-file [value] <!-- omit from toc -->
@@ -358,12 +372,14 @@ The configuration object adds support for more advanced options:
   "camelCase": true,
   "customImports": {
     "InstantRange": "./custom-types",
-    "MyCustomType": "@my-org/custom-types"
+    "MyCustomType": "@my-org/custom-types",
+    "AliasedType": "./types#OriginalType"
   },
   "overrides": {
     "columns": {
       "events.date_range": "ColumnType<InstantRange, InstantRange, never>",
-      "users.settings": "{ theme: 'dark' }"
+      "users.settings": "{ theme: 'dark' }",
+      "posts.author_type": "AliasedType"
     }
   },
   "singularize": {
@@ -378,6 +394,7 @@ The generated output:
 ```ts
 import type { InstantRange } from './custom-types';
 import type { MyCustomType } from '@my-org/custom-types';
+import type { OriginalType as AliasedType } from './types';
 
 export interface EventModel {
   dateRange: ColumnType<InstantRange, InstantRange, never>;

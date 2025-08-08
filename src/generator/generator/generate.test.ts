@@ -587,4 +587,57 @@ describe(serializeFromMetadata.name, () => {
       `,
     );
   });
+
+  test('customImports with # syntax for named exports', () => {
+    expect(
+      serialize({
+        customImports: {
+          InstantRange: './custom-types#CustomInstantRange',
+          MyType: '@org/types#OriginalType',
+          SameNameImport: './utils#SameNameImport',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'text', name: 'date_range' },
+                { dataType: 'text', name: 'user_type' },
+                { dataType: 'text', name: 'data' },
+              ],
+              name: 'events',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'events.date_range': new GenericExpressionNode('ColumnType', [
+              new IdentifierNode('InstantRange'),
+              new IdentifierNode('InstantRange'),
+              new IdentifierNode('never'),
+            ]),
+            'events.user_type': new IdentifierNode('MyType'),
+            'events.data': new IdentifierNode('SameNameImport'),
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { CustomInstantRange as InstantRange } from "./custom-types";
+        import type { SameNameImport } from "./utils";
+        import type { OriginalType as MyType } from "@org/types";
+        import type { ColumnType } from "kysely";
+
+        export interface Events {
+          data: SameNameImport;
+          date_range: ColumnType<InstantRange, InstantRange, never>;
+          user_type: MyType;
+        }
+
+        export interface DB {
+          events: Events;
+        }
+      `,
+    );
+  });
 });

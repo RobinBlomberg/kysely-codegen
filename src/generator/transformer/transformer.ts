@@ -157,8 +157,16 @@ const createContext = (options: TransformOptions): TransformContext => {
   const customImportNodes: Imports = {};
   
   // Convert custom imports to ModuleReferenceNode instances
-  for (const [name, module] of Object.entries(customImports)) {
-    customImportNodes[name] = new ModuleReferenceNode(module);
+  for (const [name, moduleSpec] of Object.entries(customImports)) {
+    // Parse the # syntax for named imports
+    const hashIndex = moduleSpec.indexOf('#');
+    if (hashIndex !== -1) {
+      const modulePath = moduleSpec.slice(0, hashIndex);
+      const exportName = moduleSpec.slice(hashIndex + 1);
+      customImportNodes[name] = new ModuleReferenceNode(modulePath, exportName);
+    } else {
+      customImportNodes[name] = new ModuleReferenceNode(moduleSpec);
+    }
   }
   
   return {
@@ -256,8 +264,14 @@ const createImportNodes = (context: TransformContext) => {
       continue;
     }
 
+    // Handle named imports with export name
+    const importName = symbol.node.exportName || id;
+    const alias = symbol.node.exportName 
+      ? (importName === name ? null : name) // If export name equals desired name, no alias needed
+      : (name === id ? null : name);
+    
     (imports[symbol.node.name] ??= []).push(
-      new ImportClauseNode(id, name === id ? null : name),
+      new ImportClauseNode(importName, alias),
     );
   }
 

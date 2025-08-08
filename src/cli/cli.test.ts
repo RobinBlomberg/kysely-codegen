@@ -229,6 +229,10 @@ describe(Cli.name, () => {
       [`--custom-imports={"InstantRange":"./custom-types"}`],
       { customImports: { InstantRange: './custom-types' } },
     );
+    assert(
+      [`--custom-imports={"MyType":"@org/types#OriginalType"}`],
+      { customImports: { MyType: '@org/types#OriginalType' } },
+    );
     assert(['--date-parser=timestamp'], { dateParser: 'timestamp' });
     assert(['--date-parser=string'], { dateParser: 'string' });
     assert(['--default-schema=foo'], { defaultSchemas: ['foo'] });
