@@ -162,8 +162,8 @@ const createContext = (options: TransformOptions): TransformContext => {
     const hashIndex = moduleSpec.indexOf('#');
     if (hashIndex !== -1) {
       const modulePath = moduleSpec.slice(0, hashIndex);
-      const exportName = moduleSpec.slice(hashIndex + 1);
-      customImportNodes[name] = new ModuleReferenceNode(modulePath, exportName);
+      const sourceName = moduleSpec.slice(hashIndex + 1);
+      customImportNodes[name] = new ModuleReferenceNode(modulePath, sourceName);
     } else {
       customImportNodes[name] = new ModuleReferenceNode(moduleSpec);
     }
@@ -264,10 +264,10 @@ const createImportNodes = (context: TransformContext) => {
       continue;
     }
 
-    // Handle named imports with export name
-    const importName = symbol.node.exportName || id;
-    const alias = symbol.node.exportName 
-      ? (importName === name ? null : name) // If export name equals desired name, no alias needed
+    // Handle named imports with source name
+    const importName = symbol.node.sourceName || id;
+    const alias = symbol.node.sourceName 
+      ? (importName === name ? null : name) // If source name equals desired name, no alias needed
       : (name === id ? null : name);
     
     (imports[symbol.node.name] ??= []).push(
