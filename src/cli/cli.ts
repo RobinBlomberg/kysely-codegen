@@ -77,6 +77,7 @@ export class Cli {
       runtimeEnums: options.runtimeEnums,
       serializer: options.serializer,
       singularize: options.singularize,
+      typeMapping: options.typeMapping,
       typeOnlyImports: options.typeOnlyImports,
       verify: options.verify,
     });
@@ -251,6 +252,10 @@ export class Cli {
       print: this.#parseBoolean(argv.print),
       runtimeEnums: this.#parseRuntimeEnums(argv['runtime-enums']),
       singularize: this.#parseBoolean(argv.singularize),
+      typeMapping:
+        typeof argv['type-mapping'] === 'string'
+          ? JSON.parse(argv['type-mapping'])
+          : undefined,
       typeOnlyImports: this.#parseBoolean(argv['type-only-imports']),
       url: this.#parseString(argv.url),
       verify: this.#parseBoolean(argv.verify),

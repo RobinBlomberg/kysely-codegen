@@ -255,6 +255,10 @@ describe(Cli.name, () => {
     );
     assert(['--print'], { print: true });
     assert(['--singularize'], { singularize: true });
+    assert(
+      [`--type-mapping={"timestamptz":"Temporal.Instant","tstzrange":"InstantRange"}`],
+      { typeMapping: { timestamptz: 'Temporal.Instant', tstzrange: 'InstantRange' } },
+    );
     assert(['--type-only-imports'], { typeOnlyImports: true });
     assert(['--type-only-imports=false'], { typeOnlyImports: false });
     assert(['--type-only-imports=true'], { typeOnlyImports: true });

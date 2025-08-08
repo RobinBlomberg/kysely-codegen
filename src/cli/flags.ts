@@ -114,6 +114,11 @@ export const FLAGS = [
     longName: 'singularize',
   },
   {
+    description: 'Specify type mappings for database types, in JSON format.',
+    example: '{"timestamptz":"Temporal.Instant","tstzrange":"InstantRange"}',
+    longName: 'type-mapping',
+  },
+  {
     default: 'true',
     description:
       'Generate code using the TypeScript 3.8+ `import type` syntax.',

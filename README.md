@@ -322,6 +322,35 @@ Singularize generated type aliases, e.g. as `BlogPost` instead of `BlogPosts`. T
 
 You can specify custom singularization rules in the [configuration file](#configuration-file).
 
+#### --type-mapping <!-- omit from toc -->
+
+Specify type mappings for database types, in JSON format. This allows you to automatically map database types to custom TypeScript types.
+
+**Example:**
+
+```sh
+kysely-codegen --type-mapping='{"timestamptz":"Temporal.Instant","tstzrange":"InstantRange"}' --custom-imports='{"Temporal":"@js-temporal/polyfill","InstantRange":"./custom-types"}'
+```
+
+This is especially useful when you want to use modern JavaScript types like Temporal API instead of Date objects:
+
+```json
+{
+  "typeMapping": {
+    "date": "Temporal.PlainDate",
+    "time": "Temporal.PlainTime",
+    "timestamp": "Temporal.Instant",
+    "timestamptz": "Temporal.Instant",
+    "interval": "Temporal.Duration",
+    "tsrange": "InstantRange",
+    "tstzrange": "InstantRange",
+    "daterange": "DateRange"
+  }
+}
+```
+
+Type mappings are automatically applied to all columns of the specified database type, eliminating the need to override each column individually. This feature works with all supported databases, though some types (like PostgreSQL range types) are database-specific.
+
 #### --type-only-imports <!-- omit from toc -->
 
 Generate code using the TypeScript 3.8+ `import type` syntax. (default: `true`)
@@ -359,6 +388,7 @@ The default configuration:
   "print": false,
   "runtimeEnums": false,
   "singularize": false,
+  "typeMapping": {},
   "typeOnlyImports": true,
   "url": "env(DATABASE_URL)",
   "verify": false
@@ -385,6 +415,11 @@ The configuration object adds support for more advanced options:
   "singularize": {
     "/^(.*?)s?$/": "$1_model",
     "/(bacch)(?:us|i)$/i": "$1us"
+  },
+  "typeMapping": {
+    "timestamptz": "Temporal.Instant",
+    "date": "Temporal.PlainDate",
+    "interval": "Temporal.Duration"
   }
 }
 ```
@@ -395,9 +430,12 @@ The generated output:
 import type { InstantRange } from './custom-types';
 import type { MyCustomType } from '@my-org/custom-types';
 import type { OriginalType as AliasedType } from './types';
+import type { Temporal } from '@js-temporal/polyfill';
 
 export interface EventModel {
   dateRange: ColumnType<InstantRange, InstantRange, never>;
+  createdAt: Temporal.Instant;
+  eventDate: Temporal.PlainDate;
 }
 
 export interface UserModel {

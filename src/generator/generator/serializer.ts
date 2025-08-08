@@ -31,6 +31,7 @@ export type SerializeFileOptions = {
   customImports?: Record<string, string>;
   defaultSchemas?: string[];
   overrides?: Overrides;
+  typeMapping?: Record<string, string>;
 };
 
 type TypeScriptSerializerOptions = {
@@ -195,6 +196,7 @@ export class TypeScriptSerializer implements Serializer {
         defaultSchemas: options?.defaultSchemas,
         dialect,
         metadata,
+        typeMapping: options?.typeMapping,
         overrides: options?.overrides,
         runtimeEnums: this.runtimeEnums,
       }),

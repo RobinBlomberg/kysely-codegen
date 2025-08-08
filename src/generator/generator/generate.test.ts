@@ -640,4 +640,52 @@ describe(serializeFromMetadata.name, () => {
       `,
     );
   });
+
+  test('typeMapping', () => {
+    expect(
+      serialize({
+        customImports: {
+          Temporal: '@js-temporal/polyfill',
+          InstantRange: './custom-types',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'int4', name: 'id' },
+                { dataType: 'timestamptz', name: 'created_at' },
+                { dataType: 'date', name: 'event_date', isNullable: true },
+                { dataType: 'interval', name: 'duration' },
+                { dataType: 'tstzrange', name: 'booking_range', isNullable: true },
+              ],
+              name: 'time_data',
+            },
+          ],
+        },
+        typeMapping: {
+          timestamptz: 'Temporal.Instant',
+          date: 'Temporal.PlainDate',
+          interval: 'Temporal.Duration',
+          tstzrange: 'InstantRange',
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { InstantRange } from "./custom-types";
+        import type { Temporal } from "@js-temporal/polyfill";
+
+        export interface TimeData {
+          booking_range: InstantRange | null;
+          created_at: Temporal.Instant;
+          duration: Temporal.Duration;
+          event_date: Temporal.PlainDate | null;
+          id: number;
+        }
+
+        export interface DB {
+          time_data: TimeData;
+        }
+      `,
+    );
+  });
 });

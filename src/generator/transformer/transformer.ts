@@ -62,6 +62,7 @@ type TransformContext = {
   runtimeEnums: boolean | RuntimeEnumsStyle;
   scalars: Scalars;
   symbols: SymbolCollection;
+  typeMapping: Record<string, string> | undefined;
 };
 
 export type TransformOptions = {
@@ -72,6 +73,7 @@ export type TransformOptions = {
   metadata: DatabaseMetadata;
   overrides?: Overrides;
   runtimeEnums?: boolean | RuntimeEnumsStyle;
+  typeMapping?: Record<string, string>;
 };
 
 const collectSymbol = (name: string, context: TransformContext) => {
@@ -196,6 +198,7 @@ const createContext = (options: TransformOptions): TransformContext => {
       ...options.dialect.adapter.scalars,
     },
     symbols: new SymbolCollection(),
+    typeMapping: options.typeMapping,
   };
 };
 
@@ -353,11 +356,49 @@ const transformColumn = ({
   return node;
 };
 
+const isPostgresRangeType = (dataType: string, context: TransformContext) => {
+  const rangeTypes = [
+    'tsrange', 'tstzrange', 'daterange', 
+    'int4range', 'int8range', 'numrange',
+    'tsmultirange', 'tstzmultirange', 'datemultirange',
+    'int4multirange', 'int8multirange', 'nummultirange'
+  ];
+  return context.dialect.adapter.constructor.name === 'PostgresAdapter' && 
+         rangeTypes.includes(dataType);
+};
+
 const transformColumnToArgs = (
   column: ColumnMetadata,
   context: TransformContext,
 ) => {
   const dataType = column.dataType.toLowerCase();
+  
+  // Check type mapping first
+  const mappedType = context.typeMapping?.[dataType];
+  if (mappedType) {
+    // Used as a unique identifier for the data type:
+    const dataTypeId = `${
+      column.dataTypeSchema ?? context.defaultSchemas
+    }.${dataType}`;
+    
+    // Only apply mapping if this is a known type in the dialect
+    const isKnownType = 
+      context.scalars[dataType] || 
+      context.enums.has(dataTypeId) ||
+      isPostgresRangeType(dataType, context);
+    
+    if (isKnownType) {
+      // Check if the mapped type references a custom import
+      const lastDotIndex = mappedType.lastIndexOf('.');
+      if (lastDotIndex !== -1) {
+        // It's a namespaced type like "Temporal.Instant"
+        const namespace = mappedType.substring(0, lastDotIndex);
+        collectSymbol(namespace, context);
+      }
+      return [new RawExpressionNode(mappedType)];
+    }
+  }
+  
   const scalarNode = context.scalars[dataType];
 
   if (scalarNode) {
