@@ -1,6 +1,6 @@
 import { cosmiconfigSync } from 'cosmiconfig';
 import minimist from 'minimist';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import type { RuntimeEnumsStyle } from '../generator';
 import { getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';

@@ -1,9 +1,9 @@
-import { promises as fs } from 'fs';
 import type { Kysely } from 'kysely';
-import { parse, relative, resolve, sep } from 'path';
-import { performance } from 'perf_hooks';
-import { DEFAULT_OUT_FILE } from '../../cli';
+import { promises as fs } from 'node:fs';
+import { parse, relative, resolve, sep } from 'node:path';
+import { performance } from 'node:perf_hooks';
 import type { DatabaseMetadata } from '../../introspector';
+import { DEFAULT_OUT_FILE } from '../constants';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
 import { type Overrides } from '../transformer/transformer';

@@ -1,5 +1,5 @@
-import { deepStrictEqual } from 'assert';
 import { type Kysely } from 'kysely';
+import { deepStrictEqual } from 'node:assert';
 import parsePostgresInterval from 'postgres-interval';
 import { migrate } from '../introspector/introspector.fixtures';
 import type { IntrospectorDialect } from './dialect';

@@ -21,6 +21,7 @@
     "dockercompose",
     "enumlabel",
     "enumtypid",
+    "esbuild",
     "execa",
     "geomcollection",
     "geometrycollection",

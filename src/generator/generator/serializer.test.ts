@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert';
+import { strictEqual } from 'node:assert';
 import { EnumCollection } from '../../introspector/enum-collection';
 import { ColumnMetadata } from '../../introspector/metadata/column-metadata';
 import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';

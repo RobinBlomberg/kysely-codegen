@@ -24,6 +24,7 @@ export * from './ast/statement-node';
 export * from './ast/template-node';
 export * from './ast/union-expression-node';
 export * from './connection-string-parser';
+export * from './constants';
 export * from './dialect';
 export * from './dialects/kysely-bun-sqlite/kysely-bun-sqlite-dialect';
 export * from './dialects/libsql/libsql-adapter';

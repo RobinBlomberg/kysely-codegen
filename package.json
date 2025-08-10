@@ -1,6 +1,6 @@
 {
   "name": "kysely-codegen",
-  "version": "0.18.3",
+  "version": "0.18.5",
   "author": "Robin Blomberg",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -21,6 +21,7 @@
     "check:types": "tsc --noEmit",
     "ci": "run-s ci:*",
     "ci:build": "pnpm build",
+    "ci:circular-imports": "madge -c ./src/index.ts",
     "ci:eslint": "pnpm lint:eslint --max-warnings=0 --report-unused-disable-directives",
     "ci:prettier": "pnpm lint:prettier",
     "ci:spelling": "cspell-cli -e dist -e pnpm-lock.yaml -e '*.svg' .",
@@ -43,56 +44,58 @@
   "dependencies": {
     "chalk": "4.1.2",
     "cosmiconfig": "^9.0.0",
-    "dotenv": "^16.4.7",
-    "dotenv-expand": "^12.0.1",
+    "dotenv": "^16.5.0",
+    "dotenv-expand": "^12.0.2",
     "git-diff": "^2.0.6",
     "micromatch": "^4.0.8",
     "minimist": "^1.2.8",
     "pluralize": "^8.0.0",
-    "zod": "^3.24.2"
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@libsql/kysely-libsql": "^0.4.1",
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
     "@robinblomberg/eslint-config-robinblomberg": "0.28.0",
-    "@robinblomberg/prettier-config": "^0.1.2",
-    "@types/better-sqlite3": "^7.6.12",
-    "@types/bun": "^1.2.5",
+    "@robinblomberg/prettier-config": "^0.2.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/bun": "^1.2.13",
     "@types/git-diff": "^2.0.7",
     "@types/micromatch": "^4.0.9",
     "@types/minimist": "^1.2.5",
-    "@types/node": "^22.13.10",
-    "@types/pg": "^8.11.11",
+    "@types/node": "^22.15.17",
+    "@types/pg": "^8.15.1",
     "@types/pluralize": "^0.0.33",
-    "@types/tedious": "^18.0.0",
-    "better-sqlite3": "^11.8.1",
-    "cspell-cli": "^8.17.3",
+    "better-sqlite3": "^11.10.0",
+    "cspell-cli": "^9.0.1",
     "eslint": "^8.57.0",
-    "execa": "^9.5.2",
-    "knip": "^5.45.0",
-    "kysely": "^0.27.6",
-    "mysql2": "^3.13.0",
+    "eslint-plugin-import": "^2.31.0",
+    "execa": "^9.5.3",
+    "knip": "^5.55.1",
+    "kysely": "^0.28.2",
+    "madge": "^8.0.0",
+    "mysql2": "^3.14.1",
     "npm-run-all": "^4.1.5",
-    "pg": "^8.13.3",
+    "pg": "^8.15.6",
     "postgres-interval": "^4.0.2",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
+    "tedious": "^19.0.0",
     "ts-dedent": "^2.2.0",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.2",
-    "vitest": "^3.0.8"
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.3"
   },
   "peerDependencies": {
-    "@libsql/kysely-libsql": "^0.3.0 || ^0.4.1",
-    "@tediousjs/connection-string": "^0.5.0",
-    "better-sqlite3": ">=7.6.2",
-    "kysely": "^0.27.0",
-    "kysely-bun-sqlite": "^0.3.2",
-    "kysely-bun-worker": "^0.5.3",
-    "mysql2": "^2.3.3 || ^3.0.0",
-    "pg": "^8.8.0",
-    "tarn": "^3.0.0",
-    "tedious": "^18.0.0"
+    "@libsql/kysely-libsql": ">=0.3.0 <0.5.0",
+    "@tediousjs/connection-string": ">=0.5.0 <0.6.0",
+    "better-sqlite3": ">=7.6.2 <8.0.0",
+    "kysely": ">=0.27.0 <1.0.0",
+    "kysely-bun-sqlite": ">=0.3.2 <1.0.0",
+    "kysely-bun-worker": ">=1.2.0 <2.0.0",
+    "mysql2": ">=2.3.3 <4.0.0",
+    "pg": ">=8.8.0 <9.0.0",
+    "tarn": ">=3.0.0 <4.0.0",
+    "tedious": ">=18.0.0 <20.0.0"
   },
   "peerDependenciesMeta": {
     "@libsql/kysely-libsql": {
@@ -126,6 +129,10 @@
       "optional": true
     }
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f",
   "eslintConfig": {
     "extends": [
       "@robinblomberg/robinblomberg",
@@ -165,12 +172,20 @@
       "@libsql/kysely-libsql",
       "@tediousjs/connection-string",
       "better-sqlite3",
+      "eslint-plugin-import",
       "kysely-bun-sqlite",
       "mysql2",
       "pg",
       "tarn",
       "tedious"
     ]
+  },
+  "madge": {
+    "detectiveOptions": {
+      "ts": {
+        "skipTypeImports": true
+      }
+    }
   },
   "prettier": "@robinblomberg/prettier-config"
 }
