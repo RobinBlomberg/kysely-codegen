@@ -53,6 +53,8 @@
     "zod": "^4.1.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.3",
+    "@babel/eslint-parser": "^7.28.0",
     "@libsql/kysely-libsql": "^0.4.1",
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
     "@robinblomberg/eslint-config-robinblomberg": "0.30.1",
