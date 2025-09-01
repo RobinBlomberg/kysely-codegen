@@ -100,11 +100,12 @@ export class Cli {
   }
 
   #parseDateParser(input: any): DateParser | undefined {
-    if (input === undefined) return undefined;
     switch (input) {
       case 'string':
       case 'timestamp':
         return input;
+      default:
+        return undefined;
     }
   }
 
@@ -114,12 +115,13 @@ export class Cli {
   }
 
   #parseNumericParser(input: any): NumericParser | undefined {
-    if (input === undefined) return undefined;
     switch (input) {
       case 'number':
       case 'number-or-string':
       case 'string':
         return input;
+      default:
+        return undefined;
     }
   }
 
@@ -210,7 +212,7 @@ export class Cli {
     const configParseResult = configResult
       ? configSchema.safeParse(configResult.config)
       : null;
-    const configError = configParseResult?.error?.errors[0];
+    const configError = configParseResult?.error?.issues[0];
 
     if (configError) {
       throw new ConfigError(configError);
