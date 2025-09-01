@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@tediousjs/connection-string':
-        specifier: '>=0.5.0 <0.6.0'
-        version: 0.5.0
       chalk:
         specifier: 4.1.2
         version: 4.1.2
@@ -26,12 +23,6 @@ importers:
       git-diff:
         specifier: ^2.0.6
         version: 2.0.6
-      kysely-bun-sqlite:
-        specifier: '>=0.3.2 <1.0.0'
-        version: 0.4.0(@types/react@19.1.12)(kysely@0.28.5)
-      kysely-bun-worker:
-        specifier: '>=1.2.0 <2.0.0'
-        version: 1.2.1(bun-types@1.2.21(@types/react@19.1.12))(kysely@0.28.5)
       micromatch:
         specifier: ^4.0.8
         version: 4.0.8
@@ -41,9 +32,6 @@ importers:
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
-      tarn:
-        specifier: '>=3.0.0 <4.0.0'
-        version: 3.0.2
       zod:
         specifier: ^4.1.5
         version: 4.1.5
@@ -60,6 +48,9 @@ importers:
       '@robinblomberg/prettier-config':
         specifier: ^0.2.0
         version: 0.2.0
+      '@tediousjs/connection-string':
+        specifier: ^0.6.0
+        version: 0.6.0
       '@types/better-sqlite3':
         specifier: ^7.6.13
         version: 7.6.13
@@ -129,6 +120,12 @@ importers:
       kysely:
         specifier: ^0.28.5
         version: 0.28.5
+      kysely-bun-sqlite:
+        specifier: ^0.4.0
+        version: 0.4.0(@types/react@19.1.12)(kysely@0.28.5)
+      kysely-bun-worker:
+        specifier: ^1.2.1
+        version: 1.2.1(bun-types@1.2.21(@types/react@19.1.12))(kysely@0.28.5)
       madge:
         specifier: ^8.0.0
         version: 8.0.0(typescript@5.9.2)
@@ -150,9 +147,12 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      tarn:
+        specifier: ^3.0.2
+        version: 3.0.2
       tedious:
-        specifier: ^19.0.0
-        version: 19.0.0
+        specifier: ^18.6.1
+        version: 18.6.1
       ts-dedent:
         specifier: ^2.2.0
         version: 2.2.0
@@ -1082,8 +1082,8 @@ packages:
   '@storybook/global@5.0.0':
     resolution: {integrity: sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ==}
 
-  '@tediousjs/connection-string@0.5.0':
-    resolution: {integrity: sha512-7qSgZbincDDDFyRweCIEvZULFAw5iz/DeunhvuxpL31nfntX3P4Yd4HkHBRg9H8CdqY1e5WFN1PZIz/REL9MVQ==}
+  '@tediousjs/connection-string@0.6.0':
+    resolution: {integrity: sha512-GxlsW354Vi6QqbUgdPyQVcQjI7cZBdGV5vOYVYuCVDTylx2wl3WHR2HlhcxxHTrMigbelpXsdcZso+66uxPfow==}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -3698,9 +3698,9 @@ packages:
     resolution: {integrity: sha512-51LAVKUSZSVfI05vjPESNc5vwqqZpbXCsU+/+wxlOrUjk2SnFTt97v9ZgQrD4YmxYW1Px6w2KjaDitCfkvgxMQ==}
     engines: {node: '>=8.0.0'}
 
-  tedious@19.0.0:
-    resolution: {integrity: sha512-nmxNBAT72mMVCIYp0Ts0Zzd5+LBQjoXlqigCrIjSo2OERSi04vr3EHq3qJxv/zgrSkg7si03SoIIfekTAadA7w==}
-    engines: {node: '>=18.17'}
+  tedious@18.6.1:
+    resolution: {integrity: sha512-9AvErXXQTd6l7TDd5EmM+nxbOGyhnmdbp/8c3pw+tjaiSXW9usME90ET/CRG1LN1Y9tPMtz/p83z4Q97B4DDpw==}
+    engines: {node: '>=18'}
 
   text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
@@ -4931,7 +4931,7 @@ snapshots:
 
   '@storybook/global@5.0.0': {}
 
-  '@tediousjs/connection-string@0.5.0': {}
+  '@tediousjs/connection-string@0.6.0': {}
 
   '@testing-library/dom@10.4.1':
     dependencies:
@@ -7989,7 +7989,7 @@ snapshots:
 
   tarn@3.0.2: {}
 
-  tedious@19.0.0:
+  tedious@18.6.1:
     dependencies:
       '@azure/core-auth': 1.10.0
       '@azure/identity': 4.11.1
