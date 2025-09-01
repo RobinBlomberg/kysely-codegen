@@ -85,9 +85,7 @@ const overridesSchema = z
 export const configSchema = z.object({
   camelCase: z.boolean().optional(),
   customImports: z.record(z.string(), z.string()).optional(),
-  dateParser: z
-    .enum<DateParser, ['string', 'timestamp']>(['string', 'timestamp'])
-    .optional(),
+  dateParser: z.enum<DateParser[]>(['string', 'timestamp']).optional(),
   defaultSchemas: z.array(z.string()).optional(),
   dialect: dialectNameSchema.optional(),
   domains: z.boolean().optional(),
@@ -97,10 +95,7 @@ export const configSchema = z.object({
   logger: z.instanceof(Logger).optional(),
   logLevel: z.enum(LOG_LEVELS).optional(),
   numericParser: z
-    .enum<
-      NumericParser,
-      ['number', 'number-or-string', 'string']
-    >(['number', 'number-or-string', 'string'])
+    .enum<NumericParser[]>(['number', 'number-or-string', 'string'])
     .optional(),
   outFile: z.string().nullable().optional(),
   overrides: overridesSchema.optional(),
@@ -109,16 +104,13 @@ export const configSchema = z.object({
   runtimeEnums: z
     .union([
       z.boolean(),
-      z.enum<RuntimeEnumsStyle, ['pascal-case', 'screaming-snake-case']>([
-        'pascal-case',
-        'screaming-snake-case',
-      ]),
+      z.enum<RuntimeEnumsStyle[]>(['pascal-case', 'screaming-snake-case']),
     ])
     .optional(),
   serializer: z
     .object({
-      serializeFile: z.function(
-        z.tuple([
+      serializeFile: z.function({
+        input: z.tuple([
           z.instanceof(DatabaseMetadata),
           z.instanceof(IntrospectorDialect),
           z
@@ -131,8 +123,8 @@ export const configSchema = z.object({
             })
             .optional(),
         ]),
-        z.string(),
-      ),
+        output: z.string(),
+      }),
     })
     .optional(),
   singularize: z

@@ -72,6 +72,7 @@
     "tinyint",
     "tinytext",
     "tsquery",
+    "tstzrange",
     "tsvector",
     "txid",
     "typbasetype",
