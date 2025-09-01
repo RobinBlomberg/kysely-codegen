@@ -280,39 +280,70 @@ describe(Cli.name, () => {
       );
     };
 
-    assert({ camelCase: 'true' }, 'Expected boolean, received string');
+    assert(
+      { camelCase: 'true' },
+      'Invalid input: expected boolean, received string',
+    );
     assert(
       { dateParser: 'timestamps' },
-      "Invalid enum value. Expected 'string' | 'timestamp', received 'timestamps'",
+      'Invalid option: expected one of "string"|"timestamp"',
     );
-    assert({ defaultSchemas: 'public' }, 'Expected array, received string');
+    assert(
+      { defaultSchemas: 'public' },
+      'Invalid input: expected array, received string',
+    );
     assert(
       { dialect: 'sqlite3' },
-      "Invalid enum value. Expected 'bun-sqlite' | 'kysely-bun-sqlite' | 'libsql' | 'mssql' | 'mysql' | 'postgres' | 'sqlite' | 'worker-bun-sqlite', received 'sqlite3'",
+      'Invalid option: expected one of "bun-sqlite"|"kysely-bun-sqlite"|"libsql"|"mssql"|"mysql"|"postgres"|"sqlite"|"worker-bun-sqlite"',
     );
-    assert({ domains: 'true' }, 'Expected boolean, received string');
-    assert({ envFile: null }, 'Expected string, received null');
-    assert({ excludePattern: false }, 'Expected string, received boolean');
-    assert({ includePattern: false }, 'Expected string, received boolean');
+    assert(
+      { domains: 'true' },
+      'Invalid input: expected boolean, received string',
+    );
+    assert({ envFile: null }, 'Invalid input: expected string, received null');
+    assert(
+      { excludePattern: false },
+      'Invalid input: expected string, received boolean',
+    );
+    assert(
+      { includePattern: false },
+      'Invalid input: expected string, received boolean',
+    );
     assert(
       { logLevel: 0 },
-      "Expected 'silent' | 'error' | 'warn' | 'info' | 'debug', received number",
+      'Invalid option: expected one of "silent"|"error"|"warn"|"info"|"debug"',
     );
     assert(
       { numericParser: 'numbers' },
-      "Invalid enum value. Expected 'number' | 'number-or-string' | 'string', received 'numbers'",
+      'Invalid option: expected one of "number"|"number-or-string"|"string"',
     );
-    assert({ outFile: false }, 'Expected string, received boolean');
-    assert({ overrides: { columns: [] } }, 'Expected object, received array', [
-      'overrides',
-      'columns',
-    ]);
-    assert({ partitions: 'true' }, 'Expected boolean, received string');
-    assert({ print: 'true' }, 'Expected boolean, received string');
+    assert(
+      { outFile: false },
+      'Invalid input: expected string, received boolean',
+    );
+    assert(
+      { overrides: { columns: [] } },
+      'Invalid input: expected record, received array',
+      ['overrides', 'columns'],
+    );
+    assert(
+      { partitions: 'true' },
+      'Invalid input: expected boolean, received string',
+    );
+    assert(
+      { print: 'true' },
+      'Invalid input: expected boolean, received string',
+    );
     assert({ runtimeEnums: 'true' }, 'Invalid input');
     assert({ singularize: 'true' }, 'Invalid input');
-    assert({ typeOnlyImports: 'true' }, 'Expected boolean, received string');
-    assert({ url: null }, 'Expected string, received null');
-    assert({ verify: 'true' }, 'Expected boolean, received string');
+    assert(
+      { typeOnlyImports: 'true' },
+      'Invalid input: expected boolean, received string',
+    );
+    assert({ url: null }, 'Invalid input: expected string, received null');
+    assert(
+      { verify: 'true' },
+      'Invalid input: expected boolean, received string',
+    );
   });
 });
