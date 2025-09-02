@@ -78,14 +78,14 @@ describe('transform with type mapping', () => {
 
     // Find the events table:
     const eventsNode = nodes.find(
-      (node): node is ExportStatementNode =>
+      (node): node is ExportStatementNode<InterfaceDeclarationNode> =>
         node instanceof ExportStatementNode &&
         node.argument instanceof InterfaceDeclarationNode &&
         node.argument.id.name === 'Events',
     );
 
     ok(eventsNode);
-    const eventsInterface = eventsNode.argument as InterfaceDeclarationNode;
+    const eventsInterface = eventsNode.argument;
     const eventsBody = eventsInterface.body;
 
     // Check that the `created_at` column uses `Temporal.Instant`:
@@ -151,14 +151,14 @@ describe('transform with type mapping', () => {
 
     // Find the bookings table:
     const bookingsNode = nodes.find(
-      (node): node is ExportStatementNode =>
+      (node): node is ExportStatementNode<InterfaceDeclarationNode> =>
         node instanceof ExportStatementNode &&
         node.argument instanceof InterfaceDeclarationNode &&
         node.argument.id.name === 'Bookings',
     );
 
     ok(bookingsNode);
-    const bookingsInterface = bookingsNode.argument as InterfaceDeclarationNode;
+    const bookingsInterface = bookingsNode.argument;
     const bookingsBody = bookingsInterface.body;
 
     // Check that the `time_range` column uses `InstantRange`:
@@ -196,14 +196,14 @@ describe('transform with type mapping', () => {
 
     // Find the test table:
     const testNode = nodes.find(
-      (node): node is ExportStatementNode =>
+      (node): node is ExportStatementNode<InterfaceDeclarationNode> =>
         node instanceof ExportStatementNode &&
         node.argument instanceof InterfaceDeclarationNode &&
         node.argument.id.name === 'Test',
     );
 
     ok(testNode);
-    const testInterface = testNode.argument as InterfaceDeclarationNode;
+    const testInterface = testNode.argument;
     const testBody = testInterface.body;
 
     // Check that `unknown_type` falls back to the default scalar (`string`):
@@ -240,14 +240,14 @@ describe('transform with type mapping', () => {
 
     // Find the `Arrays` table:
     const arraysNode = nodes.find(
-      (node): node is ExportStatementNode =>
+      (node): node is ExportStatementNode<InterfaceDeclarationNode> =>
         node instanceof ExportStatementNode &&
         node.argument instanceof InterfaceDeclarationNode &&
         node.argument.id.name === 'Arrays',
     );
 
     ok(arraysNode);
-    const arraysInterface = arraysNode.argument as InterfaceDeclarationNode;
+    const arraysInterface = arraysNode.argument;
     const arraysBody = arraysInterface.body;
 
     // Verify that the type mapping is applied correctly with
