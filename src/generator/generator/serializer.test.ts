@@ -478,11 +478,19 @@ describe(TypeScriptSerializer.name, () => {
         },
       });
 
-      // Should include the custom import
-      strictEqual(result.includes('import type { InstantRange } from "./custom-types";'), true);
-      // Should use the custom type in the interface
-      strictEqual(result.includes('custom_field: ColumnType<InstantRange, InstantRange, never>;'), true);
-      // Should not include unused custom imports
+      // Should include the custom import:
+      strictEqual(
+        result.includes('import type { InstantRange } from "./custom-types";'),
+        true,
+      );
+      // Should use the custom type in the interface:
+      strictEqual(
+        result.includes(
+          'custom_field: ColumnType<InstantRange, InstantRange, never>;',
+        ),
+        true,
+      );
+      // Should not include unused custom imports:
       strictEqual(result.includes('MyCustomType'), false);
     });
   });

@@ -656,7 +656,11 @@ describe(serializeFromMetadata.name, () => {
                 { dataType: 'timestamptz', name: 'created_at' },
                 { dataType: 'date', name: 'event_date', isNullable: true },
                 { dataType: 'interval', name: 'duration' },
-                { dataType: 'tstzrange', name: 'booking_range', isNullable: true },
+                {
+                  dataType: 'tstzrange',
+                  name: 'booking_range',
+                  isNullable: true,
+                },
               ],
               name: 'time_data',
             },

@@ -26,8 +26,10 @@ export const FLAGS = [
     longName: 'config-file',
   },
   {
-    description: 'Specify custom type imports, in JSON format. Use # for named imports.',
-    example: '{"InstantRange":"./custom-types","MyType":"./types#OriginalType"}',
+    description:
+      'Specify custom type imports, in JSON format. Use # for named imports.',
+    example:
+      '{"InstantRange":"./custom-types","MyType":"./types#OriginalType"}',
     longName: 'custom-imports',
   },
   {

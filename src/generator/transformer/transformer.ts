@@ -76,6 +76,21 @@ export type TransformOptions = {
   typeMapping?: Record<string, string>;
 };
 
+const POSTGRES_RANGE_TYPES = new Set([
+  'datemultirange',
+  'daterange',
+  'int4multirange',
+  'int4range',
+  'int8multirange',
+  'int8range',
+  'nummultirange',
+  'numrange',
+  'tsmultirange',
+  'tsrange',
+  'tstzmultirange',
+  'tstzrange',
+]);
+
 const collectSymbol = (name: string, context: TransformContext) => {
   const definition = context.definitions[name];
   if (definition) {
@@ -157,20 +172,21 @@ const collectSymbols = (
 const createContext = (options: TransformOptions): TransformContext => {
   const customImports = options.customImports || {};
   const customImportNodes: Imports = {};
-  
-  // Convert custom imports to ModuleReferenceNode instances
+
+  // Convert custom imports to `ModuleReferenceNode` instances:
   for (const [name, moduleSpec] of Object.entries(customImports)) {
-    // Parse the # syntax for named imports
+    // Parse the `#` syntax for named imports:
     const hashIndex = moduleSpec.indexOf('#');
-    if (hashIndex !== -1) {
+
+    if (hashIndex === -1) {
+      customImportNodes[name] = new ModuleReferenceNode(moduleSpec);
+    } else {
       const modulePath = moduleSpec.slice(0, hashIndex);
       const sourceName = moduleSpec.slice(hashIndex + 1);
       customImportNodes[name] = new ModuleReferenceNode(modulePath, sourceName);
-    } else {
-      customImportNodes[name] = new ModuleReferenceNode(moduleSpec);
     }
   }
-  
+
   return {
     camelCase: !!options.camelCase,
     customImports: options.customImports,
@@ -267,12 +283,17 @@ const createImportNodes = (context: TransformContext) => {
       continue;
     }
 
-    // Handle named imports with source name
+    // Handle named imports with source name:
     const importName = symbol.node.sourceName || id;
-    const alias = symbol.node.sourceName 
-      ? (importName === name ? null : name) // If source name equals desired name, no alias needed
-      : (name === id ? null : name);
-    
+    const alias = symbol.node.sourceName
+      ? importName === name
+        ? null
+        : // If the source name equals the desired name, no alias is needed:
+          name
+      : name === id
+        ? null
+        : name;
+
     (imports[symbol.node.name] ??= []).push(
       new ImportClauseNode(importName, alias),
     );
@@ -296,6 +317,13 @@ const getTableIdentifier = (
       ? `${table.schema}.${table.name}`
       : table.name;
   return transformName(name, context);
+};
+
+const isPostgresRangeType = (dataType: string, context: TransformContext) => {
+  return (
+    context.dialect.adapter.constructor.name === 'PostgresAdapter' &&
+    POSTGRES_RANGE_TYPES.has(dataType)
+  );
 };
 
 const transformColumn = ({
@@ -356,49 +384,40 @@ const transformColumn = ({
   return node;
 };
 
-const isPostgresRangeType = (dataType: string, context: TransformContext) => {
-  const rangeTypes = [
-    'tsrange', 'tstzrange', 'daterange', 
-    'int4range', 'int8range', 'numrange',
-    'tsmultirange', 'tstzmultirange', 'datemultirange',
-    'int4multirange', 'int8multirange', 'nummultirange'
-  ];
-  return context.dialect.adapter.constructor.name === 'PostgresAdapter' && 
-         rangeTypes.includes(dataType);
-};
-
 const transformColumnToArgs = (
   column: ColumnMetadata,
   context: TransformContext,
 ) => {
   const dataType = column.dataType.toLowerCase();
-  
-  // Check type mapping first
+
+  // Check type mapping first:
   const mappedType = context.typeMapping?.[dataType];
+
   if (mappedType) {
     // Used as a unique identifier for the data type:
-    const dataTypeId = `${
-      column.dataTypeSchema ?? context.defaultSchemas
-    }.${dataType}`;
-    
-    // Only apply mapping if this is a known type in the dialect
-    const isKnownType = 
-      context.scalars[dataType] || 
+    const schema = column.dataTypeSchema ?? context.defaultSchemas;
+    const dataTypeId = `${schema}.${dataType}`;
+
+    // Only apply mapping if this is a known type in the dialect:
+    const isKnownType =
+      context.scalars[dataType] ||
       context.enums.has(dataTypeId) ||
       isPostgresRangeType(dataType, context);
-    
+
     if (isKnownType) {
-      // Check if the mapped type references a custom import
+      // Check if the mapped type references a custom import:
       const lastDotIndex = mappedType.lastIndexOf('.');
+
       if (lastDotIndex !== -1) {
-        // It's a namespaced type like "Temporal.Instant"
-        const namespace = mappedType.substring(0, lastDotIndex);
+        // It's a namespaced type like "Temporal.Instant":
+        const namespace = mappedType.slice(0, Math.max(0, lastDotIndex));
         collectSymbol(namespace, context);
       }
+
       return [new RawExpressionNode(mappedType)];
     }
   }
-  
+
   const scalarNode = context.scalars[dataType];
 
   if (scalarNode) {
@@ -406,9 +425,8 @@ const transformColumnToArgs = (
   }
 
   // Used as a unique identifier for the data type:
-  const dataTypeId = `${
-    column.dataTypeSchema ?? context.defaultSchemas
-  }.${dataType}`;
+  const schema = column.dataTypeSchema ?? context.defaultSchemas;
+  const dataTypeId = `${schema}.${dataType}`;
 
   // Used for serializing the name of the symbol:
   const symbolId =

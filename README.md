@@ -267,6 +267,7 @@ kysely-codegen --custom-imports='{"MyType":"./types#OriginalType","DateRange":"@
 ```
 
 This generates:
+
 ```ts
 import type { OriginalType as MyType } from './types';
 import type { CustomDateRange as DateRange } from '@org/utils';
@@ -412,8 +413,8 @@ The configuration object adds support for more advanced options:
   "overrides": {
     "columns": {
       "events.date_range": "ColumnType<InstantRange, InstantRange, never>",
-      "users.settings": "{ theme: 'dark' }",
-      "posts.author_type": "AliasedType"
+      "posts.author_type": "AliasedType",
+      "users.settings": "{ theme: 'dark' }"
     }
   },
   "singularize": {
@@ -421,9 +422,9 @@ The configuration object adds support for more advanced options:
     "/(bacch)(?:us|i)$/i": "$1us"
   },
   "typeMapping": {
-    "timestamptz": "Temporal.Instant",
     "date": "Temporal.PlainDate",
-    "interval": "Temporal.Duration"
+    "interval": "Temporal.Duration",
+    "timestamptz": "Temporal.Instant"
   }
 }
 ```
@@ -437,8 +438,8 @@ import type { OriginalType as AliasedType } from './types';
 import type { Temporal } from '@js-temporal/polyfill';
 
 export interface EventModel {
-  dateRange: ColumnType<InstantRange, InstantRange, never>;
   createdAt: Temporal.Instant;
+  dateRange: ColumnType<InstantRange, InstantRange, never>;
   eventDate: Temporal.PlainDate;
 }
 

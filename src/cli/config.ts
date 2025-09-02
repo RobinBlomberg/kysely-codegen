@@ -22,8 +22,6 @@ import {
 import type { DateParser, NumericParser } from '../introspector';
 import { DatabaseMetadata, IntrospectorDialect } from '../introspector';
 
-export type CustomImports = Record<string, string>;
-
 export type Config = {
   camelCase?: boolean;
   customImports?: CustomImports;
@@ -50,6 +48,8 @@ export type Config = {
   url?: string;
   verify?: boolean;
 };
+
+export type CustomImports = Record<string, string>;
 
 export type DialectName = z.infer<typeof dialectNameSchema>;
 
