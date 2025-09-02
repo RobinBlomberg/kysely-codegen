@@ -1,41 +1,48 @@
 import { deepStrictEqual, ok } from 'node:assert';
-import { AliasDeclarationNode } from '../ast/alias-declaration-node';
+import { EnumCollection } from '../../introspector/enum-collection';
+import type { ColumnMetadata } from '../../introspector/metadata/column-metadata';
+import type { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
+import type { TableMetadata } from '../../introspector/metadata/table-metadata';
 import { ExportStatementNode } from '../ast/export-statement-node';
 import { IdentifierNode } from '../ast/identifier-node';
 import { ImportStatementNode } from '../ast/import-statement-node';
 import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
-import { ObjectExpressionNode } from '../ast/object-expression-node';
-import { PropertyNode } from '../ast/property-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
-import { RuntimeEnumDeclarationNode } from '../ast/runtime-enum-declaration-node';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { transform } from './transformer';
-import type { ColumnMetadata } from '../../introspector/metadata/column-metadata';
-import type { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
-import type { TableMetadata } from '../../introspector/metadata/table-metadata';
-import { EnumCollection } from '../../introspector/enum-collection';
 
 describe('transform with type mapping', () => {
-  const createColumn = (name: string, dataType: string, options?: Partial<ColumnMetadata>): ColumnMetadata => ({
-    dataType,
-    name,
-    isArray: false,
-    isNullable: false,
-    isAutoIncrementing: false,
-    hasDefaultValue: false,
+  const createColumn = (
+    name: string,
+    dataType: string,
+    options?: Partial<ColumnMetadata>,
+  ): ColumnMetadata => ({
     comment: null,
+    dataType,
+    dataTypeSchema: undefined,
+    enumValues: null,
+    hasDefaultValue: false,
+    isArray: false,
+    isAutoIncrementing: false,
+    isNullable: false,
+    name,
     ...options,
   });
 
-  const createTable = (name: string, columns: ColumnMetadata[]): TableMetadata => ({
-    name,
-    schema: null,
+  const createTable = (
+    name: string,
+    columns: ColumnMetadata[],
+  ): TableMetadata => ({
     columns,
+    isPartition: false,
+    isView: false,
+    name,
+    schema: undefined,
   });
 
   const createMetadata = (tables: TableMetadata[]): DatabaseMetadata => ({
-    tables,
     enums: new EnumCollection(),
+    tables,
   });
 
   it('should apply type mapping to known scalar types', () => {
@@ -49,56 +56,64 @@ describe('transform with type mapping', () => {
     ]);
 
     const nodes = transform({
-      dialect: new PostgresDialect(),
-      metadata,
-      typeMapping: {
-        timestamptz: 'Temporal.Instant',
-        date: 'Temporal.PlainDate',
-        interval: 'Temporal.Duration',
-      },
       customImports: {
         Temporal: '@js-temporal/polyfill',
       },
+      dialect: new PostgresDialect(),
+      metadata,
+      typeMapping: {
+        date: 'Temporal.PlainDate',
+        interval: 'Temporal.Duration',
+        timestamptz: 'Temporal.Instant',
+      },
     });
 
-    // Find the import statement
+    // Find the import statement:
     const importNode = nodes.find(
-      (node) => node instanceof ImportStatementNode && node.moduleName === '@js-temporal/polyfill'
+      (node) =>
+        node instanceof ImportStatementNode &&
+        node.moduleName === '@js-temporal/polyfill',
     );
     ok(importNode);
 
-    // Find the events table
+    // Find the events table:
     const eventsNode = nodes.find(
-      (node) =>
+      (node): node is ExportStatementNode =>
         node instanceof ExportStatementNode &&
         node.argument instanceof InterfaceDeclarationNode &&
-        node.argument.id.name === 'Events'
-    ) as ExportStatementNode;
-    
+        node.argument.id.name === 'Events',
+    );
+
     ok(eventsNode);
     const eventsInterface = eventsNode.argument as InterfaceDeclarationNode;
-    const eventsBody = eventsInterface.body as ObjectExpressionNode;
-    
-    // Check the created_at column uses Temporal.Instant
-    const createdAtProp = eventsBody.properties.find(p => p.key === 'created_at') as PropertyNode;
+    const eventsBody = eventsInterface.body;
+
+    // Check that the `created_at` column uses `Temporal.Instant`:
+    const createdAtProp = eventsBody.properties.find(
+      (p) => p.key === 'created_at',
+    );
     ok(createdAtProp);
     ok(createdAtProp.value instanceof RawExpressionNode);
     deepStrictEqual(createdAtProp.value.expression, 'Temporal.Instant');
 
-    // Check the event_date column uses Temporal.PlainDate
-    const eventDateProp = eventsBody.properties.find(p => p.key === 'event_date') as PropertyNode;
+    // Check that the `event_date` column uses `Temporal.PlainDate`:
+    const eventDateProp = eventsBody.properties.find(
+      (p) => p.key === 'event_date',
+    );
     ok(eventDateProp);
     ok(eventDateProp.value instanceof RawExpressionNode);
     deepStrictEqual(eventDateProp.value.expression, 'Temporal.PlainDate');
 
-    // Check the duration column uses Temporal.Duration
-    const durationProp = eventsBody.properties.find(p => p.key === 'duration') as PropertyNode;
+    // Check that the `duration` column uses `Temporal.Duration`:
+    const durationProp = eventsBody.properties.find(
+      (p) => p.key === 'duration',
+    );
     ok(durationProp);
     ok(durationProp.value instanceof RawExpressionNode);
     deepStrictEqual(durationProp.value.expression, 'Temporal.Duration');
 
-    // Check that int4 still uses default mapping
-    const idProp = eventsBody.properties.find(p => p.key === 'id') as PropertyNode;
+    // Check that the `int4` column still uses default mapping:
+    const idProp = eventsBody.properties.find((p) => p.key === 'id');
     ok(idProp);
     ok(idProp.value instanceof IdentifierNode);
     deepStrictEqual(idProp.value.name, 'number');
@@ -114,44 +129,50 @@ describe('transform with type mapping', () => {
     ]);
 
     const nodes = transform({
+      customImports: {
+        DateRange: './custom-types',
+        InstantRange: './custom-types',
+      },
       dialect: new PostgresDialect(),
       metadata,
       typeMapping: {
-        tstzrange: 'InstantRange',
         daterange: 'DateRange',
-      },
-      customImports: {
-        InstantRange: './custom-types',
-        DateRange: './custom-types',
+        tstzrange: 'InstantRange',
       },
     });
 
     // Find the import statement
     const importNode = nodes.find(
-      (node) => node instanceof ImportStatementNode && node.moduleName === './custom-types'
+      (node) =>
+        node instanceof ImportStatementNode &&
+        node.moduleName === './custom-types',
     );
     ok(importNode);
 
-    // Find the bookings table
+    // Find the bookings table:
     const bookingsNode = nodes.find(
-      (node) =>
+      (node): node is ExportStatementNode =>
         node instanceof ExportStatementNode &&
         node.argument instanceof InterfaceDeclarationNode &&
-        node.argument.id.name === 'Bookings'
-    ) as ExportStatementNode;
-    
+        node.argument.id.name === 'Bookings',
+    );
+
     ok(bookingsNode);
     const bookingsInterface = bookingsNode.argument as InterfaceDeclarationNode;
-    const bookingsBody = bookingsInterface.body as ObjectExpressionNode;
-    
-    // Check the time_range column uses InstantRange
-    const timeRangeProp = bookingsBody.properties.find(p => p.key === 'time_range') as PropertyNode;
+    const bookingsBody = bookingsInterface.body;
+
+    // Check that the `time_range` column uses `InstantRange`:
+    const timeRangeProp = bookingsBody.properties.find(
+      (p) => p.key === 'time_range',
+    );
     ok(timeRangeProp);
     ok(timeRangeProp.value instanceof RawExpressionNode);
     deepStrictEqual(timeRangeProp.value.expression, 'InstantRange');
 
-    // Check the date_range column uses DateRange
-    const dateRangeProp = bookingsBody.properties.find(p => p.key === 'date_range') as PropertyNode;
+    // Check that the `date_range` column uses `DateRange`:
+    const dateRangeProp = bookingsBody.properties.find(
+      (p) => p.key === 'date_range',
+    );
     ok(dateRangeProp);
     ok(dateRangeProp.value instanceof RawExpressionNode);
     deepStrictEqual(dateRangeProp.value.expression, 'DateRange');
@@ -173,20 +194,22 @@ describe('transform with type mapping', () => {
       },
     });
 
-    // Find the test table
+    // Find the test table:
     const testNode = nodes.find(
-      (node) =>
+      (node): node is ExportStatementNode =>
         node instanceof ExportStatementNode &&
         node.argument instanceof InterfaceDeclarationNode &&
-        node.argument.id.name === 'Test'
-    ) as ExportStatementNode;
-    
+        node.argument.id.name === 'Test',
+    );
+
     ok(testNode);
     const testInterface = testNode.argument as InterfaceDeclarationNode;
-    const testBody = testInterface.body as ObjectExpressionNode;
-    
-    // Check that unknown_type falls back to default scalar (string)
-    const unknownProp = testBody.properties.find(p => p.key === 'unknown_type') as PropertyNode;
+    const testBody = testInterface.body;
+
+    // Check that `unknown_type` falls back to the default scalar (`string`):
+    const unknownProp = testBody.properties.find(
+      (p) => p.key === 'unknown_type',
+    );
     ok(unknownProp);
     ok(unknownProp.value instanceof IdentifierNode);
     deepStrictEqual(unknownProp.value.name, 'string');
@@ -197,44 +220,54 @@ describe('transform with type mapping', () => {
       createTable('arrays', [
         createColumn('timestamps', 'timestamptz', { isArray: true }),
         createColumn('nullable_timestamp', 'timestamptz', { isNullable: true }),
-        createColumn('nullable_array', 'timestamptz', { isArray: true, isNullable: true }),
+        createColumn('nullable_array', 'timestamptz', {
+          isArray: true,
+          isNullable: true,
+        }),
       ]),
     ]);
 
     const nodes = transform({
+      customImports: {
+        Temporal: '@js-temporal/polyfill',
+      },
       dialect: new PostgresDialect(),
       metadata,
       typeMapping: {
         timestamptz: 'Temporal.Instant',
       },
-      customImports: {
-        Temporal: '@js-temporal/polyfill',
-      },
     });
 
-    // Find the arrays table
+    // Find the `Arrays` table:
     const arraysNode = nodes.find(
-      (node) =>
+      (node): node is ExportStatementNode =>
         node instanceof ExportStatementNode &&
         node.argument instanceof InterfaceDeclarationNode &&
-        node.argument.id.name === 'Arrays'
-    ) as ExportStatementNode;
-    
+        node.argument.id.name === 'Arrays',
+    );
+
     ok(arraysNode);
     const arraysInterface = arraysNode.argument as InterfaceDeclarationNode;
-    const arraysBody = arraysInterface.body as ObjectExpressionNode;
-    
-    // Verify the type mapping is applied correctly with arrays and nullable
-    const timestampsProp = arraysBody.properties.find(p => p.key === 'timestamps') as PropertyNode;
+    const arraysBody = arraysInterface.body;
+
+    // Verify that the type mapping is applied correctly with
+    // arrays and nullable:
+    const timestampsProp = arraysBody.properties.find(
+      (p) => p.key === 'timestamps',
+    );
+    // Should be `ArrayType<Temporal.Instant>`:
     ok(timestampsProp);
-    // Should be ArrayType<Temporal.Instant>
 
-    const nullableTimestampProp = arraysBody.properties.find(p => p.key === 'nullable_timestamp') as PropertyNode;
+    const nullableTimestampProp = arraysBody.properties.find(
+      (p) => p.key === 'nullable_timestamp',
+    );
+    // Should be `Temporal.Instant | null`:
     ok(nullableTimestampProp);
-    // Should be Temporal.Instant | null
 
-    const nullableArrayProp = arraysBody.properties.find(p => p.key === 'nullable_array') as PropertyNode;
+    const nullableArrayProp = arraysBody.properties.find(
+      (p) => p.key === 'nullable_array',
+    );
+    // Should be `ArrayType<Temporal.Instant>` | null:
     ok(nullableArrayProp);
-    // Should be ArrayType<Temporal.Instant> | null
   });
 });
