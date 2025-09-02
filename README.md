@@ -7,7 +7,7 @@
 - [Installation](#installation)
 - [Generating type definitions](#generating-type-definitions)
 - [Using the type definitions](#using-the-type-definitions)
-- [CLI arguments](#cli-arguments)
+- [CLI arguments](#cli-arguments) - [Basic example](#basic-example) - [Named imports with aliasing](#named-imports-with-aliasing)
 - [Configuration file](#configuration-file)
 - [Issue funding](#issue-funding)
 
@@ -180,6 +180,37 @@ export interface User {
 
 Specify the path to the configuration file to use.
 
+#### --custom-imports <!-- omit from toc -->
+
+Specify custom type imports to use with type overrides. This is particularly useful when using custom types from external packages or local files.
+
+##### Basic example
+
+```sh
+kysely-codegen --custom-imports='{"InstantRange":"./custom-types","MyCustomType":"@my-org/custom-types"}'
+```
+
+##### Named imports with aliasing
+
+You can import specific named exports and optionally alias them using the `#` syntax:
+
+```sh
+kysely-codegen --custom-imports='{"MyType":"./types#OriginalType","DateRange":"@org/utils#CustomDateRange"}'
+```
+
+This generates:
+
+```ts
+import type { OriginalType as MyType } from './types';
+import type { CustomDateRange as DateRange } from '@org/utils';
+```
+
+Then you can use these imported types in your overrides:
+
+```sh
+kysely-codegen --overrides='{"columns":{"events.date_range":"ColumnType<DateRange, DateRange, never>"}}'
+```
+
 #### --date-parser <!-- omit from toc -->
 
 Specify which parser to use for PostgreSQL date values. (values: `string`/`timestamp`, default: `timestamp`)
@@ -248,37 +279,6 @@ Specify type overrides for specific table columns in JSON format.
 kysely-codegen --overrides='{"columns":{"table_name.column_name":"{foo:\"bar\"}"}}'
 ```
 
-#### --custom-imports <!-- omit from toc -->
-
-Specify custom type imports to use with type overrides. This is particularly useful when using custom types from external packages or local files.
-
-**Basic Example:**
-
-```sh
-kysely-codegen --custom-imports='{"InstantRange":"./custom-types","MyCustomType":"@my-org/custom-types"}'
-```
-
-**Named Imports with Aliasing:**
-
-You can import specific named exports and optionally alias them using the `#` syntax:
-
-```sh
-kysely-codegen --custom-imports='{"MyType":"./types#OriginalType","DateRange":"@org/utils#CustomDateRange"}'
-```
-
-This generates:
-
-```ts
-import type { OriginalType as MyType } from './types';
-import type { CustomDateRange as DateRange } from '@org/utils';
-```
-
-Then you can use these imported types in your overrides:
-
-```sh
-kysely-codegen --overrides='{"columns":{"events.date_range":"ColumnType<DateRange, DateRange, never>"}}'
-```
-
 #### --out-file [value] <!-- omit from toc -->
 
 Set the file build path. (default: `./node_modules/kysely-codegen/dist/db.d.ts`)
@@ -343,13 +343,13 @@ This is especially useful when you want to use modern JavaScript types like Temp
 {
   "typeMapping": {
     "date": "Temporal.PlainDate",
+    "daterange": "DateRange",
+    "interval": "Temporal.Duration",
     "time": "Temporal.PlainTime",
     "timestamp": "Temporal.Instant",
     "timestamptz": "Temporal.Instant",
-    "interval": "Temporal.Duration",
     "tsrange": "InstantRange",
-    "tstzrange": "InstantRange",
-    "daterange": "DateRange"
+    "tstzrange": "InstantRange"
   }
 }
 ```
