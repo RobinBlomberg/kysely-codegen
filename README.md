@@ -9,7 +9,6 @@
 - [Using the type definitions](#using-the-type-definitions)
 - [CLI arguments](#cli-arguments) - [Basic example](#basic-example) - [Named imports with aliasing](#named-imports-with-aliasing)
 - [Configuration file](#configuration-file)
-- [Issue funding](#issue-funding)
 
 ## Installation
 
@@ -455,9 +454,3 @@ export interface DB {
   users: UserModel;
 }
 ```
-
-## Issue funding
-
-We use [Polar.sh](https://polar.sh/RobinBlomberg) to upvote and promote specific features that you would like to see implemented. Check the backlog and help out:
-
-<a href="https://polar.sh/RobinBlomberg"><img src="https://polar.sh/embed/fund-our-backlog.svg?org=RobinBlomberg" /></a>
