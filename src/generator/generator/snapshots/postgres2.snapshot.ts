@@ -67,11 +67,11 @@ export interface FooBar {
   interval1: Interval | null;
   interval2: Interval | null;
   json: Json | null;
-  jsonTyped: JSONColumnType<{ foo: "bar" }>;
+  jsonTyped: JSONColumnType<{ foo: "bar" }> | null;
   nullablePosInt: number | null;
   numeric1: Numeric | null;
   numeric2: Numeric | null;
-  overridden: "OVERRIDDEN";
+  overridden: "OVERRIDDEN" | null;
   testDomainIsBool: boolean | null;
   timestamps: ArrayType<Timestamp> | null;
   true: boolean;

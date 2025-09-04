@@ -346,18 +346,20 @@ const transformColumn = ({
         : overrides?.[`${table.schema}.${path}`]
       : overrides?.[path];
 
-    if (override !== undefined) {
-        const args = [typeof override === 'string' ? new RawExpressionNode(override) : override];
-        if (column.isNullable) {
-            args.push(new IdentifierNode('null'));
-        }
-
-        const node = unionize(args);
-
-        collectSymbols(node, context);
-
-        return node;
+  if (override !== undefined) {
+    const args = [
+      typeof override === 'string' ? new RawExpressionNode(override) : override,
+    ];
+    if (column.isNullable) {
+      args.push(new IdentifierNode('null'));
     }
+
+    const node = unionize(args);
+
+    collectSymbols(node, context);
+
+    return node;
+  }
 
   let args = transformColumnToArgs(column, context);
 
