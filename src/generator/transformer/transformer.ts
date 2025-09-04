@@ -347,8 +347,12 @@ const transformColumn = ({
       : overrides?.[path];
 
   if (override !== undefined) {
-    const node =
-      typeof override === 'string' ? new RawExpressionNode(override) : override;
+    const args = [typeof override === 'string' ? new RawExpressionNode(override) : override];
+    if (column.isNullable) {
+        args.push(new IdentifierNode('null'));
+    }
+
+    const node = unionize(args);
 
     collectSymbols(node, context);
 
