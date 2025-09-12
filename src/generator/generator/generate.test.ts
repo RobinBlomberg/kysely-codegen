@@ -641,6 +641,393 @@ describe(serializeFromMetadata.name, () => {
     );
   });
 
+  test('customImports with generic types in string overrides', () => {
+    expect(
+      serialize({
+        customImports: {
+          CustomType: './types',
+          JSONColumnType: 'kysely',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'text', name: 'id' },
+                { dataType: 'json', name: 'jsonField' },
+              ],
+              name: 'table',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'table.id': 'ColumnType<string, string, never>',
+            'table.jsonField': 'JSONColumnType<CustomType>',
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { CustomType } from "./types";
+        import type { ColumnType, JSONColumnType } from "kysely";
+
+        export interface Table {
+          id: ColumnType<string, string, never>;
+          jsonField: JSONColumnType<CustomType>;
+        }
+
+        export interface DB {
+          table: Table;
+        }
+      `,
+    );
+  });
+
+  test('customImports with underscored type names in string overrides', () => {
+    // Test that types with underscores are correctly extracted
+    expect(
+      serialize({
+        customImports: {
+          MY_CUSTOM_TYPE: './types',
+          Type_With_Underscores: './types',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'text', name: 'field1' },
+                { dataType: 'text', name: 'field2' },
+              ],
+              name: 'table',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'table.field1': 'MY_CUSTOM_TYPE',
+            'table.field2': 'Type_With_Underscores | null',
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { MY_CUSTOM_TYPE, Type_With_Underscores } from "./types";
+
+        export interface Table {
+          field1: MY_CUSTOM_TYPE;
+          field2: Type_With_Underscores | null;
+        }
+
+        export interface DB {
+          table: Table;
+        }
+      `,
+    );
+  });
+
+  test('customImports with built-in types should be imported when specified', () => {
+    // Test that built-in types are imported when explicitly specified in customImports
+    expect(
+      serialize({
+        customImports: {
+          Array: './custom-array',
+          Map: './custom-map',
+          CustomType: './types',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'text', name: 'field1' },
+                { dataType: 'text', name: 'field2' },
+              ],
+              name: 'table',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'table.field1': 'Array<CustomType>',
+            'table.field2': 'Map<string, CustomType>',
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { Array } from "./custom-array";
+        import type { Map } from "./custom-map";
+        import type { CustomType } from "./types";
+
+        export interface Table {
+          field1: Array<CustomType>;
+          field2: Map<string, CustomType>;
+        }
+
+        export interface DB {
+          table: Table;
+        }
+      `,
+    );
+  });
+
+  test('nested generics in string overrides', () => {
+    const result = serialize({
+      customImports: {
+        User: './models',
+        CustomMap: './types',
+      },
+      metadata: {
+        tables: [
+          {
+            columns: [
+              { dataType: 'json', name: 'complex_field' },
+              { dataType: 'json', name: 'user_map' },
+            ],
+            name: 'complex_types',
+            schema: 'public',
+          },
+        ],
+      },
+      overrides: {
+        columns: {
+          'complex_types.complex_field': 'Map<string, Array<Partial<User>>>',
+          'complex_types.user_map': 'CustomMap<string, User[]>',
+        },
+      },
+    });
+
+    // Check that all expected imports and types are present
+    expect(result).toContain('import type { User } from "./models";');
+    expect(result).toContain('import type { CustomMap } from "./types";');
+    expect(result).toContain('export interface ComplexTypes');
+    expect(result).toContain(
+      'complex_field: Map<string, Array<Partial<User>>>;',
+    );
+    expect(result).toContain('user_map: CustomMap<string, User[]>;');
+    expect(result).toContain('export interface DB');
+  });
+
+  test('union types in string overrides', () => {
+    expect(
+      serialize({
+        customImports: {
+          TypeA: './types',
+          TypeB: './types',
+          TypeC: './types',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'text', name: 'status' },
+                { dataType: 'text', name: 'mixed' },
+              ],
+              name: 'union_table',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'union_table.status': '"active" | "inactive" | "pending"',
+            'union_table.mixed': 'TypeA | TypeB | TypeC | null',
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { TypeA, TypeB, TypeC } from "./types";
+
+        export interface UnionTable {
+          mixed: TypeA | TypeB | TypeC | null;
+          status: "active" | "inactive" | "pending";
+        }
+
+        export interface DB {
+          union_table: UnionTable;
+        }
+      `,
+    );
+  });
+
+  test('intersection types in string overrides', () => {
+    expect(
+      serialize({
+        customImports: {
+          Timestamped: './mixins',
+          Authored: './mixins',
+          BaseModel: './models',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [{ dataType: 'json', name: 'entity' }],
+              name: 'intersections',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'intersections.entity': 'BaseModel & Timestamped & Authored',
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { Authored, Timestamped } from "./mixins";
+        import type { BaseModel } from "./models";
+
+        export interface Intersections {
+          entity: BaseModel & Timestamped & Authored;
+        }
+
+        export interface DB {
+          intersections: Intersections;
+        }
+      `,
+    );
+  });
+
+  test('array syntax variations in string overrides', () => {
+    expect(
+      serialize({
+        customImports: {
+          CustomType: './types',
+          NestedType: './types',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'json', name: 'array1' },
+                { dataType: 'json', name: 'array2' },
+                { dataType: 'json', name: 'array3' },
+              ],
+              name: 'arrays',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'arrays.array1': 'CustomType[]',
+            'arrays.array2': 'Array<CustomType>',
+            'arrays.array3': 'NestedType[][]',
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { CustomType, NestedType } from "./types";
+
+        export interface Arrays {
+          array1: CustomType[];
+          array2: Array<CustomType>;
+          array3: NestedType[][];
+        }
+
+        export interface DB {
+          arrays: Arrays;
+        }
+      `,
+    );
+  });
+
+  test('literal types in string overrides', () => {
+    const result = serialize({
+      metadata: {
+        tables: [
+          {
+            columns: [
+              { dataType: 'text', name: 'string_literal' },
+              { dataType: 'int', name: 'number_literal' },
+              { dataType: 'bool', name: 'boolean_literal' },
+              { dataType: 'text', name: 'mixed_literal' },
+            ],
+            name: 'literals',
+            schema: 'public',
+          },
+        ],
+      },
+      overrides: {
+        columns: {
+          'literals.string_literal': '"red" | "green" | "blue"',
+          'literals.number_literal': '1 | 2 | 3',
+          'literals.boolean_literal': 'true | false',
+          'literals.mixed_literal': '"auto" | 100 | true | null',
+        },
+      },
+    });
+
+    // Check that the interface contains the expected types
+    // Order of union elements may vary, so we check for presence
+    expect(result).toContain('export interface Literals');
+    expect(result).toMatch(/boolean_literal: (true \| false|false \| true);/);
+    expect(result).toContain('mixed_literal: "auto" | 100 | true | null;');
+    expect(result).toContain('number_literal: 1 | 2 | 3;');
+    expect(result).toContain('string_literal: "red" | "green" | "blue";');
+    expect(result).toContain('export interface DB');
+  });
+
+  test('complex mixed type expressions in string overrides', () => {
+    expect(
+      serialize({
+        customImports: {
+          JSONColumnType: 'kysely',
+          ColumnType: 'kysely',
+          UserData: './models',
+          Permission: './auth',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'serial', name: 'id' },
+                { dataType: 'json', name: 'data' },
+                { dataType: 'json', name: 'permissions' },
+              ],
+              name: 'complex',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'complex.id': 'Generated<number>',
+            'complex.data':
+              'JSONColumnType<Partial<UserData> & { tags: string[] }>',
+            'complex.permissions':
+              'ColumnType<Permission[], string, Permission[] | null>',
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { Permission } from "./auth";
+        import type { UserData } from "./models";
+        import type { ColumnType, JSONColumnType } from "kysely";
+
+        export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+          ? ColumnType<S, I | undefined, U>
+          : ColumnType<T, T | undefined, T>;
+
+        export interface Complex {
+          data: JSONColumnType<Partial<UserData> & { tags: string[] }>;
+          id: Generated<number>;
+          permissions: ColumnType<Permission[], string, Permission[] | null>;
+        }
+
+        export interface DB {
+          complex: Complex;
+        }
+      `,
+    );
+  });
+
   test('typeMapping', () => {
     expect(
       serialize({

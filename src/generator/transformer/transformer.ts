@@ -23,6 +23,7 @@ import { UnionExpressionNode } from '../ast/union-expression-node';
 import type { GeneratorDialect } from '../dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import type { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
+import { typeExpressionParser } from '../parser/type-expression-parser';
 import { toKyselyCamelCase } from '../utils/case-converter';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { GLOBAL_IMPORTS } from './imports';
@@ -154,9 +155,18 @@ const collectSymbols = (
       }
 
       break;
-    case 'RawExpression':
-      collectSymbol(node.expression, context);
+    case 'RawExpression': {
+      // Use TypeScript AST parser to extract all type identifiers from the expression
+      // This properly handles complex cases like "JSONColumnType<CustomType>"
+      // and correctly identifies all referenced types
+      const typeIdentifiers = typeExpressionParser.extractTypeIdentifiers(
+        node.expression,
+      );
+      for (const identifier of typeIdentifiers) {
+        collectSymbol(identifier, context);
+      }
       break;
+    }
     case 'Template':
       collectSymbols(node.expression, context);
       break;
@@ -348,7 +358,9 @@ const transformColumn = ({
 
   if (override !== undefined) {
     const node =
-      typeof override === 'string' ? new RawExpressionNode(override) : override;
+      typeof override === 'string'
+        ? typeExpressionParser.parse(override) // Parse string into proper AST nodes
+        : override;
 
     collectSymbols(node, context);
 

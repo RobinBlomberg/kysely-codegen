@@ -78,11 +78,18 @@ export class SymbolCollection {
     }
 
     const symbolNames = new Set(Object.values(this.symbolNames));
-    const caseConverter =
-      this.identifierStyle === 'screaming-snake-case'
-        ? toScreamingSnakeCase
-        : toKyselyPascalCase;
-    symbolName = caseConverter(id.replaceAll(/[^\w$]/g, '_'));
+
+    // For ModuleReference symbols (imports), preserve the original name
+    // to maintain exact import names like MY_CUSTOM_TYPE
+    if (symbol.type === 'ModuleReference') {
+      symbolName = id;
+    } else {
+      const caseConverter =
+        this.identifierStyle === 'screaming-snake-case'
+          ? toScreamingSnakeCase
+          : toKyselyPascalCase;
+      symbolName = caseConverter(id.replaceAll(/[^\w$]/g, '_'));
+    }
 
     if (symbolNames.has(symbolName)) {
       let suffix = 2;
