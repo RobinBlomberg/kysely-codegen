@@ -176,7 +176,8 @@ const createContext = (options: TransformOptions): TransformContext => {
   // Convert custom imports to `ModuleReferenceNode` instances:
   for (const [name, moduleSpec] of Object.entries(customImports)) {
     // Parse the `#` syntax for named imports:
-    const hashIndex = moduleSpec.indexOf('#');
+    const isSubpathImport = moduleSpec[0] === "#" ? 1 : undefined;
+    const hashIndex = moduleSpec.indexOf('#', isSubpathImport);
 
     if (hashIndex === -1) {
       customImportNodes[name] = new ModuleReferenceNode(moduleSpec);
