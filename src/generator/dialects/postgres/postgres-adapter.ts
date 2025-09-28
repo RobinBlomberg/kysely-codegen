@@ -53,7 +53,12 @@ export class PostgresAdapter extends Adapter {
         new IdentifierNode('IPostgresInterval'),
         new IdentifierNode('number'),
         new IdentifierNode('string'),
-      ])
+      ]),
+      new UnionExpressionNode([
+        new IdentifierNode('IPostgresInterval'),
+        new IdentifierNode('number'),
+        new IdentifierNode('string'),
+      ]),
     ),
     Json: JSON_DEFINITION,
     JsonArray: JSON_ARRAY_DEFINITION,
