@@ -55,6 +55,7 @@ export type DialectName = z.infer<typeof dialectNameSchema>;
 
 export const dialectNameSchema = z.enum([
   'bun-sqlite',
+  'clickhouse',
   'kysely-bun-sqlite',
   'libsql',
   'mssql',
