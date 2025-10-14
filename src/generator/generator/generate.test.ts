@@ -18,6 +18,7 @@ import { IdentifierNode, TableIdentifierNode } from '../ast/identifier-node';
 import { JsonColumnTypeNode } from '../ast/json-column-type-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
 import type { GeneratorDialect } from '../dialect';
+import { ClickhouseDialect } from '../dialects/clickhouse/clickhouse-dialect';
 import { LibsqlDialect } from '../dialects/libsql/libsql-dialect';
 import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import type { PostgresDialectOptions } from '../dialects/postgres/postgres-dialect';
@@ -38,6 +39,15 @@ type Test = {
 const SNAPSHOTS_DIR = join(__dirname, 'snapshots');
 
 const TESTS: Test[] = [
+  {
+    connectionString:
+      'http://localhost:8123?username=default&password=password',
+    dialect: new ClickhouseDialect(),
+    name: 'clickhouse',
+    generateOptions: {
+      camelCase: false,
+    },
+  },
   {
     connectionString: 'libsql://localhost:8080?tls=0',
     dialect: new LibsqlDialect(),
@@ -239,7 +249,7 @@ describe(generate.name, () => {
         db,
         dialect,
       });
-      await addExtraColumn(db);
+      await addExtraColumn(db, dialect);
 
       try {
         await generate({

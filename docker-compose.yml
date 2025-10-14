@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   kysely_codegen_adminer:
@@ -33,4 +33,14 @@ services:
     image: postgres:latest
     ports:
       - 5433:5432
+    restart: always
+  kysely_codegen_clickhouse:
+    container_name: kysely_codegen_clickhouse
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=password
+    image: clickhouse/clickhouse-server:latest
+    ports:
+      - 8123:8123
+      - 9000:9000
     restart: always
