@@ -37,9 +37,7 @@ const testValues = async (
 
 describe(ClickHouseIntrospector.name, () => {
   it('should return the correct metadata', async () => {
-    const db = await migrate(
-      'http://localhost:8123?username=default&password=password',
-    );
+    const db = await migrate('http://default:password@localhost:8123');
     await testValues(
       db,
       {

@@ -40,8 +40,7 @@ const SNAPSHOTS_DIR = join(__dirname, 'snapshots');
 
 const TESTS: Test[] = [
   {
-    connectionString:
-      'http://localhost:8123?username=default&password=password',
+    connectionString: 'http://default:password@localhost:8123',
     dialect: new ClickhouseDialect(),
     name: 'clickhouse',
     generateOptions: {
