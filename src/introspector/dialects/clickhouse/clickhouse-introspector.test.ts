@@ -24,14 +24,7 @@ const testValues = async (
   for (const [key, expectedValue] of Object.entries(outputValues)) {
     const actualValue = row[key];
 
-    if (
-      actualValue instanceof Object &&
-      actualValue.constructor.name === 'PostgresInterval'
-    ) {
-      deepStrictEqual({ ...actualValue }, expectedValue);
-    } else {
-      deepStrictEqual(actualValue, expectedValue);
-    }
+    deepStrictEqual(actualValue, expectedValue);
   }
 };
 
