@@ -35,6 +35,7 @@
     "lint": "run-p lint:*",
     "lint:eslint": "eslint src",
     "lint:prettier": "prettier --check src",
+    "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run ci",
     "start": "pnpm build && DATABASE_URL=postgres://user:password@localhost:5433/database node ./dist/cli/bin.js",
     "test": "vitest run --globals --fileParallelism=false --maxConcurrency=1 --maxWorkers=1 --sequence.seed=1",
