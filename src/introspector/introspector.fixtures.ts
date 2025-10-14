@@ -1,6 +1,8 @@
 import { CamelCasePlugin, Kysely, sql } from 'kysely';
 import assert from 'node:assert';
 import { IntrospectorDialect } from './dialect';
+import { ClickHouseIntrospectorDialect } from './dialects/clickhouse/clickhouse-dialect';
+import { migrate as migrateClickhouse } from './dialects/clickhouse/clickhouse-introspector.fixtures';
 import { MysqlIntrospectorDialect } from './dialects/mysql/mysql-dialect';
 import { PostgresIntrospectorDialect } from './dialects/postgres/postgres-dialect';
 
@@ -125,7 +127,17 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
   }
 };
 
-export const addExtraColumn = async (db: Kysely<any>) => {
+export const addExtraColumn = async (
+  db: Kysely<any>,
+  dialect?: IntrospectorDialect,
+) => {
+  if (dialect instanceof ClickHouseIntrospectorDialect) {
+    await sql`ALTER TABLE test_db.foo_bar ADD COLUMN user_name String DEFAULT 'test'`.execute(
+      db,
+    );
+    return;
+  }
+
   await db.schema
     .alterTable('foo_bar')
     .addColumn('user_name', 'varchar(50)', (col) => col.defaultTo('test'))
@@ -136,6 +148,10 @@ export const migrate = async (
   dialect: IntrospectorDialect,
   connectionString: string,
 ) => {
+  if (dialect instanceof ClickHouseIntrospectorDialect) {
+    return await migrateClickhouse(connectionString);
+  }
+
   const db = new Kysely<any>({
     dialect: await dialect.createKyselyDialect({ connectionString }),
     plugins: [new CamelCasePlugin()],

@@ -55,6 +55,8 @@
   "devDependencies": {
     "@babel/core": "^7.28.3",
     "@babel/eslint-parser": "^7.28.0",
+    "@clickhouse/client": "1.12.1",
+    "@founderpath/kysely-clickhouse": "1.7.0",
     "@libsql/kysely-libsql": "^0.4.1",
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
     "@robinblomberg/eslint-config-robinblomberg": "0.30.1",
@@ -100,6 +102,8 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
+    "@clickhouse/client": ">=0.2.0 <2.0.0",
+    "@founderpath/kysely-clickhouse": ">=1.0.0 <2.0.0",
     "@libsql/kysely-libsql": ">=0.3.0 <0.5.0",
     "@tediousjs/connection-string": ">=0.5.0 <0.6.0",
     "better-sqlite3": ">=7.6.2 <13.0.0",
@@ -112,6 +116,12 @@
     "tedious": ">=18.0.0 <20.0.0"
   },
   "peerDependenciesMeta": {
+    "@clickhouse/client": {
+      "optional": true
+    },
+    "@founderpath/kysely-clickhouse": {
+      "optional": true
+    },
     "@libsql/kysely-libsql": {
       "optional": true
     },

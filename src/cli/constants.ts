@@ -22,4 +22,5 @@ export const VALID_DIALECTS = [
   'bun-sqlite',
   'kysely-bun-sqlite',
   'worker-bun-sqlite',
+  'clickhouse',
 ];
