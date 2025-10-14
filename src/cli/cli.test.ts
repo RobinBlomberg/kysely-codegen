@@ -439,7 +439,7 @@ describe(Cli.name, () => {
     );
     assert(
       { dialect: 'sqlite3' },
-      'Invalid option: expected one of "bun-sqlite"|"kysely-bun-sqlite"|"libsql"|"mssql"|"mysql"|"postgres"|"sqlite"|"worker-bun-sqlite"',
+      'Invalid option: expected one of "bun-sqlite"|"clickhouse"|"kysely-bun-sqlite"|"libsql"|"mssql"|"mysql"|"postgres"|"sqlite"|"worker-bun-sqlite"',
     );
     assert(
       { domains: 'true' },

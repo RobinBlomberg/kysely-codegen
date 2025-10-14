@@ -33,6 +33,9 @@ npm install kysely tedious tarn @tediousjs/connection-string@0.5.0
 
 # LibSQL
 npm install @libsql/kysely-libsql
+
+# ClickHouse
+npm install kysely @clickhouse/client @founderpath/kysely-clickhouse
 ```
 
 ## Generating type definitions
@@ -54,6 +57,9 @@ DATABASE_URL=Server=mssql;Database=database;User Id=user;Password=password
 
 # LibSQL
 DATABASE_URL=libsql://token@host:port/database
+
+# ClickHouse
+DATABASE_URL=http://username:password@localhost:8123
 ```
 
 > If your URL contains a password with special characters, those characters may need to be [percent-encoded](https://en.wikipedia.org/wiki/Percent-encoding#Reserved_characters).

@@ -1,6 +1,7 @@
 import type { DialectName } from '../cli/config';
 import { IntrospectorDialect } from '../introspector/dialect';
 import type { Adapter } from './adapter';
+import { ClickhouseDialect } from './dialects/clickhouse/clickhouse-dialect';
 import { KyselyBunSqliteDialect } from './dialects/kysely-bun-sqlite/kysely-bun-sqlite-dialect';
 import { LibsqlDialect } from './dialects/libsql/libsql-dialect';
 import { MssqlDialect } from './dialects/mssql/mssql-dialect';
@@ -24,6 +25,8 @@ export const getDialect = (
   options?: PostgresDialectOptions,
 ): GeneratorDialect => {
   switch (name) {
+    case 'clickhouse':
+      return new ClickhouseDialect();
     case 'kysely-bun-sqlite':
       return new KyselyBunSqliteDialect();
     case 'libsql':
