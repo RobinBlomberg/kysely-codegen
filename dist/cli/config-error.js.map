@@ -1,0 +1,1 @@
+{"version":3,"file":"config-error.js","sourceRoot":"","sources":["../../src/cli/config-error.ts"],"names":[],"mappings":";;;AAAA,MAAa,WAAY,SAAQ,SAAS;IACxC,YAAY,KAA+C;QACzD,KAAK,CAAC,6BAA6B,KAAK,CAAC,IAAI,MAAM,KAAK,CAAC,OAAO,EAAE,CAAC,CAAC;QACpE,IAAI,CAAC,IAAI,GAAG,WAAW,CAAC,IAAI,CAAC;IAC/B,CAAC;CACF;AALD,kCAKC"}

@@ -1,6 +1,5 @@
 /.git
 **/.coverage
-**/dist
 **/node_modules
 **/*.DS_Store
 **/*.tsbuildinfo

@@ -1,0 +1,1 @@
+{"version":3,"file":"adapter.js","sourceRoot":"","sources":["../../src/generator/adapter.ts"],"names":[],"mappings":";;;AAEA,2DAAuD;AASvD;;GAEG;AACH,MAAsB,OAAO;IAA7B;QACW,kBAAa,GAAmB,IAAI,gCAAc,CAAC,SAAS,CAAC,CAAC;QAC9D,mBAAc,GAAa,EAAE,CAAC;QAC9B,gBAAW,GAAgB,EAAE,CAAC;QAC9B,YAAO,GAAY,EAAE,CAAC;QACtB,YAAO,GAAY,EAAE,CAAC;IACjC,CAAC;CAAA;AAND,0BAMC"}

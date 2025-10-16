@@ -1,0 +1,1 @@
+{"version":3,"file":"import-clause-node.js","sourceRoot":"","sources":["../../../src/generator/ast/import-clause-node.ts"],"names":[],"mappings":";;;AAAA,MAAa,gBAAgB;IAK3B,YAAY,IAAY,EAAE,QAAuB,IAAI;QAF5C,SAAI,GAAG,cAAc,CAAC;QAG7B,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC;IACrB,CAAC;CACF;AATD,4CASC"}

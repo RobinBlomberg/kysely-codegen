@@ -1,0 +1,1 @@
+{"version":3,"file":"interface-declaration-node.js","sourceRoot":"","sources":["../../../src/generator/ast/interface-declaration-node.ts"],"names":[],"mappings":";;;AAGA,MAAa,wBAAwB;IAKnC,YAAY,IAAoB,EAAE,IAA0B;QAFnD,SAAI,GAAG,sBAAsB,CAAC;QAGrC,IAAI,CAAC,EAAE,GAAG,IAAI,CAAC;QACf,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;IACnB,CAAC;CACF;AATD,4DASC"}

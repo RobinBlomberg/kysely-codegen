@@ -1,0 +1,58 @@
+import { Adapter } from '../../adapter';
+import { ArrayExpressionNode } from '../../ast/array-expression-node';
+import { ColumnTypeNode } from '../../ast/column-type-node';
+import { IdentifierNode } from '../../ast/identifier-node';
+import { ObjectExpressionNode } from '../../ast/object-expression-node';
+import { UnionExpressionNode } from '../../ast/union-expression-node';
+export declare class MysqlAdapter extends Adapter {
+    readonly definitions: {
+        Decimal: ColumnTypeNode;
+        Geometry: UnionExpressionNode;
+        Json: ColumnTypeNode;
+        JsonArray: import("../..").DefinitionNode;
+        JsonObject: import("../..").DefinitionNode;
+        JsonPrimitive: import("../..").DefinitionNode;
+        JsonValue: import("../..").DefinitionNode;
+        LineString: ArrayExpressionNode;
+        Point: ObjectExpressionNode;
+        Polygon: ArrayExpressionNode;
+    };
+    readonly scalars: {
+        bigint: IdentifierNode;
+        binary: IdentifierNode;
+        bit: IdentifierNode;
+        blob: IdentifierNode;
+        char: IdentifierNode;
+        date: IdentifierNode;
+        datetime: IdentifierNode;
+        decimal: IdentifierNode;
+        double: IdentifierNode;
+        float: IdentifierNode;
+        geomcollection: ArrayExpressionNode;
+        geometry: IdentifierNode;
+        int: IdentifierNode;
+        json: IdentifierNode;
+        linestring: IdentifierNode;
+        longblob: IdentifierNode;
+        longtext: IdentifierNode;
+        mediumblob: IdentifierNode;
+        mediumint: IdentifierNode;
+        mediumtext: IdentifierNode;
+        multilinestring: ArrayExpressionNode;
+        multipoint: ArrayExpressionNode;
+        multipolygon: ArrayExpressionNode;
+        point: IdentifierNode;
+        polygon: IdentifierNode;
+        set: IdentifierNode;
+        smallint: IdentifierNode;
+        text: IdentifierNode;
+        time: IdentifierNode;
+        timestamp: IdentifierNode;
+        tinyblob: IdentifierNode;
+        tinyint: IdentifierNode;
+        tinytext: IdentifierNode;
+        varbinary: IdentifierNode;
+        varchar: IdentifierNode;
+        year: IdentifierNode;
+    };
+}

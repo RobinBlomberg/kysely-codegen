@@ -1,0 +1,72 @@
+import type { DateParser } from '../../../introspector/dialects/postgres/date-parser';
+import type { NumericParser } from '../../../introspector/dialects/postgres/numeric-parser';
+import { Adapter } from '../../adapter';
+import { ColumnTypeNode } from '../../ast/column-type-node';
+import { IdentifierNode } from '../../ast/identifier-node';
+import { ModuleReferenceNode } from '../../ast/module-reference-node';
+import { ObjectExpressionNode } from '../../ast/object-expression-node';
+type PostgresAdapterOptions = {
+    dateParser?: DateParser;
+    numericParser?: NumericParser;
+};
+export declare class PostgresAdapter extends Adapter {
+    readonly defaultScalar: IdentifierNode;
+    readonly defaultSchemas: string[];
+    readonly definitions: {
+        Circle: ObjectExpressionNode;
+        Int8: ColumnTypeNode;
+        Interval: ColumnTypeNode;
+        Json: import("../..").DefinitionNode;
+        JsonArray: import("../..").DefinitionNode;
+        JsonObject: import("../..").DefinitionNode;
+        JsonPrimitive: import("../..").DefinitionNode;
+        JsonValue: import("../..").DefinitionNode;
+        Numeric: ColumnTypeNode;
+        Point: ObjectExpressionNode;
+        Timestamp: ColumnTypeNode;
+    };
+    readonly imports: {
+        IPostgresInterval: ModuleReferenceNode;
+    };
+    readonly scalars: {
+        bit: IdentifierNode;
+        bool: IdentifierNode;
+        box: IdentifierNode;
+        bpchar: IdentifierNode;
+        bytea: IdentifierNode;
+        cidr: IdentifierNode;
+        circle: IdentifierNode;
+        date: IdentifierNode;
+        float4: IdentifierNode;
+        float8: IdentifierNode;
+        inet: IdentifierNode;
+        int2: IdentifierNode;
+        int4: IdentifierNode;
+        int8: IdentifierNode;
+        interval: IdentifierNode;
+        json: IdentifierNode;
+        jsonb: IdentifierNode;
+        line: IdentifierNode;
+        lseg: IdentifierNode;
+        macaddr: IdentifierNode;
+        money: IdentifierNode;
+        numeric: IdentifierNode;
+        oid: IdentifierNode;
+        path: IdentifierNode;
+        point: IdentifierNode;
+        polygon: IdentifierNode;
+        text: IdentifierNode;
+        time: IdentifierNode;
+        timestamp: IdentifierNode;
+        timestamptz: IdentifierNode;
+        tsquery: IdentifierNode;
+        tsvector: IdentifierNode;
+        txid_snapshot: IdentifierNode;
+        uuid: IdentifierNode;
+        varbit: IdentifierNode;
+        varchar: IdentifierNode;
+        xml: IdentifierNode;
+    };
+    constructor(options?: PostgresAdapterOptions);
+}
+export {};

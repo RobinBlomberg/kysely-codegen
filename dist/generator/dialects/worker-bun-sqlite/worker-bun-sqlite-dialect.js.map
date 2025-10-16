@@ -1,0 +1,1 @@
+{"version":3,"file":"worker-bun-sqlite-dialect.js","sourceRoot":"","sources":["../../../../src/generator/dialects/worker-bun-sqlite/worker-bun-sqlite-dialect.ts"],"names":[],"mappings":";;;AAAA,yFAAiG;AAEjG,6DAAyD;AAEzD,MAAa,sBACX,SAAQ,0CAAyB;IADnC;;QAIW,YAAO,GAAG,IAAI,8BAAa,EAAE,CAAC;IACzC,CAAC;CAAA;AALD,wDAKC"}

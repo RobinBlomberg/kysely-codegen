@@ -1,0 +1,1 @@
+{"version":3,"file":"template-node.js","sourceRoot":"","sources":["../../../src/generator/ast/template-node.ts"],"names":[],"mappings":";;;AAEA,MAAa,YAAY;IAKvB,YAAY,MAAgB,EAAE,UAA0B;QAF/C,SAAI,GAAG,UAAU,CAAC;QAGzB,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;QACrB,IAAI,CAAC,UAAU,GAAG,UAAU,CAAC;IAC/B,CAAC;CACF;AATD,oCASC"}

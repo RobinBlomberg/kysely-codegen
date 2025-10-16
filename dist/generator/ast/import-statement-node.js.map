@@ -1,0 +1,1 @@
+{"version":3,"file":"import-statement-node.js","sourceRoot":"","sources":["../../../src/generator/ast/import-statement-node.ts"],"names":[],"mappings":";;;AAEA,MAAa,mBAAmB;IAK9B,YAAY,UAAkB,EAAE,OAA2B;QAFlD,SAAI,GAAG,iBAAiB,CAAC;QAGhC,IAAI,CAAC,UAAU,GAAG,UAAU,CAAC;QAC7B,IAAI,CAAC,OAAO,GAAG,OAAO,CAAC;IACzB,CAAC;CACF;AATD,kDASC"}

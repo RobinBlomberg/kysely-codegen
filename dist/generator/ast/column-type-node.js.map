@@ -1,0 +1,1 @@
+{"version":3,"file":"column-type-node.js","sourceRoot":"","sources":["../../../src/generator/ast/column-type-node.ts"],"names":[],"mappings":";;;AACA,uEAAkE;AAElE,MAAa,cAAe,SAAQ,+CAAqB;IACvD,YACE,UAA0B,EAC1B,GAAG,oBAGyD;QAE5D,KAAK,CAAC,YAAY,EAAE,CAAC,UAAU,EAAE,GAAG,oBAAoB,CAAC,CAAC,CAAC;IAC7D,CAAC;CACF;AAVD,wCAUC"}

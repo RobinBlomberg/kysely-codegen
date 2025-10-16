@@ -1,0 +1,1 @@
+{"version":3,"file":"property-node.js","sourceRoot":"","sources":["../../../src/generator/ast/property-node.ts"],"names":[],"mappings":";;;AAEA,MAAa,YAAY;IAMvB,YACE,GAAW,EACX,KAAqB,EACrB,UAAyB,IAAI;QANtB,SAAI,GAAG,UAAU,CAAC;QAQzB,IAAI,CAAC,OAAO,GAAG,OAAO,CAAC;QACvB,IAAI,CAAC,GAAG,GAAG,GAAG,CAAC;QACf,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC;IACrB,CAAC;CACF;AAfD,oCAeC"}

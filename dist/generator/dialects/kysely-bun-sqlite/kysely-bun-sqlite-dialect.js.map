@@ -1,0 +1,1 @@
+{"version":3,"file":"kysely-bun-sqlite-dialect.js","sourceRoot":"","sources":["../../../../src/generator/dialects/kysely-bun-sqlite/kysely-bun-sqlite-dialect.ts"],"names":[],"mappings":";;;AAAA,0HAAgI;AAEhI,2EAAqE;AAErE,MAAa,sBACX,SAAQ,8DAAkC;IAD5C;;QAIW,YAAO,GAAG,IAAI,kDAAsB,EAAE,CAAC;IAClD,CAAC;CAAA;AALD,wDAKC"}

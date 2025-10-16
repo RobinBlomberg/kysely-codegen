@@ -1,0 +1,1 @@
+{"version":3,"file":"clickhouse-dialect.js","sourceRoot":"","sources":["../../../../src/generator/dialects/clickhouse/clickhouse-dialect.ts"],"names":[],"mappings":";;;AAEA,qGAA6G;AAC7G,6DAAyD;AAEzD,MAAa,iBACX,SAAQ,kDAA6B;IADvC;;QAIW,YAAO,GAAG,IAAI,sCAAiB,EAAE,CAAC;IAC7C,CAAC;CAAA;AALD,8CAKC"}

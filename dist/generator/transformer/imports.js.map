@@ -1,0 +1,1 @@
+{"version":3,"file":"imports.js","sourceRoot":"","sources":["../../../src/generator/transformer/imports.ts"],"names":[],"mappings":";;;AAAA,wEAAmE;AAEtD,QAAA,cAAc,GAAG;IAC5B,UAAU,EAAE,IAAI,2CAAmB,CAAC,QAAQ,CAAC;IAC7C,cAAc,EAAE,IAAI,2CAAmB,CAAC,QAAQ,CAAC;CAClD,CAAC"}
