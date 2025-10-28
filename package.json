@@ -28,7 +28,7 @@
     "ci:test": "pnpm test",
     "ci:unused": "knip",
     "dev": "tsx watch ./src/cli/bin.ts",
-    "docker:up": "docker-compose up -d",
+    "docker:up": "docker compose up -d",
     "docker:wait": "wait-on tcp:5433 tcp:3306 http://localhost:8080/health",
     "fix": "run-s fix:*",
     "fix:eslint": "eslint --fix src",
