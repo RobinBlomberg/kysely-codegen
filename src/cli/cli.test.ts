@@ -7,6 +7,8 @@ import { join } from 'node:path';
 import { Pool } from 'pg';
 import { dedent } from 'ts-dedent';
 import packageJson from '../../package.json';
+import { migrate } from '../introspector/introspector.fixtures';
+import { PostgresIntrospectorDialect } from '../introspector/dialects/postgres/postgres-dialect';
 import { Cli } from './cli';
 import { ConfigError } from './config-error';
 
@@ -41,18 +43,15 @@ const OUTPUT = dedent`
 
 `;
 
+const CONNECTION_STRING = 'postgres://user:password@localhost:5433/database';
+
 const down = async (db: Kysely<any>) => {
   await db.schema.dropSchema('cli').cascade().execute();
 };
 
 const up = async () => {
-  const db = new Kysely<any>({
-    dialect: new PostgresDialect({
-      pool: new Pool({
-        connectionString: 'postgres://user:password@localhost:5433/database',
-      }),
-    }),
-  });
+  const dialect = new PostgresIntrospectorDialect();
+  const db = await migrate(dialect, CONNECTION_STRING);
 
   await db.schema.dropSchema('cli').ifExists().cascade().execute();
   await db.schema.createSchema('cli').execute();

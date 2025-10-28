@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   kysely_codegen_adminer:
     container_name: kysely_codegen_adminer
