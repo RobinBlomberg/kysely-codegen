@@ -10,6 +10,7 @@ import { Introspector } from '../../introspector';
 import type { ColumnMetadata } from '../../metadata/column-metadata';
 import { DatabaseMetadata } from '../../metadata/database-metadata';
 import type { TableMetadata } from '../../metadata/table-metadata';
+import { TableMatcher } from '../../table-matcher';
 import type { PostgresDB } from './postgres-db';
 
 export type PostgresDomainInspector = {
@@ -113,15 +114,23 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
   }
 
   async introspect(options: IntrospectOptions<PostgresDB>) {
-    const tables = await this.getTables(options);
+    const [tables, domains, enums, partitions, materializedViews] =
+      await Promise.all([
+        this.getTables(options),
+        this.introspectDomains(options.db),
+        this.introspectEnums(options.db),
+        this.introspectPartitions(options.db),
+        this.introspectMaterializedViews(options),
+      ]);
 
-    const [domains, enums, partitions] = await Promise.all([
-      this.introspectDomains(options.db),
-      this.introspectEnums(options.db),
-      this.introspectPartitions(options.db),
-    ]);
+    const allTables = [...tables, ...materializedViews];
 
-    return this.createDatabaseMetadata({ enums, domains, partitions, tables });
+    return this.createDatabaseMetadata({
+      enums,
+      domains,
+      partitions,
+      tables: allTables,
+    });
   }
 
   async introspectDomains(db: Kysely<PostgresDB>) {
@@ -191,5 +200,96 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     `.execute(db);
 
     return result.rows;
+  }
+
+  async introspectMaterializedViews(
+    options: IntrospectOptions<PostgresDB>,
+  ): Promise<KyselyTableMetadata[]> {
+    const db = options.db;
+
+    const materializedViews = await db.withoutPlugins().executeQuery<{
+      table_schema: string;
+      table_name: string;
+      column_name: string;
+      ordinal_position: number;
+      column_default: string | null;
+      is_nullable: 'YES' | 'NO';
+      data_type: string;
+      udt_schema: string;
+      udt_name: string;
+      column_comment: string | null;
+    }>(
+      sql`
+        select
+          n.nspname as table_schema,
+          c.relname as table_name,
+          a.attname as column_name,
+          a.attnum as ordinal_position,
+          pg_get_expr(ad.adbin, ad.adrelid) as column_default,
+          case when a.attnotnull then 'NO' else 'YES' end as is_nullable,
+          t.typname as data_type,
+          tn.nspname as udt_schema,
+          t.typname as udt_name,
+          col_description(c.oid, a.attnum) as column_comment
+        from pg_class c
+        join pg_namespace n on n.oid = c.relnamespace
+        join pg_attribute a on a.attrelid = c.oid
+        join pg_type t on t.oid = a.atttypid
+        join pg_namespace tn on tn.oid = t.typnamespace
+        left join pg_attrdef ad on ad.adrelid = c.oid and ad.adnum = a.attnum
+        where c.relkind = 'm'
+          and a.attnum > 0
+          and not a.attisdropped
+        order by n.nspname, c.relname, a.attnum;
+      `.compile(db),
+    );
+
+    const tableMap = new Map<string, KyselyTableMetadata>();
+
+    for (const row of materializedViews.rows) {
+      const tableKey = `${row.table_schema}.${row.table_name}`;
+
+      let table = tableMap.get(tableKey);
+      if (!table) {
+        table = {
+          name: row.table_name,
+          schema: row.table_schema,
+          isView: true,
+          columns: [],
+        };
+        tableMap.set(tableKey, table);
+      }
+
+      const isAutoIncrementing =
+        row.column_default?.includes('nextval') ?? false;
+
+      table.columns.push({
+        name: row.column_name,
+        dataType: row.udt_name,
+        dataTypeSchema: row.udt_schema,
+        isNullable: row.is_nullable === 'YES',
+        isAutoIncrementing,
+        hasDefaultValue: row.column_default !== null,
+        comment: row.column_comment ?? undefined,
+      });
+    }
+
+    let tables = Array.from(tableMap.values());
+
+    if (options.includePattern) {
+      const tableMatcher = new TableMatcher(options.includePattern);
+      tables = tables.filter(({ name, schema }) =>
+        tableMatcher.match(schema, name),
+      );
+    }
+
+    if (options.excludePattern) {
+      const tableMatcher = new TableMatcher(options.excludePattern);
+      tables = tables.filter(
+        ({ name, schema }) => !tableMatcher.match(schema, name),
+      );
+    }
+
+    return tables;
   }
 }
