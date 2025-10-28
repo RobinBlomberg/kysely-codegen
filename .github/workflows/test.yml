@@ -23,7 +23,14 @@ jobs:
         run: pnpm docker:up
 
       - name: Wait for databases
-        run: pnpx wait-on tcp:5433 tcp:3306 http://localhost:8080/health
+        run: |
+          pnpx wait-on tcp:5433 tcp:3306 http://localhost:8080/health
+          for i in {1..30}; do
+            docker exec kysely_codegen_mysql mysqladmin ping -h localhost --silent && break
+            echo "Waiting for MySQL to be ready..."
+            sleep 1
+          done
+          docker exec kysely_codegen_postgres pg_isready -U user
 
       - name: Run tests
         run: pnpm test
