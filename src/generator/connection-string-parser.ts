@@ -117,8 +117,13 @@ export class ConnectionStringParser {
     const parts = connectionString.match(DIALECT_PARTS_REGEXP)!;
     const protocol = parts[1]!;
     const tail = parts[2]!;
-    const normalizedConnectionString =
-      protocol === 'pg' ? `postgres${tail}` : connectionString;
+    let normalizedConnectionString = connectionString;
+    if (protocol === 'pg') {
+      normalizedConnectionString = `postgres${tail}`;
+    }
+    if (protocol === 'sqlite') {
+      normalizedConnectionString = tail.replace(/^:\/\//, '');
+    }
     const dialect = options.dialect ?? this.#inferDialectName(connectionString);
 
     return {
