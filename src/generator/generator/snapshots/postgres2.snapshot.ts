@@ -79,6 +79,12 @@ export interface FooBar {
   userStatus2: TestStatus | null;
 }
 
+export interface FooBarMv {
+  nullablePosInt: number | null;
+  overridden: string | null;
+  userStatus: Status | null;
+}
+
 export interface PartitionedTable {
   id: Generated<number>;
 }
@@ -86,5 +92,6 @@ export interface PartitionedTable {
 export interface DB {
   enum: Enum;
   fooBar: FooBar;
+  fooBarMv: FooBarMv;
   partitionedTable: PartitionedTable;
 }

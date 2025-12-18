@@ -1,5 +1,6 @@
 import { cosmiconfigSync } from 'cosmiconfig';
 import minimist from 'minimist';
+import { writeSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { RuntimeEnumsStyle } from '../generator';
 import { getDialect } from '../generator';
@@ -150,7 +151,8 @@ export class Cli {
   }
 
   #showHelp() {
-    console.info(
+    writeSync(
+      1,
       ['', 'kysely-codegen [options]', '', serializeFlags(FLAGS), ''].join(
         '\n',
       ),

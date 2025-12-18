@@ -8,6 +8,11 @@ const down = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
   assert(dialect instanceof IntrospectorDialect);
 
   await db.schema.dropTable('boolean').ifExists().execute();
+
+  if (dialect instanceof PostgresIntrospectorDialect) {
+    await sql`drop materialized view if exists public.foo_bar_mv;`.execute(db);
+  }
+
   await db.schema.dropTable('foo_bar').ifExists().execute();
 
   if (dialect instanceof PostgresIntrospectorDialect) {
@@ -122,6 +127,12 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
         create table partition_1 partition of partitioned_table for values from (1) to (100);
       `.compile(db),
     );
+
+    await sql`
+      create materialized view public.foo_bar_mv as
+      select overridden, user_status, nullable_pos_int
+      from public.foo_bar;
+    `.execute(db);
   }
 };
 

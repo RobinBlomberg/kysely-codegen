@@ -37,6 +37,8 @@ type Test = {
 
 const SNAPSHOTS_DIR = join(__dirname, 'snapshots');
 
+const normalizeNewlines = (string: string) => string.replace(/\r\n/g, '\n');
+
 const TESTS: Test[] = [
   {
     connectionString: 'libsql://localhost:8080?tls=0',
@@ -224,7 +226,7 @@ describe(generate.name, () => {
         join(SNAPSHOTS_DIR, `${name}.snapshot.ts`),
         'utf8',
       );
-      strictEqual(output, expectedOutput);
+      strictEqual(normalizeNewlines(output), normalizeNewlines(expectedOutput));
       await db.destroy();
     }
   });

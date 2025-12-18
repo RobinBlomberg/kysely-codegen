@@ -8,6 +8,6 @@ test(DiffChecker.name, () => {
   );
   strictEqual(
     new DiffChecker().diff('Foo\nBar\nBaz', 'Foo\nQux\nBaz'),
-    '@@ -1,3 +1,3 @@\n Foo\n-Bar\n+Qux\n Baz\n',
+    ' Foo\n-Bar\n+Qux\n Baz\n',
   );
 });

@@ -308,6 +308,32 @@ describe(Introspector.name, () => {
               new TableMetadata({
                 columns: [
                   new ColumnMetadata({
+                    dataType: 'text',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'overridden',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'status',
+                    dataTypeSchema: 'public',
+                    enumValues: ['CONFIRMED', 'UNCONFIRMED'],
+                    isNullable: true,
+                    name: 'user_status',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'int4',
+                    dataTypeSchema: 'public',
+                    isNullable: true,
+                    name: 'nullable_pos_int',
+                  }),
+                ],
+                isView: true,
+                name: 'foo_bar_mv',
+                schema: 'public',
+              }),
+              new TableMetadata({
+                columns: [
+                  new ColumnMetadata({
                     dataType: 'int4',
                     dataTypeSchema: 'pg_catalog',
                     hasDefaultValue: true,

@@ -7,6 +7,10 @@ export class DiffChecker {
   }
 
   diff(oldTypes: string, newTypes: string) {
-    return gitDiff(this.#sanitize(oldTypes), this.#sanitize(newTypes));
+    // Force the JS implementation to avoid environment-specific differences
+    // (e.g. whether `git` is available / repo detection / shell utilities).
+    return gitDiff(this.#sanitize(oldTypes), this.#sanitize(newTypes), {
+      forceFake: true,
+    });
   }
 }

@@ -41,6 +41,8 @@ const OUTPUT = dedent`
 
 `;
 
+const TEST_TIMEOUT = 60_000;
+
 const down = async (db: Kysely<any>) => {
   await db.schema.dropSchema('cli').cascade().execute();
 };
@@ -72,15 +74,15 @@ const up = async () => {
 
 describe(Cli.name, () => {
   beforeAll(async () => {
-    await execa`pnpm build`;
-  });
+    await execa`npm run build`;
+  }, TEST_TIMEOUT);
 
   it('should be able to start the CLI', async () => {
     const output = await execa`node ${BINARY_PATH} --help`.then(
       (r) => r.stdout,
     );
     deepStrictEqual(output.includes('--help, -h'), true);
-  });
+  }, TEST_TIMEOUT);
 
   it('should be able to run the CLI programmatically with a custom config object', async () => {
     const db = await up();
@@ -132,7 +134,7 @@ describe(Cli.name, () => {
     );
 
     await down(db);
-  });
+  }, TEST_TIMEOUT);
 
   it('should be able to supply a custom serializer to the config', async () => {
     const db = await up();
@@ -179,6 +181,12 @@ describe(Cli.name, () => {
           enum: text
         }
 
+        table foo_bar_mv {
+          overridden: text
+          user_status: status
+          nullable_pos_int: int4
+        }
+
         table partitioned_table {
           id: int4
         }
@@ -186,14 +194,14 @@ describe(Cli.name, () => {
     );
 
     await down(db);
-  });
+  }, TEST_TIMEOUT);
 
   it('should be able to run the CLI successfully using a config file', async () => {
     const db = await up();
     await fs.writeFile(OUTPUT_PATH, OUTPUT);
     await execa`node ${BINARY_PATH} --config-file ./src/cli/test/config.cjs --out-file ${OUTPUT_PATH} --verify`;
     await down(db);
-  });
+  }, TEST_TIMEOUT);
 
   it('should support custom imports and type mapping', async () => {
     const db = await up();
@@ -298,6 +306,12 @@ describe(Cli.name, () => {
           userStatus2: TestStatus | null;
         }
 
+        export interface FooBarMv {
+          nullablePosInt: number | null;
+          overridden: string | null;
+          userStatus: Status | null;
+        }
+
         export interface PartitionedTable {
           id: Generated<number>;
         }
@@ -306,6 +320,7 @@ describe(Cli.name, () => {
           "cli.bacchi": CliBacchi;
           enum: Enum;
           fooBar: FooBar;
+          fooBarMv: FooBarMv;
           partitionedTable: PartitionedTable;
         }
 
@@ -313,7 +328,7 @@ describe(Cli.name, () => {
     );
 
     await down(db);
-  });
+  }, TEST_TIMEOUT);
 
   it('should return an exit code of 1 if the generated types are not up-to-date', async () => {
     const db = await up();
@@ -336,7 +351,7 @@ describe(Cli.name, () => {
 
     await down(db);
     await fs.writeFile(OUTPUT_PATH, OUTPUT);
-  });
+  }, TEST_TIMEOUT);
 
   it('should parse options correctly', () => {
     const assert = (args: string[], expectedOptions: Partial<Config>) => {

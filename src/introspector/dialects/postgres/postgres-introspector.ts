@@ -3,13 +3,14 @@ import type {
   ColumnMetadata as KyselyColumnMetaData,
   TableMetadata as KyselyTableMetadata,
 } from 'kysely';
-import { sql } from 'kysely';
+import { DEFAULT_MIGRATION_LOCK_TABLE, DEFAULT_MIGRATION_TABLE, sql } from 'kysely';
 import { EnumCollection } from '../../enum-collection';
 import type { IntrospectOptions } from '../../introspector';
 import { Introspector } from '../../introspector';
 import type { ColumnMetadata } from '../../metadata/column-metadata';
 import { DatabaseMetadata } from '../../metadata/database-metadata';
 import type { TableMetadata } from '../../metadata/table-metadata';
+import { TableMatcher } from '../../table-matcher';
 import type { PostgresDB } from './postgres-db';
 
 export type PostgresDomainInspector = {
@@ -29,6 +30,19 @@ export type PostgresIntrospectorOptions = {
   partitions?: boolean;
 };
 
+type PostgresRawColumnMetadata = {
+  auto_incrementing: string | null;
+  column: string;
+  column_description: string | null;
+  has_default: boolean;
+  not_null: boolean;
+  schema: string;
+  table: string;
+  table_type: string;
+  type: string;
+  type_schema: string;
+};
+
 export class PostgresIntrospector extends Introspector<PostgresDB> {
   protected readonly options: PostgresIntrospectorOptions;
 
@@ -43,6 +57,87 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
       domains: options?.domains ?? true,
       partitions: options?.partitions,
     };
+  }
+
+  protected override async getTables(options: IntrospectOptions<PostgresDB>) {
+    // Kysely's built-in postgres introspector doesn't include materialized views (`relkind = 'm'`).
+    // Replicate its query and include them.
+    const { rows } = await sql<PostgresRawColumnMetadata>`
+      select
+        a.attname as column,
+        a.attnotnull as not_null,
+        a.atthasdef as has_default,
+        c.relname as table,
+        c.relkind as table_type,
+        ns.nspname as schema,
+        typ.typname as type,
+        dtns.nspname as type_schema,
+        col_description(a.attrelid, a.attnum) as column_description,
+        pg_get_serial_sequence(
+          quote_ident(ns.nspname) || '.' || quote_ident(c.relname),
+          a.attname
+        ) as auto_incrementing
+      from pg_catalog.pg_attribute as a
+      inner join pg_catalog.pg_class as c on a.attrelid = c.oid
+      inner join pg_catalog.pg_namespace as ns on c.relnamespace = ns.oid
+      inner join pg_catalog.pg_type as typ on a.atttypid = typ.oid
+      inner join pg_catalog.pg_namespace as dtns on typ.typnamespace = dtns.oid
+      where c.relkind in ('r', 'v', 'p', 'm')
+        and ns.nspname !~ '^pg_'
+        and ns.nspname != 'information_schema'
+        and ns.nspname != 'crdb_internal'
+        and has_schema_privilege(ns.nspname, 'USAGE')
+        and a.attnum >= 0
+        and a.attisdropped != true
+        and c.relname != ${DEFAULT_MIGRATION_TABLE}
+        and c.relname != ${DEFAULT_MIGRATION_LOCK_TABLE}
+      order by ns.nspname, c.relname, a.attnum;
+    `.execute(options.db.withoutPlugins());
+
+    let tables = this.parseTableMetadata(rows);
+
+    if (options.includePattern) {
+      const tableMatcher = new TableMatcher(options.includePattern);
+      tables = tables.filter(({ name, schema }) => tableMatcher.match(schema, name));
+    }
+
+    if (options.excludePattern) {
+      const tableMatcher = new TableMatcher(options.excludePattern);
+      tables = tables.filter(({ name, schema }) => !tableMatcher.match(schema, name));
+    }
+
+    return tables;
+  }
+
+  private parseTableMetadata(columns: PostgresRawColumnMetadata[]) {
+    const tables = new Map<string, KyselyTableMetadata>();
+
+    for (const column of columns) {
+      const key = `${column.schema}\0${column.table}`;
+      let table = tables.get(key);
+
+      if (!table) {
+        table = {
+          columns: [],
+          isView: column.table_type === 'v' || column.table_type === 'm',
+          name: column.table,
+          schema: column.schema,
+        };
+        tables.set(key, table);
+      }
+
+      table.columns.push({
+        comment: column.column_description ?? undefined,
+        dataType: column.type,
+        dataTypeSchema: column.type_schema,
+        hasDefaultValue: column.has_default,
+        isAutoIncrementing: column.auto_incrementing !== null,
+        isNullable: !column.not_null,
+        name: column.column,
+      });
+    }
+
+    return Array.from(tables.values());
   }
 
   createDatabaseMetadata({
