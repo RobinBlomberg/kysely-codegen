@@ -3,7 +3,7 @@ import { join } from 'node:path';
 export const DEFAULT_OUT_FILE = join(
   process.cwd(),
   'node_modules',
-  'kysely-codegen',
+  'kysely-generate',
   'dist',
   'db.d.ts',
 );

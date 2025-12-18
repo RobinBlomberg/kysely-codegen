@@ -23,7 +23,7 @@ const compact = <T extends Record<string, unknown>>(object: T) => {
 };
 
 /**
- * Creates a kysely-codegen command-line interface.
+ * Creates a kysely-generate command-line interface.
  */
 export class Cli {
   logLevel = DEFAULT_LOG_LEVEL;
@@ -91,7 +91,7 @@ export class Cli {
   #loadConfig(config?: {
     configFile?: string;
   }): { config: unknown; filepath: string } | null {
-    const explorer = cosmiconfigSync('kysely-codegen');
+    const explorer = cosmiconfigSync('kysely-generate');
     return config?.configFile
       ? explorer.load(config.configFile)
       : explorer.search();
@@ -153,7 +153,7 @@ export class Cli {
   #showHelp() {
     writeSync(
       1,
-      ['', 'kysely-codegen [options]', '', serializeFlags(FLAGS), ''].join(
+      ['', 'kysely-generate [options]', '', serializeFlags(FLAGS), ''].join(
         '\n',
       ),
     );

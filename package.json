@@ -1,21 +1,21 @@
 {
-  "name": "kysely-codegen",
+  "name": "kysely-generate",
   "version": "0.19.0",
-  "author": "Robin Blomberg",
+  "author": "VastBlast",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "kysely-codegen": "./dist/cli/bin.js"
+    "kysely-generate": "./dist/cli/bin.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RobinBlomberg/kysely-codegen.git"
+    "url": "git+https://github.com/VastBlast/kysely-generate.git"
   },
   "bugs": {
-    "url": "https://github.com/RobinBlomberg/kysely-codegen/issues"
+    "url": "https://github.com/VastBlast/kysely-generate/issues"
   },
-  "homepage": "https://github.com/RobinBlomberg/kysely-codegen#readme",
+  "homepage": "https://github.com/VastBlast/kysely-generate#readme",
   "scripts": {
     "build": "rimraf dist && tsc --project ./tsconfig.build.json",
     "check:types": "tsc --noEmit",
