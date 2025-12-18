@@ -20,12 +20,12 @@
     "build": "rimraf dist && tsc --project ./tsconfig.build.json",
     "check:types": "tsc --noEmit",
     "ci": "run-s ci:*",
-    "ci:build": "pnpm build",
+    "ci:build": "npm run build",
     "ci:circular-imports": "madge -c ./src/index.ts",
-    "ci:eslint": "pnpm lint:eslint --max-warnings=0 --report-unused-disable-directives",
-    "ci:prettier": "pnpm lint:prettier",
-    "ci:spelling": "cspell-cli -e dist -e pnpm-lock.yaml -e '*.svg' .",
-    "ci:test": "pnpm test",
+    "ci:eslint": "npm run lint:eslint -- --max-warnings=0 --report-unused-disable-directives",
+    "ci:prettier": "npm run lint:prettier",
+    "ci:spelling": "cspell-cli -e dist -e package-lock.json -e '*.svg' .",
+    "ci:test": "npm run test",
     "ci:unused": "knip",
     "dev": "tsx watch ./src/cli/bin.ts",
     "docker:up": "docker-compose up -d",
@@ -35,8 +35,8 @@
     "lint": "run-p lint:*",
     "lint:eslint": "eslint src",
     "lint:prettier": "prettier --check src",
-    "prepublishOnly": "pnpm run ci",
-    "start": "pnpm build && DATABASE_URL=postgres://user:password@localhost:5433/database node ./dist/cli/bin.js",
+    "prepublishOnly": "npm run ci",
+    "start": "npm run build && DATABASE_URL=postgres://user:password@localhost:5433/database node ./dist/cli/bin.js",
     "test": "vitest run --globals --fileParallelism=false --maxConcurrency=1 --maxWorkers=1 --sequence.seed=1",
     "test:watch": "vitest watch --globals --fileParallelism=false --maxConcurrency=1 --maxWorkers=1 --sequence.seed=1",
     "upgrade": "ncu -u"
@@ -146,7 +146,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "npm@11.7.0",
   "eslintConfig": {
     "extends": [
       "@robinblomberg/robinblomberg",
