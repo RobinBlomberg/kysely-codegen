@@ -3,7 +3,11 @@ import type {
   ColumnMetadata as KyselyColumnMetaData,
   TableMetadata as KyselyTableMetadata,
 } from 'kysely';
-import { DEFAULT_MIGRATION_LOCK_TABLE, DEFAULT_MIGRATION_TABLE, sql } from 'kysely';
+import {
+  DEFAULT_MIGRATION_LOCK_TABLE,
+  DEFAULT_MIGRATION_TABLE,
+  sql,
+} from 'kysely';
 import { EnumCollection } from '../../enum-collection';
 import type { IntrospectOptions } from '../../introspector';
 import { Introspector } from '../../introspector';
@@ -98,12 +102,16 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
 
     if (options.includePattern) {
       const tableMatcher = new TableMatcher(options.includePattern);
-      tables = tables.filter(({ name, schema }) => tableMatcher.match(schema, name));
+      tables = tables.filter(({ name, schema }) =>
+        tableMatcher.match(schema, name),
+      );
     }
 
     if (options.excludePattern) {
       const tableMatcher = new TableMatcher(options.excludePattern);
-      tables = tables.filter(({ name, schema }) => !tableMatcher.match(schema, name));
+      tables = tables.filter(
+        ({ name, schema }) => !tableMatcher.match(schema, name),
+      );
     }
 
     return tables;

@@ -12,9 +12,8 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
    * @see https://www.connectionstrings.com/microsoft-data-sqlclient/using-a-non-standard-port/
    */
   async #parseConnectionString(connectionString: string) {
-    const { parseConnectionString } = await import(
-      '@tediousjs/connection-string'
-    );
+    const { parseConnectionString } =
+      await import('@tediousjs/connection-string');
 
     const parsed = parseConnectionString(connectionString) as Record<
       string,

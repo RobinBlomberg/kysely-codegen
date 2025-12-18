@@ -6,9 +6,8 @@ export class LibsqlIntrospectorDialect extends IntrospectorDialect {
   override readonly introspector = new LibsqlIntrospector();
 
   async createKyselyDialect(options: CreateKyselyDialectOptions) {
-    const { LibsqlDialect: KyselyLibsqlDialect } = await import(
-      '@libsql/kysely-libsql'
-    );
+    const { LibsqlDialect: KyselyLibsqlDialect } =
+      await import('@libsql/kysely-libsql');
 
     // LibSQL URLs are of the form `libsql://token@host:port/db`:
     const url = new URL(options.connectionString);

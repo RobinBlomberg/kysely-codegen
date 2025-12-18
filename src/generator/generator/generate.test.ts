@@ -37,7 +37,7 @@ type Test = {
 
 const SNAPSHOTS_DIR = join(__dirname, 'snapshots');
 
-const normalizeNewlines = (string: string) => string.replace(/\r\n/g, '\n');
+const normalizeNewlines = (string: string) => string.replaceAll('\r\n', '\n');
 
 const TESTS: Test[] = [
   {
