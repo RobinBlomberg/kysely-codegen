@@ -1,9 +1,11 @@
 import { z } from 'zod';
-import type {
-  LogLevel,
-  Overrides,
-  RuntimeEnumsStyle,
-  Serializer,
+import {
+  MYSQL_DATE_STRING_TYPES,
+  type LogLevel,
+  type MysqlDateStrings,
+  type Overrides,
+  type RuntimeEnumsStyle,
+  type Serializer,
 } from '../generator';
 import {
   ArrayExpressionNode,
@@ -26,6 +28,7 @@ export type Config = {
   camelCase?: boolean;
   customImports?: CustomImports;
   dateParser?: DateParser;
+  dateStrings?: MysqlDateStrings;
   defaultSchemas?: string[];
   dialect?: DialectName;
   domains?: boolean;
@@ -82,10 +85,18 @@ const overridesSchema = z
   .object({ columns: z.record(z.string(), expressionNodeSchema).optional() })
   .optional();
 
+const mysqlDateStringTypeSchema = z.preprocess(
+  (value) => (typeof value === 'string' ? value.toLowerCase() : value),
+  z.enum(MYSQL_DATE_STRING_TYPES),
+);
+
 export const configSchema = z.object({
   camelCase: z.boolean().optional(),
   customImports: z.record(z.string(), z.string()).optional(),
   dateParser: z.enum<DateParser[]>(['string', 'timestamp']).optional(),
+  dateStrings: z
+    .union([z.boolean(), z.array(mysqlDateStringTypeSchema)])
+    .optional(),
   defaultSchemas: z.array(z.string()).optional(),
   dialect: dialectNameSchema.optional(),
   domains: z.boolean().optional(),

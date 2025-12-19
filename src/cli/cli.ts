@@ -3,7 +3,7 @@ import minimist from 'minimist';
 import { writeSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { RuntimeEnumsStyle } from '../generator';
-import { getDialect } from '../generator';
+import { MYSQL_DATE_STRING_TYPES, getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';
 import { generate } from '../generator/generator/generate';
 import { DEFAULT_LOG_LEVEL } from '../generator/logger/log-level';
@@ -52,6 +52,7 @@ export class Cli {
 
     const dialect = getDialect(dialectName, {
       dateParser: options.dateParser,
+      dateStrings: options.dateStrings,
       domains: options.domains,
       numericParser: options.numericParser,
       partitions: options.partitions,
@@ -110,6 +111,29 @@ export class Cli {
       default:
         return undefined;
     }
+  }
+
+  #parseDateStrings(input: any): Config['dateStrings'] {
+    if (input === undefined) return undefined;
+
+    if (input === true || input === false || input === 'true' || input === 'false') {
+      return this.#parseBoolean(input);
+    }
+
+    const values = this.#parseStringArray(input);
+
+    if (!values) return undefined;
+
+    const normalized = values.map((value) => value.toLowerCase());
+    const isValid = normalized.every((value) =>
+      MYSQL_DATE_STRING_TYPES.includes(
+        value as (typeof MYSQL_DATE_STRING_TYPES)[number],
+      ),
+    );
+
+    return isValid
+      ? (normalized as (typeof MYSQL_DATE_STRING_TYPES)[number][])
+      : undefined;
   }
 
   #parseDialectName(input: any): DialectName | undefined {
@@ -239,6 +263,7 @@ export class Cli {
           ? JSON.parse(argv['custom-imports'])
           : undefined,
       dateParser: this.#parseDateParser(argv['date-parser']),
+      dateStrings: this.#parseDateStrings(argv['date-strings']),
       defaultSchemas: this.#parseStringArray(argv['default-schema']),
       dialect: this.#parseDialectName(argv.dialect),
       domains: this.#parseBoolean(argv.domains),

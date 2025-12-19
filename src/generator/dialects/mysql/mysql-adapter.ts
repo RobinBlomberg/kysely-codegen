@@ -6,11 +6,20 @@ import { ObjectExpressionNode } from '../../ast/object-expression-node';
 import { PropertyNode } from '../../ast/property-node';
 import { UnionExpressionNode } from '../../ast/union-expression-node';
 import {
+  MYSQL_DATE_STRING_TYPES,
+  type MysqlDateStringType,
+  type MysqlDateStrings,
+} from './date-strings';
+import {
   JSON_ARRAY_DEFINITION,
   JSON_OBJECT_DEFINITION,
   JSON_PRIMITIVE_DEFINITION,
   JSON_VALUE_DEFINITION,
 } from '../../transformer/definitions';
+
+type MysqlAdapterOptions = {
+  dateStrings?: MysqlDateStrings;
+};
 
 export class MysqlAdapter extends Adapter {
   override readonly definitions = {
@@ -82,4 +91,34 @@ export class MysqlAdapter extends Adapter {
     varchar: new IdentifierNode('string'),
     year: new IdentifierNode('number'),
   };
+
+  constructor(options?: MysqlAdapterOptions) {
+    super();
+
+    const dateStringTypes = normalizeDateStringTypes(options?.dateStrings);
+
+    if (dateStringTypes.has('date')) {
+      this.scalars.date = new IdentifierNode('string');
+    }
+
+    if (dateStringTypes.has('datetime')) {
+      this.scalars.datetime = new IdentifierNode('string');
+    }
+
+    if (dateStringTypes.has('timestamp')) {
+      this.scalars.timestamp = new IdentifierNode('string');
+    }
+  }
 }
+
+const normalizeDateStringTypes = (value?: MysqlDateStrings) => {
+  if (!value) {
+    return new Set<MysqlDateStringType>();
+  }
+
+  if (value === true) {
+    return new Set(MYSQL_DATE_STRING_TYPES);
+  }
+
+  return new Set(value);
+};

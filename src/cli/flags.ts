@@ -39,6 +39,12 @@ export const FLAGS = [
     values: ['string', 'timestamp'],
   },
   {
+    default: 'false',
+    description:
+      'Treat MySQL DATE/DATETIME/TIMESTAMP as strings. Use true for all, or repeat with date/datetime/timestamp.',
+    longName: 'date-strings',
+  },
+  {
     description: 'Set the default schema(s) for the database connection.',
     longName: 'default-schema',
   },
