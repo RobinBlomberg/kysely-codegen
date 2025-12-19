@@ -575,4 +575,142 @@ describe(transform.name, () => {
       ]),
     );
   });
+
+  it('should collect custom imports from raw override expressions', () => {
+    const nodes = transform({
+      customImports: {
+        CustomType: './types',
+        JSONColumnType: 'kysely',
+        OtherType: './types',
+        TemplateType: './types',
+      },
+      dialect: new PostgresDialect({}),
+      metadata: new DatabaseMetadata({
+        enums,
+        tables: [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'payload',
+              }),
+            ],
+            name: 'table',
+            schema: 'public',
+          }),
+        ],
+      }),
+      overrides: {
+        columns: {
+          'table.payload':
+            'JSONColumnType<Record<string, CustomType | OtherType[]> | `prefix-${TemplateType}`>',
+        },
+      },
+    });
+
+    const importNodes = nodes.filter((node) => node.type === 'ImportStatement');
+    const typesImport = importNodes.find(
+      (node) => node.moduleName === './types',
+    );
+
+    deepStrictEqual(
+      typesImport?.imports.map((clause) => clause.name).sort(),
+      ['CustomType', 'OtherType', 'TemplateType'].sort(),
+    );
+
+    const kyselyImport = importNodes.find(
+      (node) => node.moduleName === 'kysely',
+    );
+    deepStrictEqual(
+      kyselyImport,
+      new ImportStatementNode('kysely', [
+        new ImportClauseNode('JSONColumnType'),
+      ]),
+    );
+  });
+
+  it('should ignore property and parameter names in raw overrides', () => {
+    const nodes = transform({
+      customImports: {
+        CustomType: './types',
+        OtherType: './types',
+        bar: './types',
+        baz: './types',
+        foo: './types',
+      },
+      dialect: new PostgresDialect({}),
+      metadata: new DatabaseMetadata({
+        enums,
+        tables: [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'details',
+              }),
+            ],
+            name: 'table',
+            schema: 'public',
+          }),
+        ],
+      }),
+      overrides: {
+        columns: {
+          'table.details':
+            '({ foo: CustomType; readonly bar?: OtherType } & ((baz: CustomType) => OtherType))',
+        },
+      },
+    });
+
+    const importNodes = nodes.filter((node) => node.type === 'ImportStatement');
+    const typesImport = importNodes.find(
+      (node) => node.moduleName === './types',
+    );
+
+    deepStrictEqual(
+      typesImport?.imports.map((clause) => clause.name).sort(),
+      ['CustomType', 'OtherType'].sort(),
+    );
+  });
+
+  it('should ignore identifiers inside strings and comments in raw overrides', () => {
+    const nodes = transform({
+      customImports: {
+        CommentType: './types',
+        CustomType: './types',
+      },
+      dialect: new PostgresDialect({}),
+      metadata: new DatabaseMetadata({
+        enums,
+        tables: [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'notes',
+              }),
+            ],
+            name: 'table',
+            schema: 'public',
+          }),
+        ],
+      }),
+      overrides: {
+        columns: {
+          'table.notes':
+            'CustomType | "CommentType" | /* CommentType */ null',
+        },
+      },
+    });
+
+    const importNodes = nodes.filter((node) => node.type === 'ImportStatement');
+    const typesImport = importNodes.find(
+      (node) => node.moduleName === './types',
+    );
+
+    deepStrictEqual(
+      typesImport?.imports.map((clause) => clause.name).sort(),
+      ['CustomType'].sort(),
+    );
+  });
 });

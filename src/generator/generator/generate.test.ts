@@ -623,6 +623,52 @@ describe(serializeFromMetadata.name, () => {
     );
   });
 
+  test('customImports with raw override expressions', () => {
+    expect(
+      serialize({
+        customImports: {
+          CustomType: './types',
+          MyEnum: './types',
+        },
+        metadata: {
+          tables: [
+            {
+              columns: [
+                { dataType: 'json', name: 'payload' },
+                { dataType: 'text', name: 'status' },
+                { dataType: 'text', name: 'statuses' },
+              ],
+              name: 'events',
+              schema: 'public',
+            },
+          ],
+        },
+        overrides: {
+          columns: {
+            'events.payload': 'JSONColumnType<CustomType>',
+            'events.status': 'MyEnum | null',
+            'events.statuses': 'MyEnum[]',
+          },
+        },
+      }),
+    ).toStrictEqual(
+      dedent`
+        import type { CustomType, MyEnum } from "./types";
+        import type { JSONColumnType } from "kysely";
+
+        export interface Events {
+          payload: JSONColumnType<CustomType>;
+          status: MyEnum | null;
+          statuses: MyEnum[];
+        }
+
+        export interface DB {
+          events: Events;
+        }
+      `,
+    );
+  });
+
   test('customImports with # syntax for named exports', () => {
     expect(
       serialize({

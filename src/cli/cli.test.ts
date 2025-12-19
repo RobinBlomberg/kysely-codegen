@@ -10,9 +10,12 @@ import packageJson from '../../package.json';
 import { Cli } from './cli';
 import { ConfigError } from './config-error';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { migrate } from '../introspector/introspector.fixtures';
+import { PostgresIntrospectorDialect } from '../introspector/dialects/postgres/postgres-dialect';
 
 const BINARY_PATH = join(process.cwd(), packageJson.bin['kysely-generate']);
 const OUTPUT_PATH = join(__dirname, 'test', 'output.snapshot.ts');
+const CONNECTION_STRING = 'postgres://user:password@localhost:5433/database';
 
 const OUTPUT = dedent`
   /**
@@ -48,11 +51,21 @@ const down = async (db: Kysely<any>) => {
   await db.schema.dropSchema('cli').cascade().execute();
 };
 
+const resetPublicSchema = async () => {
+  const db = await migrate(
+    new PostgresIntrospectorDialect(),
+    CONNECTION_STRING,
+  );
+  await db.destroy();
+};
+
 const up = async () => {
+  await resetPublicSchema();
+
   const db = new Kysely<any>({
     dialect: new PostgresDialect({
       pool: new Pool({
-        connectionString: 'postgres://user:password@localhost:5433/database',
+        connectionString: CONNECTION_STRING,
       }),
     }),
   });
@@ -106,7 +119,7 @@ describe(Cli.name, () => {
           runtimeEnums: 'pascal-case',
           singularize: { '/(bacch)(?:us|i)$/i': '$1us' },
           typeOnlyImports: true,
-          url: 'postgres://user:password@localhost:5433/database',
+          url: CONNECTION_STRING,
         },
       });
 
@@ -240,7 +253,7 @@ describe(Cli.name, () => {
             interval: 'Temporal.Duration',
             timestamptz: 'Instant',
           },
-          url: 'postgres://user:password@localhost:5433/database',
+          url: CONNECTION_STRING,
         },
       });
 

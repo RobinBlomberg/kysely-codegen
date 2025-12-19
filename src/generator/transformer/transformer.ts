@@ -116,6 +116,344 @@ const collectSymbol = (name: string, context: TransformContext) => {
   }
 };
 
+const extractIdentifiersFromTypeExpression = (expression: string) => {
+  const identifiers = new Set<string>();
+  let i = 0;
+  let inLineComment = false;
+  let inBlockComment = false;
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
+  let inTemplateLiteral = false;
+  let templateExpressionDepth = 0;
+  let memberStart = false;
+
+  const isIdentifierStart = (char: string | undefined) => {
+    if (!char) {
+      return false;
+    }
+
+    return (
+      (char >= 'A' && char <= 'Z') ||
+      (char >= 'a' && char <= 'z') ||
+      char === '_' ||
+      char === '$'
+    );
+  };
+
+  const isIdentifierPart = (char: string | undefined) => {
+    if (!char) {
+      return false;
+    }
+
+    return isIdentifierStart(char) || (char >= '0' && char <= '9');
+  };
+
+  const isWhitespace = (char: string | undefined) =>
+    char === ' ' || char === '\n' || char === '\r' || char === '\t';
+
+  const skipLineComment = (startIndex: number) => {
+    let index = startIndex;
+
+    while (index < expression.length && expression[index] !== '\n') {
+      index += 1;
+    }
+
+    return index;
+  };
+
+  const skipBlockComment = (startIndex: number) => {
+    let index = startIndex;
+
+    while (index < expression.length) {
+      if (expression[index] === '*' && expression[index + 1] === '/') {
+        return index + 2;
+      }
+
+      index += 1;
+    }
+
+    return index;
+  };
+
+  const skipTrivia = (startIndex: number) => {
+    let index = startIndex;
+
+    while (index < expression.length) {
+      const char = expression[index];
+      const nextChar = expression[index + 1];
+
+      if (isWhitespace(char)) {
+        index += 1;
+        continue;
+      }
+
+      if (char === '/' && nextChar === '/') {
+        index = skipLineComment(index + 2);
+        continue;
+      }
+
+      if (char === '/' && nextChar === '*') {
+        index = skipBlockComment(index + 2);
+        continue;
+      }
+
+      break;
+    }
+
+    return index;
+  };
+
+  const peekNextNonTriviaChar = (startIndex: number) => {
+    const index = skipTrivia(startIndex);
+
+    if (index >= expression.length) {
+      return null;
+    }
+
+    return { char: expression[index]!, index };
+  };
+
+  const peekNextIdentifier = (startIndex: number) => {
+    const nextChar = peekNextNonTriviaChar(startIndex);
+
+    if (!nextChar || !isIdentifierStart(nextChar.char)) {
+      return null;
+    }
+
+    let end = nextChar.index + 1;
+
+    while (end < expression.length && isIdentifierPart(expression[end]!)) {
+      end += 1;
+    }
+
+    return expression.slice(nextChar.index, end);
+  };
+
+  const isMemberModifier = (identifier: string) => identifier === 'readonly';
+
+  const isMemberName = (identifierEndIndex: number) => {
+    if (!memberStart) {
+      return false;
+    }
+
+    const nextChar = peekNextNonTriviaChar(identifierEndIndex);
+
+    if (!nextChar) {
+      return false;
+    }
+
+    if (nextChar.char === '?') {
+      const afterQuestion = peekNextNonTriviaChar(nextChar.index + 1);
+      return afterQuestion?.char === ':';
+    }
+
+    if (nextChar.char === ':') {
+      return true;
+    }
+
+    return peekNextIdentifier(identifierEndIndex) === 'in';
+  };
+
+  const skipNestedTemplateLiteral = (startIndex: number) => {
+    let index = startIndex + 1;
+
+    while (index < expression.length) {
+      const char = expression[index];
+
+      if (char === '\\') {
+        index += 2;
+        continue;
+      }
+
+      if (char === '`') {
+        return index + 1;
+      }
+
+      index += 1;
+    }
+
+    return index;
+  };
+
+  while (i < expression.length) {
+    const char = expression[i];
+    const nextChar = expression[i + 1];
+
+    if (inLineComment) {
+      if (char === '\n') {
+        inLineComment = false;
+      }
+
+      i += 1;
+      continue;
+    }
+
+    if (inBlockComment) {
+      if (char === '*' && nextChar === '/') {
+        inBlockComment = false;
+        i += 2;
+        continue;
+      }
+
+      i += 1;
+      continue;
+    }
+
+    if (inSingleQuote) {
+      if (char === '\\') {
+        i += 2;
+        continue;
+      }
+
+      if (char === "'") {
+        inSingleQuote = false;
+      }
+
+      i += 1;
+      continue;
+    }
+
+    if (inDoubleQuote) {
+      if (char === '\\') {
+        i += 2;
+        continue;
+      }
+
+      if (char === '"') {
+        inDoubleQuote = false;
+      }
+
+      i += 1;
+      continue;
+    }
+
+    if (inTemplateLiteral && templateExpressionDepth === 0) {
+      if (char === '\\') {
+        i += 2;
+        continue;
+      }
+
+      if (char === '$' && nextChar === '{') {
+        templateExpressionDepth = 1;
+        i += 2;
+        continue;
+      }
+
+      if (char === '`') {
+        inTemplateLiteral = false;
+      }
+
+      i += 1;
+      continue;
+    }
+
+    if (char === '/' && nextChar === '/') {
+      inLineComment = true;
+      i += 2;
+      continue;
+    }
+
+    if (char === '/' && nextChar === '*') {
+      inBlockComment = true;
+      i += 2;
+      continue;
+    }
+
+    if (char === "'") {
+      inSingleQuote = true;
+      i += 1;
+      continue;
+    }
+
+    if (char === '"') {
+      inDoubleQuote = true;
+      i += 1;
+      continue;
+    }
+
+    if (char === '`') {
+      if (templateExpressionDepth > 0) {
+        i = skipNestedTemplateLiteral(i);
+      } else {
+        inTemplateLiteral = true;
+        i += 1;
+      }
+
+      continue;
+    }
+
+    if (templateExpressionDepth > 0) {
+      if (char === '{') {
+        templateExpressionDepth += 1;
+        memberStart = true;
+        i += 1;
+        continue;
+      }
+
+      if (char === '}') {
+        templateExpressionDepth -= 1;
+        memberStart = false;
+        i += 1;
+        continue;
+      }
+    }
+
+    if (isIdentifierStart(char)) {
+      let end = i + 1;
+
+      while (end < expression.length && isIdentifierPart(expression[end]!)) {
+        end += 1;
+      }
+
+      const identifier = expression.slice(i, end);
+
+      if (memberStart && isMemberModifier(identifier)) {
+        i = end;
+        continue;
+      }
+
+      if (!isMemberName(end)) {
+        identifiers.add(identifier);
+      }
+
+      memberStart = false;
+      i = end;
+      continue;
+    }
+
+    if (char === '{' || char === ',' || char === ';' || char === '(') {
+      memberStart = true;
+      i += 1;
+      continue;
+    }
+
+    if (char === '[') {
+      memberStart = true;
+      i += 1;
+      continue;
+    }
+
+    if (char === '}' || char === ')' || char === ']') {
+      memberStart = false;
+      i += 1;
+      continue;
+    }
+
+    i += 1;
+  }
+
+  return identifiers;
+};
+
+const collectSymbolsFromRawExpression = (
+  expression: string,
+  context: TransformContext,
+) => {
+  for (const identifier of extractIdentifiersFromTypeExpression(expression)) {
+    collectSymbol(identifier, context);
+  }
+};
+
 const collectSymbols = (
   node: ExpressionNode | TemplateNode,
   context: TransformContext,
@@ -155,7 +493,7 @@ const collectSymbols = (
 
       break;
     case 'RawExpression':
-      collectSymbol(node.expression, context);
+      collectSymbolsFromRawExpression(node.expression, context);
       break;
     case 'Template':
       collectSymbols(node.expression, context);

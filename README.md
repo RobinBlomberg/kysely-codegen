@@ -9,6 +9,7 @@ Changes in this fork:
 - Added esm rather than just cjs build output.
   - Now uses tsdown to build both cjs and esm outputs.
   - Uses oxlint and tsgo
+- Fixed custom import detection for override/type-mapping expressions with generics, unions, and arrays.
 
 `kysely-generate` generates Kysely type definitions from your database. That's it.
 
