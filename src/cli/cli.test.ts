@@ -393,6 +393,13 @@ describe(Cli.name, () => {
     });
     assert(['--date-parser=timestamp'], { dateParser: 'timestamp' });
     assert(['--date-parser=string'], { dateParser: 'string' });
+    assert(['--date-strings'], { dateStrings: true });
+    assert(['--date-strings=false'], { dateStrings: false });
+    assert(['--date-strings=date'], { dateStrings: ['date'] });
+    assert(['--date-strings=DATE'], { dateStrings: ['date'] });
+    assert(['--date-strings=date', '--date-strings=timestamp'], {
+      dateStrings: ['date', 'timestamp'],
+    });
     assert(['--default-schema=foo'], { defaultSchemas: ['foo'] });
     assert(['--default-schema=foo', '--default-schema=bar'], {
       defaultSchemas: ['foo', 'bar'],
@@ -473,6 +480,7 @@ describe(Cli.name, () => {
       { dateParser: 'timestamps' },
       'Invalid option: expected one of "string"|"timestamp"',
     );
+    assert({ dateStrings: 'date' }, 'Invalid input');
     assert(
       { defaultSchemas: 'public' },
       'Invalid input: expected array, received string',

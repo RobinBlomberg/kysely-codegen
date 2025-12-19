@@ -5,6 +5,7 @@
 Changes in this fork:
 
 - PostgreSQL materialized view support (introspects materialized views alongside tables).
+- MySQL dateStrings-aware typing for DATE/DATETIME/TIMESTAMP.
 
 `kysely-generate` generates Kysely type definitions from your database. That's it.
 
@@ -220,6 +221,10 @@ kysely-generate --overrides='{"columns":{"events.date_range":"ColumnType<DateRan
 
 Specify which parser to use for PostgreSQL date values. (values: `string`/`timestamp`, default: `timestamp`)
 
+#### --date-strings <!-- omit from toc -->
+
+Treat MySQL DATE/DATETIME/TIMESTAMP columns as `string` in generated types to match mysql2 `dateStrings`. Use `--date-strings` for all, or repeat with `--date-strings=date`, `--date-strings=datetime`, `--date-strings=timestamp`.
+
 #### --default-schema [value] <!-- omit from toc -->
 
 Set the default schema(s) for the database connection.
@@ -384,6 +389,7 @@ The default configuration:
   "camelCase": false,
   "customImports": {},
   "dateParser": "timestamp",
+  "dateStrings": false,
   "defaultSchemas": [], // ["public"] for PostgreSQL.
   "dialect": null,
   "domains": true,

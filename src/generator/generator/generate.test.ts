@@ -394,6 +394,38 @@ describe(serializeFromMetadata.name, () => {
         `,
       );
     });
+
+    test('MysqlDialect options', () => {
+      expect(
+        serialize({
+          dialect: new MysqlDialect({ dateStrings: ['date', 'timestamp'] }),
+          metadata: {
+            tables: [
+              {
+                columns: [
+                  { dataType: 'date', name: 'event_date' },
+                  { dataType: 'datetime', name: 'created_at' },
+                  { dataType: 'timestamp', name: 'updated_at' },
+                ],
+                name: 'events',
+              },
+            ],
+          },
+        }),
+      ).toStrictEqual(
+        dedent`
+          export interface Events {
+            created_at: Date;
+            event_date: string;
+            updated_at: string;
+          }
+
+          export interface DB {
+            events: Events;
+          }
+        `,
+      );
+    });
   });
 
   test('logger', () => {
