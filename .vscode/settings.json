@@ -1,18 +1,7 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.addMissingImports": "explicit",
-    "source.organizeImports": "explicit"
-  },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
-  "editor.insertSpaces": true,
-  "editor.rulers": [80],
-  "editor.tabSize": 2,
-  "editor.trimAutoWhitespace": true,
-  "eslint.format.enable": false,
-  "files.encoding": "utf8",
-  "files.eol": "\n",
-  "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true
+  "files.exclude": {
+    "package-lock.json": true,
+    "node_modules": true,
+    "LICENSE": true
+  }
 }

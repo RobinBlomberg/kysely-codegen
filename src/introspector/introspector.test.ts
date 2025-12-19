@@ -12,6 +12,7 @@ import { Introspector } from './introspector';
 import { ColumnMetadata } from './metadata/column-metadata';
 import { DatabaseMetadata } from './metadata/database-metadata';
 import { TableMetadata } from './metadata/table-metadata';
+import { describe, it } from 'vitest';
 
 type Test = {
   connectionString: string;

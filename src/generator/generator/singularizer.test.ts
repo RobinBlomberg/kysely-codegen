@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { createSingularizer } from './singularizer';
 
 describe(createSingularizer.name, () => {

@@ -1,5 +1,6 @@
 import { strictEqual } from 'node:assert';
 import { TableMatcher } from './table-matcher';
+import { describe, it } from 'vitest';
 
 describe(TableMatcher.name, () => {
   it('should match tables without schemas', () => {

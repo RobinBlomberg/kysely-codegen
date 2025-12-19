@@ -24,6 +24,7 @@ import { MysqlDialect } from '../dialects/mysql/mysql-dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { transform } from '../transformer/transformer';
 import { TypeScriptSerializer } from './serializer';
+import { describe, it, test } from 'vitest';
 
 describe(TypeScriptSerializer.name, () => {
   const serializer = new TypeScriptSerializer();

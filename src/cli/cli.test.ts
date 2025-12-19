@@ -9,6 +9,7 @@ import { dedent } from 'ts-dedent';
 import packageJson from '../../package.json';
 import { Cli } from './cli';
 import { ConfigError } from './config-error';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 const BINARY_PATH = join(process.cwd(), packageJson.bin['kysely-generate']);
 const OUTPUT_PATH = join(__dirname, 'test', 'output.snapshot.ts');

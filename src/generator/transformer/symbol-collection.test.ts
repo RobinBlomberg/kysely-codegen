@@ -2,6 +2,7 @@ import { deepStrictEqual } from 'node:assert';
 import { IdentifierNode } from '../ast/identifier-node';
 import type { SymbolNode } from './symbol-collection';
 import { SymbolCollection } from './symbol-collection';
+import { test } from 'vitest';
 
 test(SymbolCollection.name, () => {
   const symbols = new SymbolCollection();

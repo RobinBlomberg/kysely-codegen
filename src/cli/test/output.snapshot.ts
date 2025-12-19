@@ -3,7 +3,7 @@
  * Please do not edit it manually.
  */
 
-import { ColumnType } from "kysely";
+import type { ColumnType } from "kysely";
 
 export enum Status {
   Confirmed = "CONFIRMED",

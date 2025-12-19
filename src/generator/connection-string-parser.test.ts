@@ -1,5 +1,6 @@
 import { deepStrictEqual } from 'node:assert';
 import { ConnectionStringParser } from './connection-string-parser';
+import { describe, it } from 'vitest';
 
 describe(ConnectionStringParser.name, () => {
   const parser = new ConnectionStringParser();

@@ -27,6 +27,7 @@ import { Logger } from '../logger/logger';
 import { toKyselyCamelCase } from '../utils/case-converter';
 import type { GenerateOptions, SerializeFromMetadataOptions } from './generate';
 import { generate, serializeFromMetadata } from './generate';
+import { describe, expect, it, test } from 'vitest';
 
 type Test = {
   connectionString: string;

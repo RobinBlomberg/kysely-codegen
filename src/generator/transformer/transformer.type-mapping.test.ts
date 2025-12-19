@@ -10,6 +10,7 @@ import { InterfaceDeclarationNode } from '../ast/interface-declaration-node';
 import { RawExpressionNode } from '../ast/raw-expression-node';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import { transform } from './transformer';
+import { describe, it } from 'vitest';
 
 describe('transform with type mapping', () => {
   const createColumn = (
