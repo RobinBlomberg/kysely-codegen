@@ -395,8 +395,8 @@ const transformColumnToArgs = (
 
   if (mappedType) {
     // Used as a unique identifier for the data type:
-    const schema = column.dataTypeSchema ?? context.defaultSchemas;
-    const dataTypeId = `${schema}.${dataType}`;
+    const schema = column.dataTypeSchema ?? context.defaultSchemas[0];
+    const dataTypeId = schema ? `${schema}.${dataType}` : dataType;
 
     // Only apply mapping if this is a known type in the dialect:
     const isKnownType =
@@ -425,8 +425,8 @@ const transformColumnToArgs = (
   }
 
   // Used as a unique identifier for the data type:
-  const schema = column.dataTypeSchema ?? context.defaultSchemas;
-  const dataTypeId = `${schema}.${dataType}`;
+  const schema = column.dataTypeSchema ?? context.defaultSchemas[0];
+  const dataTypeId = schema ? `${schema}.${dataType}` : dataType;
 
   // Used for serializing the name of the symbol:
   const symbolId =

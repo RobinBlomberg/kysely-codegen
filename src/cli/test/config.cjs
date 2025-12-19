@@ -7,7 +7,7 @@ module.exports = {
   outFile: './output.snapshot.ts',
   runtimeEnums: 'pascal-case',
   singularize: { '/(bacch)(?:us|i)$/i': '$1us' },
-  typeOnlyImports: false,
+  typeOnlyImports: true,
   url: 'postgres://user:password@localhost:5433/database',
   verify: true,
 };

@@ -163,8 +163,10 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
       .map((table): TableMetadata => {
         const columns = table.columns.map((column): ColumnMetadata => {
           const dataType = this.getRootType(column, domains);
+          const schema =
+            column.dataTypeSchema ?? this.options.defaultSchemas?.[0] ?? 'public';
           const enumValues = enums.get(
-            `${column.dataTypeSchema ?? this.options.defaultSchemas}.${dataType}`,
+            `${schema}.${dataType}`,
           );
           const isArray = dataType.startsWith('_');
 

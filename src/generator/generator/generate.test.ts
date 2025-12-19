@@ -191,7 +191,7 @@ describe(generate.name, () => {
     }
 
     class PostgresEnumTablesDialect extends PostgresDialect {
-      introspector: PostgresEnumTablesIntrospector;
+      override readonly introspector: PostgresEnumTablesIntrospector;
 
       constructor(options?: PostgresDialectOptions) {
         super(options);
@@ -400,7 +400,7 @@ describe(serializeFromMetadata.name, () => {
     class ArrayLogger extends Logger {
       readonly messages: string[] = [];
 
-      debug(message = '') {
+      override debug(message = '') {
         this.messages.push(message);
       }
     }

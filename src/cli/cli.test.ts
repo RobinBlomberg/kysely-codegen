@@ -20,7 +20,7 @@ const OUTPUT = dedent`
    * Please do not edit it manually.
    */
 
-  import { ColumnType } from "kysely";
+  import type { ColumnType } from "kysely";
 
   export enum Status {
     Confirmed = "CONFIRMED",
@@ -105,7 +105,7 @@ describe(Cli.name, () => {
           outFile: null,
           runtimeEnums: 'pascal-case',
           singularize: { '/(bacch)(?:us|i)$/i': '$1us' },
-          typeOnlyImports: false,
+          typeOnlyImports: true,
           url: 'postgres://user:password@localhost:5433/database',
         },
       });
@@ -117,7 +117,7 @@ describe(Cli.name, () => {
            * Please do not edit it manually.
            */
 
-          import { ColumnType } from "kysely";
+          import type { ColumnType } from "kysely";
 
           export enum Status {
             Confirmed = "CONFIRMED",
