@@ -6,6 +6,9 @@ Changes in this fork:
 
 - PostgreSQL materialized view support (introspects materialized views alongside tables).
 - MySQL dateStrings-aware typing for DATE/DATETIME/TIMESTAMP.
+- Added esm rather than just cjs build output.
+  - Now uses tsdown to build both cjs and esm outputs.
+  - Uses oxlint and tsgo
 
 `kysely-generate` generates Kysely type definitions from your database. That's it.
 
@@ -14,7 +17,9 @@ Changes in this fork:
 - [Installation](#installation)
 - [Generating type definitions](#generating-type-definitions)
 - [Using the type definitions](#using-the-type-definitions)
-- [CLI arguments](#cli-arguments) - [Basic example](#basic-example) - [Named imports with aliasing](#named-imports-with-aliasing)
+- [CLI arguments](#cli-arguments)
+      - [Basic example](#basic-example)
+      - [Named imports with aliasing](#named-imports-with-aliasing)
 - [Configuration file](#configuration-file)
 
 ## Installation
