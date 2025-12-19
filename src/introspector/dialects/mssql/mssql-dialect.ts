@@ -12,14 +12,15 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
    * @see https://www.connectionstrings.com/microsoft-data-sqlclient/using-a-non-standard-port/
    */
   async #parseConnectionString(connectionString: string) {
-    const { parseConnectionString } =
+    const { MSSQL_SCHEMA, parse } =
       await import('@tediousjs/connection-string');
 
-    const parsed = parseConnectionString(connectionString) as Record<
+    const schema = parse(connectionString).toSchema(MSSQL_SCHEMA) as Record<
       string,
-      string
+      string | number | boolean
     >;
-    const tokens = parsed.server!.split(',');
+    const dataSource = schema['data source'] as string;
+    const tokens = dataSource.split(',');
     const serverAndInstance = tokens[0]!.split('\\');
     const server = serverAndInstance[0]!;
     const instanceName = serverAndInstance[1];
@@ -34,12 +35,12 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
         : undefined;
 
     return {
-      database: parsed.database!,
+      database: schema['initial catalog'] as string,
       instanceName,
-      password: parsed.password!,
+      password: schema.password as string,
       port,
       server,
-      userName: parsed['user id']!,
+      userName: schema['user id'] as string,
     };
   }
 
