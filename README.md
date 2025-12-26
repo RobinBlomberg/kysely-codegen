@@ -292,7 +292,7 @@ Print the generated output to the terminal instead of a file.
 
 #### --runtime-enums <!-- omit from toc -->
 
-The PostgreSQL `--runtime-enums` option generates runtime enums instead of string unions. You can optionally specify which naming convention to use for runtime enum keys. (values: [`pascal-case`, `screaming-snake-case`], default: `screaming-snake-case`)
+For the PostgreSQL and MySQL `--runtime-enums` option generates runtime enums instead of string unions. You can optionally specify which naming convention to use for runtime enum keys. (values: [`pascal-case`, `screaming-snake-case`], default: `screaming-snake-case`)
 
 **Examples:**
 
