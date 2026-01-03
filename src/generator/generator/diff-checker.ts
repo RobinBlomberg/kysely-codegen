@@ -1,4 +1,4 @@
-import gitDiff from 'git-diff';
+import { createPatch } from 'diff';
 
 export class DiffChecker {
   #sanitize(string: string) {
@@ -7,6 +7,14 @@ export class DiffChecker {
   }
 
   diff(oldTypes: string, newTypes: string) {
-    return gitDiff(this.#sanitize(oldTypes), this.#sanitize(newTypes));
+    if (oldTypes === newTypes) return undefined;
+
+    return (
+      createPatch('', this.#sanitize(oldTypes), this.#sanitize(newTypes))
+        .split('\n')
+        // remove header lines
+        .slice(4)
+        .join('\n')
+    );
   }
 }
