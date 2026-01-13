@@ -51,6 +51,9 @@ DATABASE_URL=C:/Program Files/sqlite3/db
 
 # MSSQL
 DATABASE_URL=Server=mssql;Database=database;User Id=user;Password=password
+# or using ntlm auth
+DATABASE_URL=Server=mssql;Database=database;User Id=user;Password=password;Domain=domain;authentication=ntlm
+
 
 # LibSQL
 DATABASE_URL=libsql://token@host:port/database
