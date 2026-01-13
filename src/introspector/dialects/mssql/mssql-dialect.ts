@@ -41,6 +41,8 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
       port,
       server,
       userName: parsed['user id']!,
+      domain: parsed.domain!,
+      authenticationType: parsed.authentication!
     };
   }
 
@@ -48,8 +50,21 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
     const tarn = await import('tarn');
     const tedious = await import('tedious');
 
-    const { database, instanceName, password, port, server, userName } =
+    const { database, instanceName, password, port, server, userName, domain, authenticationType } =
       await this.#parseConnectionString(options.connectionString);
+
+    const authentication = {
+      options: authenticationType === 'ntlm' ? { password, userName, domain } : { password, userName },
+      type: authenticationType === 'ntlm' ? 'ntlm' as const : 'default' as const,
+    }
+
+    const connectionOptions = {
+      database,
+      encrypt: options.ssl ?? true,
+      instanceName,
+      port,
+      trustServerCertificate: true,
+    }
 
     return new KyselyMssqlDialect({
       tarn: {
@@ -60,17 +75,8 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
         ...tedious,
         connectionFactory: () => {
           return new tedious.Connection({
-            authentication: {
-              options: { password, userName },
-              type: 'default',
-            },
-            options: {
-              database,
-              encrypt: options.ssl ?? true,
-              instanceName,
-              port,
-              trustServerCertificate: true,
-            },
+            authentication,
+            options: connectionOptions,
             server,
           });
         },
