@@ -58,7 +58,7 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
       type: authenticationType === 'ntlm' ? 'ntlm' as const : 'default' as const,
     }
 
-    const ConnectionOptions = {
+    const connectionOptions = {
       database,
       encrypt: options.ssl ?? true,
       instanceName,
@@ -76,7 +76,7 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
         connectionFactory: () => {
           return new tedious.Connection({
             authentication,
-            options: ConnectionOptions,
+            options: connectionOptions,
             server,
           });
         },
