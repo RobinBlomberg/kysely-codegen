@@ -55,8 +55,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       '@tediousjs/connection-string':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@types/better-sqlite3':
         specifier: ^7.6.13
         version: 7.6.13
@@ -1088,8 +1088,8 @@ packages:
   '@storybook/global@5.0.0':
     resolution: {integrity: sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ==}
 
-  '@tediousjs/connection-string@0.5.0':
-    resolution: {integrity: sha512-7qSgZbincDDDFyRweCIEvZULFAw5iz/DeunhvuxpL31nfntX3P4Yd4HkHBRg9H8CdqY1e5WFN1PZIz/REL9MVQ==}
+  '@tediousjs/connection-string@1.0.0':
+    resolution: {integrity: sha512-3G0JqbtokS8h9Wz4JfcOVhaI9Thknv2PP2+mE33jMdH4lUQMBfLZas4R0kVEvwNC0QsPUbGF6H36oBou1bxdkg==}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -4937,7 +4937,7 @@ snapshots:
 
   '@storybook/global@5.0.0': {}
 
-  '@tediousjs/connection-string@0.5.0': {}
+  '@tediousjs/connection-string@1.0.0': {}
 
   '@testing-library/dom@10.4.1':
     dependencies:
