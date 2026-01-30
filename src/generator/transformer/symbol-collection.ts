@@ -82,7 +82,8 @@ export class SymbolCollection {
       this.identifierStyle === 'screaming-snake-case'
         ? toScreamingSnakeCase
         : toKyselyPascalCase;
-    symbolName = caseConverter(id.replaceAll(/[^\w$]/g, '_'));
+    //                                             Add CJK unicode range
+    symbolName = caseConverter(id.replaceAll(/[^\w$\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/g, '_'));
 
     if (symbolNames.has(symbolName)) {
       let suffix = 2;
