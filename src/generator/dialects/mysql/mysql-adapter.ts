@@ -81,5 +81,6 @@ export class MysqlAdapter extends Adapter {
     varbinary: new IdentifierNode('Buffer'),
     varchar: new IdentifierNode('string'),
     year: new IdentifierNode('number'),
+    uuid: new IdentifierNode('string')
   };
 }
