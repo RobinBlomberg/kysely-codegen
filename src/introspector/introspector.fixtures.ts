@@ -7,6 +7,10 @@ import { PostgresIntrospectorDialect } from './dialects/postgres/postgres-dialec
 const down = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
   assert(dialect instanceof IntrospectorDialect);
 
+  if (dialect instanceof PostgresIntrospectorDialect) {
+    await sql`drop materialized view if exists foo_bar_mv;`.execute(db);
+  }
+
   await db.schema.dropTable('boolean').ifExists().execute();
   await db.schema.dropTable('foo_bar').ifExists().execute();
 
@@ -120,6 +124,11 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
     await db.executeQuery(
       sql`
         create table partition_1 partition of partitioned_table for values from (1) to (100);
+      `.compile(db),
+    );
+    await db.executeQuery(
+      sql`
+        create materialized view foo_bar_mv as select id, "true", "false" from foo_bar;
       `.compile(db),
     );
   }

@@ -73,6 +73,12 @@ export interface FooBar {
   userStatus2: TestStatus | null;
 }
 
+export interface FooBarMv {
+  false: boolean | null;
+  id: number | null;
+  true: boolean | null;
+}
+
 export interface PartitionedTable {
   id: Generated<number>;
 }
@@ -80,5 +86,6 @@ export interface PartitionedTable {
 export interface DB {
   enum: Enum;
   fooBar: FooBar;
+  fooBarMv: FooBarMv;
   partitionedTable: PartitionedTable;
 }

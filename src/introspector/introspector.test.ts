@@ -318,6 +318,31 @@ describe(Introspector.name, () => {
                 name: 'partitioned_table',
                 schema: 'public',
               }),
+              new TableMetadata({
+                columns: [
+                  new ColumnMetadata({
+                    dataType: 'int4',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'id',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'bool',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'true',
+                  }),
+                  new ColumnMetadata({
+                    dataType: 'bool',
+                    dataTypeSchema: 'pg_catalog',
+                    isNullable: true,
+                    name: 'false',
+                  }),
+                ],
+                isView: true,
+                name: 'foo_bar_mv',
+                schema: 'public',
+              }),
             ],
           }),
         );
