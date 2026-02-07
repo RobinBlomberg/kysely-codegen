@@ -12,7 +12,7 @@ export class DiffChecker {
     return (
       createPatch('', this.#sanitize(oldTypes), this.#sanitize(newTypes))
         .split('\n')
-        // remove header lines
+        // Remove header lines:
         .slice(4)
         .join('\n')
     );
