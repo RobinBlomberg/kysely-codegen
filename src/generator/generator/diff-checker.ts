@@ -7,7 +7,9 @@ export class DiffChecker {
   }
 
   diff(oldTypes: string, newTypes: string) {
-    if (oldTypes === newTypes) return undefined;
+    if (oldTypes === newTypes) {
+      return undefined;
+    }
 
     return (
       createPatch('', this.#sanitize(oldTypes), this.#sanitize(newTypes))
