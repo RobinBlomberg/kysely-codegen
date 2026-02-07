@@ -79,8 +79,8 @@ export class SymbolCollection {
 
     const symbolNames = new Set(Object.values(this.symbolNames));
 
-    // For ModuleReference symbols (imports), preserve the original name
-    // to maintain exact import names like MY_CUSTOM_TYPE
+    // For `ModuleReference` symbols (imports), preserve the original name
+    // to maintain exact import names like MY_CUSTOM_TYPE:
     if (symbol.type === 'ModuleReference') {
       symbolName = id;
     } else {
