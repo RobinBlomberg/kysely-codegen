@@ -125,6 +125,7 @@ export class PostgresAdapter extends Adapter {
     polygon: new IdentifierNode('string'),
     text: new IdentifierNode('string'),
     time: new IdentifierNode('string'),
+    timetz: new IdentifierNode('string'),
     timestamp: new IdentifierNode('Timestamp'),
     timestamptz: new IdentifierNode('Timestamp'),
     tsquery: new IdentifierNode('string'),
