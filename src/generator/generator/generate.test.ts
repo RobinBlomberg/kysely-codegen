@@ -264,6 +264,18 @@ describe(generate.name, () => {
       await db.destroy();
     }
   });
+
+  afterAll(async () => {
+    const db = await migrate(
+      new PostgresDialect(),
+      'postgres://user:password@localhost:5433/database',
+    );
+
+    await sql`drop schema if exists public cascade;`.execute(db);
+    await sql`create schema public;`.execute(db);
+
+    await db.destroy();
+  });
 });
 
 describe(serializeFromMetadata.name, () => {

@@ -1,0 +1,33 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Start test databases
+        run: docker compose up -d --wait
+
+      - name: Wait for LibSQL
+        run: pnpx wait-on http://localhost:8080/health
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Stop databases
+        if: always()
+        run: docker compose down -v

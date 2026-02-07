@@ -19,6 +19,12 @@ export interface Bacchus {
   status: Status | null;
 }
 
+export interface BacchiMv {
+  bacchusId: number | null;
+  status: Status | null;
+}
+
 export interface DB {
   bacchi: Bacchus;
+  bacchiMv: BacchiMv;
 }

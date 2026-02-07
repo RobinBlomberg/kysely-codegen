@@ -7,6 +7,8 @@ import { join } from 'node:path';
 import { Pool } from 'pg';
 import { dedent } from 'ts-dedent';
 import packageJson from '../../package.json';
+import { migrate } from '../introspector/introspector.fixtures';
+import { PostgresIntrospectorDialect } from '../introspector/dialects/postgres/postgres-dialect';
 import { Cli } from './cli';
 import { ConfigError } from './config-error';
 
@@ -35,24 +37,27 @@ const OUTPUT = dedent`
     status: Status | null;
   }
 
+  export interface BacchiMv {
+    bacchusId: number | null;
+    status: Status | null;
+  }
+
   export interface DB {
     bacchi: Bacchus;
+    bacchiMv: BacchiMv;
   }
 
 `;
+
+const CONNECTION_STRING = 'postgres://user:password@localhost:5433/database';
 
 const down = async (db: Kysely<any>) => {
   await db.schema.dropSchema('cli').cascade().execute();
 };
 
 const up = async () => {
-  const db = new Kysely<any>({
-    dialect: new PostgresDialect({
-      pool: new Pool({
-        connectionString: 'postgres://user:password@localhost:5433/database',
-      }),
-    }),
-  });
+  const dialect = new PostgresIntrospectorDialect();
+  const db = await migrate(dialect, CONNECTION_STRING);
 
   await db.schema.dropSchema('cli').ifExists().cascade().execute();
   await db.schema.createSchema('cli').execute();
@@ -66,6 +71,11 @@ const up = async () => {
     .addColumn('status', sql`cli.status`)
     .addColumn('bacchus_id', 'serial', (col) => col.primaryKey())
     .execute();
+  await db.executeQuery(
+    sql`create materialized view cli.bacchi_mv as select bacchus_id, status from cli.bacchi;`.compile(
+      db,
+    ),
+  );
 
   return db;
 };
@@ -124,8 +134,14 @@ describe(Cli.name, () => {
           status: Status | null;
         }
 
+        export interface BacchiMv {
+          bacchusId: number | null;
+          status: Status | null;
+        }
+
         export interface DB {
           bacchi: Bacchus;
+          bacchiMv: BacchiMv;
         }
 
       `,
@@ -181,6 +197,17 @@ describe(Cli.name, () => {
 
         table partitioned_table {
           id: int4
+        }
+
+        table bacchi_mv {
+          bacchus_id: int4
+          status: status
+        }
+
+        table foo_bar_mv {
+          id: int4
+          true: bool
+          false: bool
         }
       `,
     );
@@ -265,6 +292,11 @@ describe(Cli.name, () => {
           status: CliStatus | null;
         }
 
+        export interface CliBacchiMv {
+          bacchusId: number | null;
+          status: CliStatus | null;
+        }
+
         export interface Enum {
           name: string;
         }
@@ -298,14 +330,22 @@ describe(Cli.name, () => {
           userStatus2: TestStatus | null;
         }
 
+        export interface FooBarMv {
+          false: boolean | null;
+          id: number | null;
+          true: boolean | null;
+        }
+
         export interface PartitionedTable {
           id: Generated<number>;
         }
 
         export interface DB {
           "cli.bacchi": CliBacchi;
+          "cli.bacchiMv": CliBacchiMv;
           enum: Enum;
           fooBar: FooBar;
+          fooBarMv: FooBarMv;
           partitionedTable: PartitionedTable;
         }
 
@@ -391,6 +431,33 @@ describe(Cli.name, () => {
     assert(['--verify'], { verify: true });
     assert(['--verify=false'], { verify: false });
     assert(['--verify=true'], { verify: true });
+  });
+
+  it('should generate types for materialized views', async () => {
+    const db = await up();
+
+    const output = await new Cli().run({
+      argv: ['--camel-case'],
+      config: {
+        camelCase: false,
+        defaultSchemas: ['cli'],
+        dialect: 'postgres',
+        includePattern: 'cli.*',
+        logLevel: 'silent',
+        outFile: null,
+        runtimeEnums: 'pascal-case',
+        singularize: false,
+        typeOnlyImports: false,
+        url: 'postgres://user:password@localhost:5433/database',
+      },
+    });
+
+    expect(output).toContain('export interface BacchiMv {');
+    expect(output).toContain('bacchusId: number | null;');
+    expect(output).toContain('status: Status | null;');
+    expect(output).toContain('bacchiMv: BacchiMv;');
+
+    await down(db);
   });
 
   it('should throw an error if a flag is deprecated', () => {

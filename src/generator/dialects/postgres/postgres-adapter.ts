@@ -127,6 +127,7 @@ export class PostgresAdapter extends Adapter {
     time: new IdentifierNode('string'),
     timestamp: new IdentifierNode('Timestamp'),
     timestamptz: new IdentifierNode('Timestamp'),
+    timetz: new IdentifierNode('string'),
     tsquery: new IdentifierNode('string'),
     tsvector: new IdentifierNode('string'),
     txid_snapshot: new IdentifierNode('string'),

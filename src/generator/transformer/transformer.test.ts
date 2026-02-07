@@ -574,4 +574,64 @@ describe(transform.name, () => {
       ]),
     );
   });
+
+  it('should handle subpath imports starting with #', () => {
+    const nodes = transform({
+      customImports: {
+        MySubpathType: '#internal/types',
+        NestedType: '#internal/nested#MyNestedType',
+      },
+      dialect: new PostgresDialect({}),
+      metadata: new DatabaseMetadata({
+        enums,
+        tables: [
+          new TableMetadata({
+            columns: [
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'subpath_column',
+              }),
+              new ColumnMetadata({
+                dataType: 'text',
+                name: 'nested_column',
+              }),
+            ],
+            name: 'subpath_test',
+            schema: 'public',
+          }),
+        ],
+      }),
+      overrides: {
+        columns: {
+          'subpath_test.subpath_column': new IdentifierNode('MySubpathType'),
+          'subpath_test.nested_column': new IdentifierNode('NestedType'),
+        },
+      },
+    });
+
+    // Verify subpath imports are handled correctly:
+    const importNodes = nodes.filter((node) => node.type === 'ImportStatement');
+
+    // Check subpath import without named export: `import { MySubpathType } from '#internal/types';`
+    const subpathImport = importNodes.find(
+      (node) => node.moduleName === '#internal/types',
+    );
+    deepStrictEqual(
+      subpathImport,
+      new ImportStatementNode('#internal/types', [
+        new ImportClauseNode('MySubpathType', null),
+      ]),
+    );
+
+    // Check subpath import with named export: `import { MyNestedType as NestedType } from '#internal/nested';`
+    const nestedImport = importNodes.find(
+      (node) => node.moduleName === '#internal/nested',
+    );
+    deepStrictEqual(
+      nestedImport,
+      new ImportStatementNode('#internal/nested', [
+        new ImportClauseNode('MyNestedType', 'NestedType'),
+      ]),
+    );
+  });
 });
