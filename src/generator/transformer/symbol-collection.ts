@@ -78,11 +78,27 @@ export class SymbolCollection {
     }
 
     const symbolNames = new Set(Object.values(this.symbolNames));
-    const caseConverter =
-      this.identifierStyle === 'screaming-snake-case'
-        ? toScreamingSnakeCase
-        : toKyselyPascalCase;
-    symbolName = caseConverter(id.replaceAll(/[^\w$]/g, '_'));
+
+    // For `ModuleReference` symbols (imports), preserve the original name
+    // to maintain exact import names like MY_CUSTOM_TYPE:
+    if (symbol.type === 'ModuleReference') {
+      symbolName = id;
+    } else {
+      const caseConverter =
+        this.identifierStyle === 'screaming-snake-case'
+          ? toScreamingSnakeCase
+          : toKyselyPascalCase;
+
+      // Replace characters with underscores except for:
+      // - Word characters (A-Z, a-z, 0-9, _)
+      // - Dollar sign ($)
+      // - CJK Unified Ideographs Extension A (U+3400–U+4DBF)
+      // - CJK Unified Ideographs (U+4E00–U+9FFF)
+      // - CJK Compatibility Ideographs (U+F900–U+FAFF)
+      symbolName = caseConverter(
+        id.replaceAll(/[^\w$\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/g, '_'),
+      );
+    }
 
     if (symbolNames.has(symbolName)) {
       let suffix = 2;

@@ -23,6 +23,7 @@ import { UnionExpressionNode } from '../ast/union-expression-node';
 import type { GeneratorDialect } from '../dialect';
 import { PostgresDialect } from '../dialects/postgres/postgres-dialect';
 import type { RuntimeEnumsStyle } from '../generator/runtime-enums-style';
+import { typeExpressionParser } from '../parser/type-expression-parser';
 import { toKyselyCamelCase } from '../utils/case-converter';
 import { GLOBAL_DEFINITIONS } from './definitions';
 import { GLOBAL_IMPORTS } from './imports';
@@ -154,9 +155,18 @@ const collectSymbols = (
       }
 
       break;
-    case 'RawExpression':
-      collectSymbol(node.expression, context);
+    case 'RawExpression': {
+      // Use TypeScript AST parser to extract all type identifiers from the expression
+      // This properly handles complex cases like "JSONColumnType<CustomType>"
+      // and correctly identifies all referenced types
+      const typeIdentifiers = typeExpressionParser.extractTypeIdentifiers(
+        node.expression,
+      );
+      for (const identifier of typeIdentifiers) {
+        collectSymbol(identifier, context);
+      }
       break;
+    }
     case 'Template':
       collectSymbols(node.expression, context);
       break;
@@ -176,7 +186,8 @@ const createContext = (options: TransformOptions): TransformContext => {
   // Convert custom imports to `ModuleReferenceNode` instances:
   for (const [name, moduleSpec] of Object.entries(customImports)) {
     // Parse the `#` syntax for named imports:
-    const hashIndex = moduleSpec.indexOf('#');
+    const isSubpathImport = moduleSpec[0] === '#' ? 1 : undefined;
+    const hashIndex = moduleSpec.indexOf('#', isSubpathImport);
 
     if (hashIndex === -1) {
       customImportNodes[name] = new ModuleReferenceNode(moduleSpec);
@@ -347,14 +358,13 @@ const transformColumn = ({
       : overrides?.[path];
 
   if (override !== undefined) {
-    const args = [
-      typeof override === 'string' ? new RawExpressionNode(override) : override,
-    ];
-    if (column.isNullable) {
-      args.push(new IdentifierNode('null'));
-    }
-
-    const node = unionize(args);
+    const node =
+      typeof override === 'string'
+        ? typeExpressionParser.parse(override)
+        : unionize([
+            override,
+            ...(column.isNullable ? [new IdentifierNode('null')] : []),
+          ]);
 
     collectSymbols(node, context);
 

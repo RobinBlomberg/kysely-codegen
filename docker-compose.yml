@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   kysely_codegen_adminer:
     container_name: kysely_codegen_adminer
@@ -24,6 +22,12 @@ services:
     ports:
       - 3306:3306
     restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "user", "-ppassword"]
+      interval: 2s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
   kysely_codegen_postgres:
     container_name: kysely_codegen_postgres
     environment:
@@ -34,3 +38,9 @@ services:
     ports:
       - 5433:5432
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d database"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
