@@ -18,6 +18,7 @@ test(SymbolCollection.name, () => {
   symbols.set('0x123', symbol);
   symbols.set('!', symbol);
   symbols.set('"', symbol);
+  symbols.set('用户', symbol);
 
   deepStrictEqual(symbols.symbolNames, {
     'foo-bar': 'FooBar',
@@ -28,5 +29,6 @@ test(SymbolCollection.name, () => {
     '0x123': '_0x123',
     '!': '_',
     '"': '_2',
+    用户: '用户',
   });
 });

@@ -82,7 +82,16 @@ export class SymbolCollection {
       this.identifierStyle === 'screaming-snake-case'
         ? toScreamingSnakeCase
         : toKyselyPascalCase;
-    symbolName = caseConverter(id.replaceAll(/[^\w$]/g, '_'));
+
+    // Replace characters with underscores except for:
+    // - Word characters (A-Z, a-z, 0-9, _)
+    // - Dollar sign ($)
+    // - CJK Unified Ideographs Extension A (U+3400–U+4DBF)
+    // - CJK Unified Ideographs (U+4E00–U+9FFF)
+    // - CJK Compatibility Ideographs (U+F900–U+FAFF)
+    symbolName = caseConverter(
+      id.replaceAll(/[^\w$\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/g, '_'),
+    );
 
     if (symbolNames.has(symbolName)) {
       let suffix = 2;
