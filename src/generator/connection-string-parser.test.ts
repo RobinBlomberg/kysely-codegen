@@ -5,7 +5,7 @@ describe(ConnectionStringParser.name, () => {
   const parser = new ConnectionStringParser();
 
   describe('postgres', () => {
-    it('should infer the correct dialect name', () => {
+    it('should normalize the connection string and infer the correct dialect name', () => {
       deepStrictEqual(
         parser.parse({
           connectionString: 'postgres://username:password@hostname/database',
@@ -76,6 +76,15 @@ describe(ConnectionStringParser.name, () => {
         }),
         {
           connectionString: '/usr/local/bin',
+          dialect: 'sqlite',
+        },
+      );
+      deepStrictEqual(
+        parser.parse({
+          connectionString: 'sqlite://./path/to/db.sqlite',
+        }),
+        {
+          connectionString: './path/to/db.sqlite',
           dialect: 'sqlite',
         },
       );
