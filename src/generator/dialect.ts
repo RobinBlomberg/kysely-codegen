@@ -1,4 +1,4 @@
-import type { DialectName } from '../cli/config';
+import type { DialectName } from '../config/config';
 import { IntrospectorDialect } from '../introspector/dialect';
 import type { Adapter } from './adapter';
 import { KyselyBunSqliteDialect } from './dialects/kysely-bun-sqlite/kysely-bun-sqlite-dialect';

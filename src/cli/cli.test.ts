@@ -1,16 +1,15 @@
 import type { Config } from 'cosmiconfig';
 import { execa, ExecaError } from 'execa';
-import { Kysely, PostgresDialect, sql } from 'kysely';
+import { Kysely, sql } from 'kysely';
 import { deepStrictEqual } from 'node:assert';
 import fs from 'node:fs/promises';
 import { join } from 'node:path';
-import { Pool } from 'pg';
 import { dedent } from 'ts-dedent';
 import packageJson from '../../package.json';
-import { migrate } from '../introspector/introspector.fixtures';
+import { ConfigError } from '../config';
 import { PostgresIntrospectorDialect } from '../introspector/dialects/postgres/postgres-dialect';
+import { migrate } from '../introspector/introspector.fixtures';
 import { Cli } from './cli';
-import { ConfigError } from './config-error';
 
 const BINARY_PATH = join(process.cwd(), packageJson.bin['kysely-codegen']);
 const OUTPUT_PATH = join(__dirname, 'test', 'output.snapshot.ts');
@@ -512,7 +511,7 @@ describe(Cli.name, () => {
       { domains: 'true' },
       'Invalid input: expected boolean, received string',
     );
-    assert({ envFile: null }, 'Invalid input: expected string, received null');
+    assert({ envFile: 0 }, 'Invalid input: expected string, received number');
     assert(
       { excludePattern: false },
       'Invalid input: expected string, received boolean',

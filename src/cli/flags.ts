@@ -43,7 +43,7 @@ export const FLAGS = [
     longName: 'default-schema',
   },
   {
-    description: 'Set the SQL dialect.',
+    description: 'Explicitly set the SQL dialect.',
     longName: 'dialect',
     values: VALID_DIALECTS,
   },
@@ -52,7 +52,7 @@ export const FLAGS = [
     longName: 'env-file',
   },
   {
-    description: 'Exclude tables matching the specified glob pattern.',
+    description: 'Exclude tables that match the specified glob pattern.',
     examples: ['users', '*.table', 'secrets.*', '*._*'],
     longName: 'exclude-pattern',
   },
@@ -62,7 +62,7 @@ export const FLAGS = [
     shortName: 'h',
   },
   {
-    description: 'Only include tables matching the specified glob pattern.',
+    description: 'Only include tables that match the specified glob pattern.',
     examples: ['users', '*.table', 'secrets.*', '*._*'],
     longName: 'include-pattern',
   },

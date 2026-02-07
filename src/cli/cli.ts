@@ -1,6 +1,9 @@
-import { cosmiconfigSync } from 'cosmiconfig';
+import { Config as CosmiconfigConfig } from 'cosmiconfig';
 import minimist from 'minimist';
 import { resolve } from 'node:path';
+import type { DialectName } from '../config';
+import { ConfigError, configSchema, dialectNameSchema } from '../config';
+import { loadConfig } from '../config/config';
 import type { RuntimeEnumsStyle } from '../generator';
 import { getDialect } from '../generator';
 import { ConnectionStringParser } from '../generator/connection-string-parser';
@@ -9,9 +12,6 @@ import { DEFAULT_LOG_LEVEL } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import type { DateParser } from '../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
-import type { Config, DialectName } from './config';
-import { configSchema, dialectNameSchema } from './config';
-import { ConfigError } from './config-error';
 import { DEFAULT_URL, VALID_DIALECTS } from './constants';
 import { FLAGS, serializeFlags } from './flags';
 
@@ -27,7 +27,7 @@ const compact = <T extends Record<string, unknown>>(object: T) => {
 export class Cli {
   logLevel = DEFAULT_LOG_LEVEL;
 
-  async generate(options: Config) {
+  async generate(options: CosmiconfigConfig) {
     const connectionStringParser = new ConnectionStringParser();
     const logger = options.logger ?? new Logger(options.logLevel);
 
@@ -85,15 +85,6 @@ export class Cli {
     await db.destroy();
 
     return output;
-  }
-
-  #loadConfig(config?: {
-    configFile?: string;
-  }): { config: unknown; filepath: string } | null {
-    const explorer = cosmiconfigSync('kysely-codegen');
-    return config?.configFile
-      ? explorer.load(config.configFile)
-      : explorer.search();
   }
 
   #parseBoolean(input: any): boolean | undefined {
@@ -160,8 +151,8 @@ export class Cli {
 
   parseOptions(
     args: string[],
-    options?: { config?: Config; silent?: boolean },
-  ): Config {
+    options?: { config?: CosmiconfigConfig; silent?: boolean },
+  ): CosmiconfigConfig {
     const argv = minimist(args);
     const logLevel = argv['log-level'];
 
@@ -210,7 +201,7 @@ export class Cli {
     const configFile = this.#parseString(argv['config-file']);
     const configResult = options?.config
       ? { config: options.config, filepath: null }
-      : this.#loadConfig({ configFile });
+      : loadConfig({ configFile });
     const configParseResult = configResult
       ? configSchema.safeParse(configResult.config)
       : null;
@@ -230,7 +221,7 @@ export class Cli {
         })
       : {};
 
-    const cliOptions: Config = compact({
+    const cliOptions: CosmiconfigConfig = compact({
       camelCase: this.#parseBoolean(argv['camel-case']),
       customImports:
         typeof argv['custom-imports'] === 'string'
@@ -268,7 +259,7 @@ export class Cli {
       ? undefined
       : (cliOptions.outFile ?? configOptions.outFile);
 
-    const generateOptions: Config = {
+    const generateOptions: CosmiconfigConfig = {
       ...configOptions,
       ...cliOptions,
       ...(logLevel === undefined ? {} : { logLevel }),
@@ -288,7 +279,7 @@ export class Cli {
     return generateOptions;
   }
 
-  async run(options?: { argv?: string[]; config?: Config }) {
+  async run(options?: { argv?: string[]; config?: CosmiconfigConfig }) {
     const generateOptions = this.parseOptions(options?.argv ?? [], {
       config: options?.config,
     });
