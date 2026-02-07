@@ -371,7 +371,7 @@ const transformColumn = ({
     return node;
   }
 
-  let args = transformColumnToArgs(column, context);
+  let args = transformColumnToArgs(column, context, table);
 
   if (column.isArray) {
     const unionizedArgs = unionize(args);
@@ -403,6 +403,7 @@ const transformColumn = ({
 const transformColumnToArgs = (
   column: ColumnMetadata,
   context: TransformContext,
+  table: TableMetadata,
 ) => {
   const dataType = column.dataType.toLowerCase();
 
@@ -454,10 +455,14 @@ const transformColumnToArgs = (
 
   const enumValues = context.enums.get(dataTypeId);
 
-  if (enumValues) {
+  if (enumValues && column.enumValues) {
     if (context.runtimeEnums) {
+      const tableName = table.name;
+      const columnName = column.name;
+      const symbolId = `${tableName}_${columnName}`;
+
       const symbol: SymbolNode = {
-        node: new RuntimeEnumDeclarationNode(symbolId, enumValues, {
+        node: new RuntimeEnumDeclarationNode(symbolId, column.enumValues, {
           identifierStyle:
             context.runtimeEnums === 'screaming-snake-case'
               ? 'screaming-snake-case'
@@ -486,6 +491,25 @@ const transformColumnToArgs = (
   }
 
   if (column.enumValues) {
+    if (context.runtimeEnums) {
+      const tableName = table.name;
+      const columnName = column.name;
+      const symbolId = `${tableName}_${columnName}`;
+
+      const symbol: SymbolNode = {
+        node: new RuntimeEnumDeclarationNode(symbolId, column.enumValues, {
+          identifierStyle:
+            context.runtimeEnums === 'screaming-snake-case'
+              ? 'screaming-snake-case'
+              : 'kysely-pascal-case',
+        }),
+        type: 'RuntimeEnumDefinition',
+      };
+      symbol.node.id.name = context.symbols.set(symbolId, symbol);
+      const node = new IdentifierNode(symbol.node.id.name);
+      return [node];
+    }
+
     return transformEnum(column.enumValues);
   }
 
