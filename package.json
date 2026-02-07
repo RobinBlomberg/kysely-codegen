@@ -28,7 +28,8 @@
     "ci:test": "pnpm test",
     "ci:unused": "knip",
     "dev": "tsx watch ./src/cli/bin.ts",
-    "docker:up": "docker-compose up -d",
+    "docker:up": "docker compose up -d --wait",
+    "docker:wait": "wait-on tcp:5433 tcp:3306 http://localhost:8080/health",
     "fix": "run-s fix:*",
     "fix:eslint": "eslint --fix src",
     "fix:prettier": "prettier --write src",
@@ -97,7 +98,8 @@
     "ts-dedent": "^2.2.0",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wait-on": "^9.0.1"
   },
   "peerDependencies": {
     "@libsql/kysely-libsql": ">=0.3.0 <0.5.0",
