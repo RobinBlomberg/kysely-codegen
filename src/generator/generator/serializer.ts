@@ -1,11 +1,11 @@
-import type { DatabaseMetadata } from '../../introspector';
+import type { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
 import type { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import type { ArrayExpressionNode } from '../ast/array-expression-node';
 import type { ExportStatementNode } from '../ast/export-statement-node';
 import type { ExpressionNode } from '../ast/expression-node';
 import type { ExtendsClauseNode } from '../ast/extends-clause-node';
 import type { GenericExpressionNode } from '../ast/generic-expression-node';
-import { type IdentifierNode } from '../ast/identifier-node';
+import type { IdentifierNode } from '../ast/identifier-node';
 import type { ImportClauseNode } from '../ast/import-clause-node';
 import type { ImportStatementNode } from '../ast/import-statement-node';
 import type { InferClauseNode } from '../ast/infer-clause-node';

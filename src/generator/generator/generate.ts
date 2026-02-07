@@ -2,7 +2,7 @@ import type { Kysely } from 'kysely';
 import { promises as fs } from 'node:fs';
 import { parse, relative, resolve, sep } from 'node:path';
 import { performance } from 'node:perf_hooks';
-import type { DatabaseMetadata } from '../../introspector';
+import type { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
 import { DEFAULT_OUT_FILE } from '../constants';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';

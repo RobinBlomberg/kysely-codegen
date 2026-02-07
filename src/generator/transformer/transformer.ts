@@ -357,7 +357,7 @@ const transformColumn = ({
         : overrides?.[`${table.schema}.${path}`]
       : overrides?.[path];
 
-  if (override !== undefined) {
+  if (override) {
     const node =
       typeof override === 'string'
         ? typeExpressionParser.parse(override)

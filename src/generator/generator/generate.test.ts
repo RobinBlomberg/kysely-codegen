@@ -3,15 +3,14 @@ import { strictEqual } from 'node:assert';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { dedent } from 'ts-dedent';
-import type {
-  DatabaseMetadataOptions,
-  IntrospectOptions,
-} from '../../introspector';
-import { DatabaseMetadata, PostgresIntrospector } from '../../introspector';
+import { PostgresIntrospector } from '../../introspector/dialects/postgres/postgres-introspector';
+import type { IntrospectOptions } from '../../introspector/introspector';
 import {
   addExtraColumn,
   migrate,
 } from '../../introspector/introspector.fixtures';
+import type { DatabaseMetadataOptions } from '../../introspector/metadata/database-metadata';
+import { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { GenericExpressionNode } from '../ast/generic-expression-node';
 import { IdentifierNode, TableIdentifierNode } from '../ast/identifier-node';

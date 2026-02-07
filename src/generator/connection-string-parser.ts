@@ -11,8 +11,8 @@ const DIALECT_PARTS_REGEXP = /([^:]*)(.*)/;
  */
 type ParseConnectionStringOptions = {
   connectionString: string;
-  dialect?: DialectName;
-  envFile?: string;
+  dialect?: DialectName | null;
+  envFile?: string | null;
   logger?: Logger;
 };
 
@@ -78,7 +78,9 @@ export class ConnectionStringParser {
         );
       }
 
-      const { error } = expandEnv(loadEnv({ path: options.envFile }));
+      const { error } = expandEnv(
+        loadEnv({ path: options.envFile ?? undefined }),
+      );
       const displayEnvFile = options.envFile ?? '.env';
 
       if (error) {
@@ -87,7 +89,7 @@ export class ConnectionStringParser {
           typeof error.code === 'string' &&
           error.code === 'ENOENT'
         ) {
-          if (options.envFile !== undefined) {
+          if (options.envFile != null) {
             throw new ReferenceError(
               `Could not resolve connection string '${connectionString}'. ` +
                 `Environment file '${displayEnvFile}' could not be found. ` +

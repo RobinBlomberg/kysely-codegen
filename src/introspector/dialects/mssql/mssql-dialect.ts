@@ -22,12 +22,11 @@ export class MssqlIntrospectorDialect extends IntrospectorDialect {
 
     // Instance name and port are mutually exclusive.
     // See https://tediousjs.github.io/tedious/api-connection.html#:~:text=options.instanceName.
-    const port =
-      instanceName === undefined
-        ? tokens[1]
-          ? Number.parseInt(tokens[1], 10)
-          : DEFAULT_MSSQL_PORT
-        : undefined;
+    const port = instanceName
+      ? undefined
+      : tokens[1]
+        ? Number.parseInt(tokens[1], 10)
+        : DEFAULT_MSSQL_PORT;
 
     return {
       database: parsed.get('database'),

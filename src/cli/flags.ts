@@ -1,4 +1,4 @@
-import { DEFAULT_OUT_FILE } from '../generator';
+import { DEFAULT_OUT_FILE } from '../generator/constants';
 import {
   DEFAULT_RUNTIME_ENUMS_STYLE,
   DEFAULT_URL,

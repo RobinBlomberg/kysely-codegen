@@ -67,7 +67,7 @@ export class SymbolCollection {
   }
 
   has(id: string) {
-    return this.symbols[id] !== undefined;
+    return !!this.symbols[id];
   }
 
   set(id: string, symbol: SymbolNode) {

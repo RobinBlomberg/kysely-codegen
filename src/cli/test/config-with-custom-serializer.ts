@@ -1,5 +1,5 @@
 import type { Config } from '../../config/config';
-import type { DatabaseMetadata } from '../../introspector';
+import type { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
 
 const config: Config = {
   logLevel: 'debug',

@@ -1,12 +1,13 @@
 import type { Config } from 'cosmiconfig';
 import { execa, ExecaError } from 'execa';
-import { Kysely, sql } from 'kysely';
+import type { Kysely } from 'kysely';
+import { sql } from 'kysely';
 import { deepStrictEqual } from 'node:assert';
 import fs from 'node:fs/promises';
 import { join } from 'node:path';
 import { dedent } from 'ts-dedent';
 import packageJson from '../../package.json';
-import { ConfigError } from '../config';
+import { ConfigError } from '../config/config-error';
 import { PostgresIntrospectorDialect } from '../introspector/dialects/postgres/postgres-dialect';
 import { migrate } from '../introspector/introspector.fixtures';
 import { Cli } from './cli';

@@ -13,9 +13,8 @@ export class KyselyBunSqliteIntrospectorDialect extends IntrospectorDialect {
     }
 
     const { default: Database } = await import('bun:sqlite');
-    const { BunSqliteDialect: KyselyBunSqliteDialect } = await import(
-      'kysely-bun-sqlite'
-    );
+    const { BunSqliteDialect: KyselyBunSqliteDialect } =
+      await import('kysely-bun-sqlite');
 
     return new KyselyBunSqliteDialect({
       database: new Database(options.connectionString),

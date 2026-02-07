@@ -1,27 +1,25 @@
 import { cosmiconfigSync } from 'cosmiconfig';
 import { z } from 'zod';
-import type {
-  LogLevel,
-  Overrides,
-  RuntimeEnumsStyle,
-  Serializer,
-} from '../generator';
-import {
-  ArrayExpressionNode,
-  ExtendsClauseNode,
-  GenericExpressionNode,
-  IdentifierNode,
-  InferClauseNode,
-  LiteralNode,
-  LOG_LEVELS,
-  Logger,
-  MappedTypeNode,
-  ObjectExpressionNode,
-  RawExpressionNode,
-  UnionExpressionNode,
-} from '../generator';
-import type { DateParser, NumericParser } from '../introspector';
-import { DatabaseMetadata, IntrospectorDialect } from '../introspector';
+import { ArrayExpressionNode } from '../generator/ast/array-expression-node';
+import { ExtendsClauseNode } from '../generator/ast/extends-clause-node';
+import { GenericExpressionNode } from '../generator/ast/generic-expression-node';
+import { IdentifierNode } from '../generator/ast/identifier-node';
+import { InferClauseNode } from '../generator/ast/infer-clause-node';
+import { LiteralNode } from '../generator/ast/literal-node';
+import { MappedTypeNode } from '../generator/ast/mapped-type-node';
+import { ObjectExpressionNode } from '../generator/ast/object-expression-node';
+import { RawExpressionNode } from '../generator/ast/raw-expression-node';
+import { UnionExpressionNode } from '../generator/ast/union-expression-node';
+import type { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
+import type { Serializer } from '../generator/generator/serializer';
+import type { LogLevel } from '../generator/logger/log-level';
+import { LOG_LEVELS } from '../generator/logger/log-level';
+import { Logger } from '../generator/logger/logger';
+import type { Overrides } from '../generator/transformer/transformer';
+import { IntrospectorDialect } from '../introspector/dialect';
+import type { DateParser } from '../introspector/dialects/postgres/date-parser';
+import type { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
+import { DatabaseMetadata } from '../introspector/metadata/database-metadata';
 
 export type Config = {
   /**
