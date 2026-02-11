@@ -40,6 +40,7 @@ export class PostgresIntrospectorDialect extends IntrospectorDialect {
 
     if (this.options.dateParser === 'string') {
       pg.types.setTypeParser(1082, (date) => date);
+      pg.types.setTypeParser(1182, (v) => v.slice(1, -1).split(',')); // date[], looks like e.g. "{2024-01-05,2024-01-06}"
     }
 
     if (this.options.numericParser === 'number') {
