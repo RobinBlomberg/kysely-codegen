@@ -119,7 +119,111 @@ export type Config<DB = any> = {
    */
   partitions?: boolean;
   /**
-   * Postprocess the introspected metadata before code generation.
+   * Postprocess the introspected metadata before generating code.
+   *
+   * This function allows you to reuse the active Kysely connection to further
+   * introspect the database and modify the metadata as needed.
+   *
+   * @example
+   * ```ts
+   * // Generate enum types from PostGraphile enum tables:
+   * postprocess: async ({ db, metadata }) => {
+   *   const rows = await db
+   *     .selectFrom("pg_catalog.pg_constraint as foreign_key_constraint")
+   *     .innerJoin(
+   *       "pg_catalog.pg_class as from_table",
+   *       "from_table.oid",
+   *       "foreign_key_constraint.conrelid",
+   *     )
+   *     .innerJoin(
+   *       "pg_catalog.pg_namespace as from_table_namespace",
+   *       "from_table_namespace.oid",
+   *       "from_table.relnamespace",
+   *     )
+   *     .innerJoin("pg_catalog.pg_attribute as from_column", (join) =>
+   *       join
+   *         .onRef("from_column.attrelid", "=", "from_table.oid")
+   *         .on(sql`from_column.attnum = any(foreign_key_constraint.conkey)`),
+   *     )
+   *     .innerJoin(
+   *       "pg_catalog.pg_class as to_table",
+   *       "to_table.oid",
+   *       "foreign_key_constraint.confrelid",
+   *     )
+   *     .innerJoin(
+   *       "pg_catalog.pg_namespace as to_table_namespace",
+   *       "to_table_namespace.oid",
+   *       "to_table.relnamespace",
+   *     )
+   *     .innerJoin("pg_catalog.pg_attribute as to_column", (join) =>
+   *       join
+   *         .onRef("to_column.attrelid", "=", "to_table.oid")
+   *         .on(sql`to_column.attnum = any(foreign_key_constraint.confkey)`),
+   *     )
+   *     .select([
+   *       "from_table_namespace.nspname as fromSchema",
+   *       "from_table.relname as fromTable",
+   *       "from_column.attname as fromColumn",
+   *       "to_table_namespace.nspname as enumSchema",
+   *       "to_table.relname as enumTable",
+   *       "to_column.attname as enumColumn",
+   *     ])
+   *     .where("foreign_key_constraint.contype", "=", "f")
+   *     .where(sql<any>`obj_description(to_table.oid, 'pg_class') like '%@enum%'`)
+   *     .execute();
+   *
+   *   await Promise.all(
+   *     rows.map(
+   *       async ({
+   *         fromColumn,
+   *         fromSchema,
+   *         fromTable,
+   *         enumColumn,
+   *         enumSchema,
+   *         enumTable,
+   *       }) => {
+   *         const fromTableMetadata = metadata.tables.find(
+   *           (table) => table.schema === fromSchema && table.name === fromTable,
+   *         );
+   *         const fromColumnMetadata = fromTableMetadata?.columns.find(
+   *           (column) => column.name === fromColumn,
+   *         );
+   *         const enumTableMetadata = metadata.tables.find(
+   *           (table) => table.schema === enumSchema && table.name === enumTable,
+   *         );
+   *         const enumColumnMetadata = enumTableMetadata?.columns.find(
+   *           (column) => column.name === enumColumn,
+   *         );
+   *
+   *         if (fromColumnMetadata || enumColumnMetadata) {
+   *           const dataType = `${enumTable}.${enumColumn}`;
+   *           const enumValues = await db
+   *             .selectFrom(`${enumSchema}.${enumTable}`)
+   *             .select(enumColumn)
+   *             .execute()
+   *             .then((rows) =>
+   *               rows.map((row) => (row as Record<string, string>)[enumColumn]),
+   *             );
+   *
+   *           metadata.enums.set(`${enumSchema}.${dataType}`, enumValues);
+   *
+   *           if (fromColumnMetadata) {
+   *             fromColumnMetadata.dataTypeSchema = enumSchema;
+   *             fromColumnMetadata.dataType = dataType;
+   *           }
+   *
+   *           if (enumColumnMetadata) {
+   *             enumColumnMetadata.dataTypeSchema = enumSchema;
+   *             enumColumnMetadata.dataType = dataType;
+   *           }
+   *         }
+   *       },
+   *     ),
+   *   );
+   *
+   *   return metadata;
+   * },
+   * ```
    */
   postprocess?: PostprocessFunction<DB>;
   /**
