@@ -19,7 +19,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.29.3",
   "scripts": {
     "build": "rimraf dist && tsc --project ./tsconfig.build.json",
     "check:types": "tsc --noEmit",
@@ -152,6 +152,7 @@
   "pnpm": {
     "overrides": {
       "@isaacs/brace-expansion": ">=5.0.1",
+      "axios": ">=1.13.5",
       "js-yaml": ">=4.1.1",
       "jws": ">=3.2.3",
       "lodash": ">=4.17.23",
