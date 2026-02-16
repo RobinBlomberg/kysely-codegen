@@ -26,7 +26,7 @@ export class MysqlIntrospector extends Introspector<MysqlDB> {
             : null,
       })),
     }));
-    return new DatabaseMetadata({ tables });
+    return new DatabaseMetadata({ enums, tables });
   }
 
   async introspect(options: IntrospectOptions<MysqlDB>) {
