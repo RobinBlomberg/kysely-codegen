@@ -79,7 +79,7 @@ export class ConnectionStringParser {
       }
 
       const { error } = expandEnv(
-        loadEnv({ path: options.envFile ?? undefined }),
+        loadEnv({ path: options.envFile ?? undefined, quiet: true }),
       );
       const displayEnvFile = options.envFile ?? '.env';
 
