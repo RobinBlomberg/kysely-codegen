@@ -10,6 +10,7 @@ import { MappedTypeNode } from '../generator/ast/mapped-type-node';
 import { ObjectExpressionNode } from '../generator/ast/object-expression-node';
 import { RawExpressionNode } from '../generator/ast/raw-expression-node';
 import { UnionExpressionNode } from '../generator/ast/union-expression-node';
+import type { PostprocessFunction } from '../generator/generator/generate';
 import type { RuntimeEnumsStyle } from '../generator/generator/runtime-enums-style';
 import type { Serializer } from '../generator/generator/serializer';
 import type { LogLevel } from '../generator/logger/log-level';
@@ -21,7 +22,7 @@ import type { DateParser } from '../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
 import { DatabaseMetadata } from '../introspector/metadata/database-metadata';
 
-export type Config = {
+export type Config<DB = any> = {
   /**
    * Use the Kysely `CamelCasePlugin`.
    */
@@ -117,6 +118,10 @@ export type Config = {
    * Include partitions of PostgreSQL tables in the generated code.
    */
   partitions?: boolean;
+  /**
+   * Postprocess the introspected metadata before code generation.
+   */
+  postprocess?: PostprocessFunction<DB>;
   /**
    * Print the generated output to the terminal instead of a file.
    */
@@ -224,6 +229,7 @@ export const configSchema = z.object({
   outFile: z.string().nullable().optional(),
   overrides: overridesSchema.optional(),
   partitions: z.boolean().optional(),
+  postprocess: z.function().optional(),
   print: z.boolean().optional(),
   runtimeEnums: z
     .union([
@@ -261,7 +267,7 @@ export const configSchema = z.object({
   verify: z.boolean().optional(),
 });
 
-export const defineConfig = (config: Config): Config => {
+export const defineConfig = <DB = any>(config: Config<DB>): Config<DB> => {
   return config;
 };
 

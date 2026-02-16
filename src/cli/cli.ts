@@ -81,6 +81,7 @@ export class Cli {
       outFile: options.outFile,
       overrides: options.overrides,
       partitions: options.partitions,
+      postprocess: options.postprocess,
       print: options.print,
       runtimeEnums: options.runtimeEnums,
       serializer: options.serializer,

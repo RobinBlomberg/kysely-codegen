@@ -30,6 +30,8 @@ import { GLOBAL_IMPORTS } from './imports';
 import type { SymbolNode } from './symbol-collection';
 import { SymbolCollection } from './symbol-collection';
 
+export type ColumnOverrides = Record<string, ExpressionNode | string>;
+
 export type Overrides = {
   /**
    * Specifies type overrides for columns.
@@ -46,7 +48,7 @@ export type Overrides = {
    * }
    * ```
    */
-  columns?: Record<string, ExpressionNode | string>;
+  columns?: ColumnOverrides;
 };
 
 type TransformContext = {
@@ -434,12 +436,6 @@ const transformColumnToArgs = (
     }
   }
 
-  const scalarNode = context.scalars[dataType];
-
-  if (scalarNode) {
-    return [scalarNode];
-  }
-
   // Used as a unique identifier for the data type:
   const schema = column.dataTypeSchema ?? context.defaultSchemas;
   const dataTypeId = `${schema}.${dataType}`;
@@ -487,6 +483,12 @@ const transformColumnToArgs = (
 
   if (column.enumValues) {
     return transformEnum(column.enumValues);
+  }
+
+  const scalarNode = context.scalars[dataType];
+
+  if (scalarNode) {
+    return [scalarNode];
   }
 
   return [context.defaultScalar];

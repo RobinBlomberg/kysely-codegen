@@ -6,13 +6,13 @@ import type { DatabaseMetadata } from '../../introspector/metadata/database-meta
 import { DEFAULT_OUT_FILE } from '../constants';
 import type { GeneratorDialect } from '../dialect';
 import type { Logger } from '../logger/logger';
-import { type Overrides } from '../transformer/transformer';
+import type { Overrides } from '../transformer/transformer';
 import { DiffChecker } from './diff-checker';
 import type { RuntimeEnumsStyle } from './runtime-enums-style';
 import type { Serializer } from './serializer';
 import { TypeScriptSerializer } from './serializer';
 
-export type GenerateOptions = {
+export type GenerateOptions<DB = any> = {
   camelCase?: boolean;
   customImports?: Record<string, string>;
   db: Kysely<any>;
@@ -24,6 +24,7 @@ export type GenerateOptions = {
   outFile?: string | null;
   overrides?: Overrides;
   partitions?: boolean;
+  postprocess?: PostprocessFunction<DB>;
   print?: boolean;
   runtimeEnums?: boolean | RuntimeEnumsStyle;
   serializer?: Serializer;
@@ -33,6 +34,11 @@ export type GenerateOptions = {
   typeOnlyImports?: boolean;
   verify?: boolean;
 };
+
+export type PostprocessFunction<DB = any> = (context: {
+  db: Kysely<DB>;
+  metadata: DatabaseMetadata;
+}) => Promise<DatabaseMetadata>;
 
 export type SerializeFromMetadataOptions = Omit<
   GenerateOptions,
@@ -53,12 +59,16 @@ export const generate = async (options: GenerateOptions) => {
 
   options.logger?.info('Introspecting database...');
 
-  const metadata = await options.dialect.introspector.introspect({
+  const rawMetadata = await options.dialect.introspector.introspect({
     db: options.db,
     excludePattern: options.excludePattern,
     includePattern: options.includePattern,
     partitions: options.partitions,
   });
+
+  const metadata = options.postprocess
+    ? await options.postprocess({ db: options.db, metadata: rawMetadata })
+    : rawMetadata;
 
   const newOutput = serializeFromMetadata({ ...options, metadata, startTime });
 
