@@ -50,11 +50,13 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
     domains,
     enums,
     partitions,
+    tableComments,
     tables: rawTables,
   }: {
     domains: PostgresDomainInspector[];
     enums: EnumCollection;
     partitions: TableReference[];
+    tableComments: Map<string, string>;
     tables: KyselyTableMetadata[];
   }) {
     const tables = rawTables
@@ -87,6 +89,7 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
 
         return {
           columns,
+          comment: tableComments.get(`${table.schema}.${table.name}`) ?? null,
           isPartition,
           isView: table.isView,
           name: table.name,
@@ -114,14 +117,21 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
   }
 
   async introspect(options: IntrospectOptions<PostgresDB>) {
-    const [tables, domains, enums, partitions, materializedViews] =
-      await Promise.all([
-        this.getTables(options),
-        this.introspectDomains(options.db),
-        this.introspectEnums(options.db),
-        this.introspectPartitions(options.db),
-        this.introspectMaterializedViews(options),
-      ]);
+    const [
+      tables,
+      domains,
+      enums,
+      partitions,
+      materializedViews,
+      tableComments,
+    ] = await Promise.all([
+      this.getTables(options),
+      this.introspectDomains(options.db),
+      this.introspectEnums(options.db),
+      this.introspectPartitions(options.db),
+      this.introspectMaterializedViews(options),
+      this.introspectTableComments(options.db),
+    ]);
 
     const allTables = [...tables, ...materializedViews];
 
@@ -129,8 +139,34 @@ export class PostgresIntrospector extends Introspector<PostgresDB> {
       enums,
       domains,
       partitions,
+      tableComments,
       tables: allTables,
     });
+  }
+
+  async introspectTableComments(db: Kysely<PostgresDB>) {
+    const result = await sql<{
+      schema: string;
+      name: string;
+      comment: string;
+    }>`
+      select
+        n.nspname as schema,
+        c.relname as name,
+        obj_description(c.oid, 'pg_class') as comment
+      from pg_class c
+      join pg_namespace n on n.oid = c.relnamespace
+      where c.relkind in ('r', 'v', 'm', 'p', 'f')
+        and obj_description(c.oid, 'pg_class') is not null;
+    `.execute(db);
+
+    const tableComments = new Map<string, string>();
+
+    for (const row of result.rows) {
+      tableComments.set(`${row.schema}.${row.name}`, row.comment);
+    }
+
+    return tableComments;
   }
 
   async introspectDomains(db: Kysely<PostgresDB>) {

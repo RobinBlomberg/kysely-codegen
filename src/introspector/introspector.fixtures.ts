@@ -112,6 +112,12 @@ const up = async (db: Kysely<any>, dialect: IntrospectorDialect) => {
       .addColumn('name', 'text', (col) => col.primaryKey().notNull())
       .execute();
     await db.executeQuery(sql`comment on table enum is '@enum';`.compile(db));
+    await db.executeQuery(
+      sql`
+        comment on table foo_bar is
+        'This is a comment on a table.\r\n\r\nIt spans multiple lines.';
+      `.compile(db),
+    );
     await db.schema
       .alterTable('foo_bar')
       .addColumn('enum', sql`text not null references enum(name)`)

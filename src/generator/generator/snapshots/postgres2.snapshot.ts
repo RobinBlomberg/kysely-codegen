@@ -46,10 +46,18 @@ export type Numeric = ColumnType<number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+/**
+ * @enum
+ */
 export interface Enum {
   name: string;
 }
 
+/**
+ * This is a comment on a table.
+ *
+ * It spans multiple lines.
+ */
 export interface FooBar {
   array: string[] | null;
   childDomain: number | null;

@@ -119,6 +119,13 @@ export class TypeScriptSerializer implements Serializer {
   serializeExportStatement(node: ExportStatementNode) {
     let data = '';
 
+    if (
+      node.argument.type === 'InterfaceDeclaration' &&
+      node.argument.comment
+    ) {
+      data += this.serializeJsdoc(node.argument.comment);
+    }
+
     data += 'export ';
 
     switch (node.argument.type) {
@@ -329,6 +336,18 @@ export class TypeScriptSerializer implements Serializer {
     }
 
     data += '}';
+
+    return data;
+  }
+
+  serializeJsdoc(comment: string) {
+    let data = '/**\n';
+
+    for (const line of comment.split(/\r?\n/)) {
+      data += ` *${line ? ` ${line}` : ''}\n`;
+    }
+
+    data += ' */\n';
 
     return data;
   }

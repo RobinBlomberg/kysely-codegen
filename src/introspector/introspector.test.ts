@@ -165,6 +165,7 @@ describe(Introspector.name, () => {
                     name: 'name',
                   }),
                 ],
+                comment: '@enum',
                 name: 'enum',
                 schema: 'public',
               }),
@@ -302,6 +303,8 @@ describe(Introspector.name, () => {
                     name: 'enum',
                   }),
                 ],
+                comment:
+                  'This is a comment on a table.\r\n\r\nIt spans multiple lines.',
                 name: 'foo_bar',
                 schema: 'public',
               }),
