@@ -399,6 +399,42 @@ describe(TypeScriptSerializer.name, () => {
       );
     });
 
+    it('should serialize table comments as a JSDoc above the interface', () => {
+      const dialect = new PostgresDialect();
+      const enums = new EnumCollection();
+
+      const ast = transform({
+        camelCase: true,
+        dialect,
+        metadata: new DatabaseMetadata({
+          enums,
+          tables: [
+            new TableMetadata({
+              columns: [new ColumnMetadata({ dataType: 'int4', name: 'id' })],
+              comment: 'Users of the system.\nSee docs for more.',
+              name: 'users',
+              schema: 'public',
+            }),
+          ],
+        }),
+      });
+
+      strictEqual(
+        serializer.serializeStatements(ast),
+        '/**\n' +
+          ' * Users of the system.\n' +
+          ' * See docs for more.\n' +
+          ' */\n' +
+          'export interface Users {\n' +
+          '  id: number;\n' +
+          '}\n' +
+          '\n' +
+          'export interface DB {\n' +
+          '  users: Users;\n' +
+          '}\n',
+      );
+    });
+
     it('should serialize Postgres JSON fields properly', () => {
       const dialect = new PostgresDialect();
       const enums = new EnumCollection();

@@ -34,6 +34,7 @@ describe('transform with type mapping', () => {
     columns: ColumnMetadata[],
   ): TableMetadata => ({
     columns,
+    comment: null,
     isPartition: false,
     isView: false,
     name,

@@ -523,6 +523,7 @@ const transformTables = (context: TransformContext) => {
       new InterfaceDeclarationNode(
         new TableIdentifierNode(symbolName),
         expression,
+        table.comment,
       ),
     );
     tableNodes.push(tableNode);

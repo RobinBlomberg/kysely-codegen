@@ -297,10 +297,18 @@ describe(Cli.name, () => {
           status: CliStatus | null;
         }
 
+        /**
+         * @enum
+         */
         export interface Enum {
           name: string;
         }
 
+        /**
+         * This is a comment on a table.
+         *
+         * It spans multiple lines.
+         */
         export interface FooBar {
           array: string[] | null;
           childDomain: number | null;

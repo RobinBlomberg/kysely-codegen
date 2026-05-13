@@ -5,4 +5,9 @@ export type MysqlDB = {
     TABLE_NAME: string;
     TABLE_SCHEMA: string;
   };
+  'information_schema.TABLES': {
+    TABLE_COMMENT: string | null;
+    TABLE_NAME: string;
+    TABLE_SCHEMA: string;
+  };
 };
