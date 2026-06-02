@@ -20,7 +20,14 @@ class CaseConverter extends kysely_1.CamelCasePlugin {
  * ```
  */
 const toCamelCase = (string) => {
-    return new CaseConverter().toCamelCase(string).replace(/Id(?![a-z])/, 'ID');
+    // Match the runtime CustomCamelCasePlugin in consumer projects: `Id`/`Ids`
+    // at the end of an identifier (or before an uppercase/digit) become
+    // `ID`/`IDs`. Apply `Ids` first so the singular rule doesn't pre-eat its
+    // trailing `Id`. The `g` flag handles identifiers with multiple `Id`s.
+    return new CaseConverter()
+        .toCamelCase(string)
+        .replace(/Ids(?![a-z])/g, 'IDs')
+        .replace(/Id(?![a-z])/g, 'ID');
 };
 exports.toCamelCase = toCamelCase;
 /**
