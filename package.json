@@ -114,7 +114,7 @@
     "mysql2": ">=2.3.3 <4.0.0",
     "pg": ">=8.8.0 <9.0.0",
     "tarn": ">=3.0.0 <4.0.0",
-    "tedious": ">=18.0.0 <20.0.0"
+    "tedious": ">=18.0.0 <21.0.0"
   },
   "peerDependenciesMeta": {
     "@libsql/kysely-libsql": {
@@ -178,7 +178,7 @@
         1,
         {
           "checkGlobalVariables": false
-        }
+        }te
       ],
       "unicorn/prefer-node-protocol": 0
     }
