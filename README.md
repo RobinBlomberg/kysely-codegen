@@ -238,7 +238,7 @@ Print all command line options.
 
 #### --include-pattern [value], --exclude-pattern [value] <!-- omit from toc -->
 
-You can choose which tables should be included during code generation by providing a glob pattern to the `--include-pattern` and `--exclude-pattern` flags. We use [micromatch](https://github.com/micromatch/micromatch) under the hood, which provides advanced glob support. For instance, if you only want to include your public tables:
+You can choose which tables should be included during code generation by providing a glob pattern to the `--include-pattern` and `--exclude-pattern` flags. We use [picomatch](https://github.com/micromatch/picomatch) under the hood, which provides advanced glob support. For instance, if you only want to include your public tables:
 
 ```sh
 kysely-codegen --include-pattern="public.*"

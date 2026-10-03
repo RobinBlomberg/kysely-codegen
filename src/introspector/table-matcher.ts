@@ -1,11 +1,11 @@
-import { matcher } from 'micromatch';
+import picomatch from 'picomatch';
 
 export class TableMatcher {
   isMatch: (string: string) => boolean;
   isSimpleGlob: boolean;
 
   constructor(pattern: string) {
-    this.isMatch = matcher(pattern, { nocase: true });
+    this.isMatch = picomatch(pattern, { nocase: true });
     this.isSimpleGlob = !pattern.includes('.');
   }
 
