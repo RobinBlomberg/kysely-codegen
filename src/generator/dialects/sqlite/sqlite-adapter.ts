@@ -1,6 +1,24 @@
 import { Adapter } from '../../adapter';
 import { IdentifierNode } from '../../ast/identifier-node';
 
+const NUMERIC_TYPES = new Set([
+  'bigint',
+  'decimal',
+  'double',
+  'double precision',
+  'float',
+  'int',
+  'int2',
+  'int8',
+  'integer',
+  'mediumint',
+  'numeric',
+  'real',
+  'smallint',
+  'tinyint',
+  'unsigned big int',
+]);
+
 export class SqliteAdapter extends Adapter {
   override readonly defaultScalar = new IdentifierNode('string');
   override readonly scalars = {
@@ -12,4 +30,20 @@ export class SqliteAdapter extends Adapter {
     real: new IdentifierNode('number'),
     text: new IdentifierNode('string'),
   };
+
+  override resolveScalar(dataType: string) {
+    const scalar = super.resolveScalar(dataType);
+
+    if (scalar) {
+      return scalar;
+    }
+
+    const baseType = dataType
+      .trim()
+      .replace(/\s*\([^)]*\)$/, '')
+      .replaceAll(/\s+/g, ' ');
+    return NUMERIC_TYPES.has(baseType)
+      ? new IdentifierNode('number')
+      : undefined;
+  }
 }

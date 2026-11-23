@@ -2,7 +2,7 @@ import type { EnumCollection } from '../../introspector/enum-collection';
 import type { ColumnMetadata } from '../../introspector/metadata/column-metadata';
 import type { DatabaseMetadata } from '../../introspector/metadata/database-metadata';
 import type { TableMetadata } from '../../introspector/metadata/table-metadata';
-import type { Definitions, Imports, Scalars } from '../adapter';
+import type { Definitions, Imports } from '../adapter';
 import { AliasDeclarationNode } from '../ast/alias-declaration-node';
 import { ArrayExpressionNode } from '../ast/array-expression-node';
 import { ExportStatementNode } from '../ast/export-statement-node';
@@ -63,7 +63,6 @@ type TransformContext = {
   metadata: DatabaseMetadata;
   overrides: Overrides | undefined;
   runtimeEnums: boolean | RuntimeEnumsStyle;
-  scalars: Scalars;
   symbols: SymbolCollection;
   typeMapping: Record<string, string> | undefined;
 };
@@ -223,9 +222,6 @@ const createContext = (options: TransformOptions): TransformContext => {
     metadata: options.metadata,
     overrides: options.overrides,
     runtimeEnums: options.runtimeEnums ?? false,
-    scalars: {
-      ...options.dialect.adapter.scalars,
-    },
     symbols: new SymbolCollection(),
     typeMapping: options.typeMapping,
   };
@@ -407,6 +403,7 @@ const transformColumnToArgs = (
   context: TransformContext,
 ) => {
   const dataType = column.dataType.toLowerCase();
+  const scalarNode = context.dialect.adapter.resolveScalar(dataType);
 
   // Check type mapping first:
   const mappedType = context.typeMapping?.[dataType];
@@ -418,7 +415,7 @@ const transformColumnToArgs = (
 
     // Only apply mapping if this is a known type in the dialect:
     const isKnownType =
-      context.scalars[dataType] ||
+      scalarNode ||
       context.enums.has(dataTypeId) ||
       isPostgresRangeType(dataType, context);
 
@@ -484,8 +481,6 @@ const transformColumnToArgs = (
   if (column.enumValues) {
     return transformEnum(column.enumValues);
   }
-
-  const scalarNode = context.scalars[dataType];
 
   if (scalarNode) {
     return [scalarNode];
