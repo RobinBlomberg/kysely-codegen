@@ -18,4 +18,8 @@ export abstract class Adapter {
   readonly definitions: Definitions = {};
   readonly imports: Imports = {};
   readonly scalars: Scalars = {};
+
+  resolveScalar(dataType: string): ExpressionNode | undefined {
+    return this.scalars[dataType];
+  }
 }
