@@ -17,10 +17,8 @@ import type { LogLevel } from '../generator/logger/log-level';
 import { LOG_LEVELS } from '../generator/logger/log-level';
 import { Logger } from '../generator/logger/logger';
 import type { Overrides } from '../generator/transformer/transformer';
-import { IntrospectorDialect } from '../introspector/dialect';
 import type { DateParser } from '../introspector/dialects/postgres/date-parser';
 import type { NumericParser } from '../introspector/dialects/postgres/numeric-parser';
-import { DatabaseMetadata } from '../introspector/metadata/database-metadata';
 
 export type Config<DB = any> = {
   /**
@@ -342,24 +340,11 @@ export const configSchema = z.object({
     ])
     .optional(),
   serializer: z
-    .object({
-      serializeFile: z.function({
-        input: z.tuple([
-          z.instanceof(DatabaseMetadata),
-          z.instanceof(IntrospectorDialect),
-          z
-            .object({
-              camelCase: z.boolean().optional(),
-              customImports: z.record(z.string(), z.string()).optional(),
-              defaultSchemas: z.string().array().optional(),
-              overrides: overridesSchema.optional(),
-              typeMapping: z.record(z.string(), z.string()).optional(),
-            })
-            .optional(),
-        ]),
-        output: z.string(),
-      }),
-    })
+    .custom<Serializer>(
+      (value) =>
+        typeof (value as Serializer | null)?.serializeFile === 'function',
+      'Expected an object with a serializeFile method',
+    )
     .optional(),
   singularize: z
     .union([z.boolean(), z.record(z.string(), z.string())])
