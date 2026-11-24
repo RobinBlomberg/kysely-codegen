@@ -55,6 +55,7 @@
     "micromatch": "^4.0.8",
     "minimist": "^1.2.8",
     "pluralize": "^8.0.0",
+    "typescript": "^5.9.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -100,7 +101,6 @@
     "tedious": "^19.2.0",
     "ts-dedent": "^2.2.0",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
     "vitest": "^4.0.18",
     "wait-on": "^9.0.3"
   },
